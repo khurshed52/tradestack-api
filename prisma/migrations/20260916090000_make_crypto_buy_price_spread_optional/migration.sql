@@ -1,0 +1,3 @@
+ALTER TABLE "Crypto"
+  ALTER COLUMN "buyPrice" DROP NOT NULL,
+  ALTER COLUMN "spread" DROP NOT NULL;

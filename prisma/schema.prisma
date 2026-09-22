@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Customer {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @unique @db.Uuid
+  customerFirstName   String
+  customerLastName    String
+  email               String   @unique
+  customerNationality String
+  phoneNumber         String   @unique
+  reglink             String?
+  isActive            Boolean  @default(true)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Crypto {
+  symbol        String               @id
+  buyPrice      Decimal?             @db.Decimal(28, 10)
+  spread        Decimal?             @db.Decimal(28, 10)
+  price         Decimal              @db.Decimal(28, 10)
+  changePercent Decimal              @db.Decimal(18, 8)
+  high          Decimal              @db.Decimal(28, 10)
+  low           Decimal              @db.Decimal(28, 10)
+  updatedAt     DateTime             @updatedAt
+  history       CryptoPriceHistory[]
+}
+
+model CryptoPriceHistory {
+  id         String   @id @default(uuid()) @db.Uuid
+  symbol     String
+  price      Decimal  @db.Decimal(28, 10)
+  recordedAt DateTime @default(now())
+  crypto     Crypto   @relation(fields: [symbol], references: [symbol])
+
+  @@index([symbol, recordedAt])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+model Order {
+  id                    String      @id @default(uuid()) @db.Uuid
+  // Nullable only for orders created before account selection was required.
+  tradingAccountId      String?
+  amount                Int
+  currency              String      @default("usd")
+  status                OrderStatus @default(PENDING)
+  stripeCheckoutId      String?     @unique
+  stripePaymentIntentId String?     @unique
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+
+model User {
+  id                String             @id @default(uuid()) @db.Uuid
+  email             String             @unique
+  passwordHash      String
+  name              String?
+  role              UserRole           @default(USER)
+  isActive          Boolean            @default(true)
+  sessions          UserSession[]
+  passwordResetOtps PasswordResetOtp[]
+  customer          Customer?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model UserSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String    @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  lastUsedAt       DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model PasswordResetOtp {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  otpHash    String
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  usedAt     DateTime?
+  attempts   Int       @default(0)
+  createdAt  DateTime  @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
