@@ -7,6 +7,7 @@ import profileRoute from "./profileRoute.js";
 import kycRoute from "./kycRoute.js";
 import adminRouter from "./adminRoute.js";
 import miscRoute from "./miscRoute.js";
+import accountRouter from "./accountRoute.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -42,4 +43,5 @@ routes.use("/payment", paymentRouter);
 routes.use("/profile", profileRoute);
 routes.use("/kyc", kycRoute);
 routes.use("/admin", adminRouter);
+routes.use("/accounts", accountRouter);
 export default routes;
