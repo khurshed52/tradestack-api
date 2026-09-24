@@ -216,6 +216,11 @@ server.listen(
     );
 
 
+    if (process.env.ENABLE_MARKET_PRICE_UPDATES !== 'true') {
+      console.log('Automatic market price updates disabled');
+      return;
+    }
+
     void startTwelveDataStream()
       .then((stop) => {
         stopTwelveData = stop;

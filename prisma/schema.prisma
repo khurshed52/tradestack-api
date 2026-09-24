@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
   moduleFormat = "esm"
 }
 
@@ -9,18 +9,134 @@ datasource db {
 }
 
 model Customer {
-  id                  String   @id @default(uuid()) @db.Uuid
-  userId              String   @unique @db.Uuid
+  id                  String  @id @default(uuid()) @db.Uuid
+  userId              String  @unique @db.Uuid
   customerFirstName   String
   customerLastName    String
-  email               String   @unique
+  email               String  @unique
   customerNationality String
-  phoneNumber         String   @unique
+  phoneNumber         String  @unique
   reglink             String?
-  isActive            Boolean  @default(true)
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  isActive            Boolean @default(true)
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingAccounts TradingAccount[]
+  // KYC
+  kycProfile      KycProfile?
+  kycAgreement    KycAgreement?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model KycAgreement {
+  id         String @id @default(uuid()) @db.Uuid
+  customerId String @unique @db.Uuid
+
+  // Agreement used when customer signed
+  documentVersion String
+
+  // Location of generated signed PDF
+  documentPath String
+
+  // SHA-256 of final PDF
+  documentHash String
+
+  // Signing audit information
+  signedAt  DateTime
+  ipAddress String?
+  userAgent String?
+
+  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum KycStatus {
+  NOT_STARTED
+  PROFILE_IN_PROGRESS
+  PROFILE_COMPLETED
+  IDENTITY_PENDING
+  IDENTITY_IN_PROGRESS
+  IDENTITY_VERIFIED
+  IDENTITY_REJECTED
+  SIGNATURE_PENDING
+  COMPLETED
+  APPROVED
+  REJECTED
+}
+
+enum TradingPlatform {
+  MT4
+  MT5
+}
+
+enum TradingAccountStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+model TradingAccount {
+  id         String @id @default(uuid()) @db.Uuid
+  customerId String @db.Uuid
+
+  // User-facing trading account number
+  accountNumber String @unique
+
+  // Display only for now.
+  // No MT4/MT5 integration yet.
+  platform TradingPlatform @default(MT5)
+
+  // Base account currency
+  currency String @default("USD")
+
+  // Account balance
+  balance Decimal @default(0) @db.Decimal(18, 2)
+
+  status TradingAccountStatus @default(ACTIVE)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+}
+
+model KycProfile {
+  id         String @id @default(uuid()) @db.Uuid
+  customerId String @unique @db.Uuid
+
+  // Personal information
+  dateOfBirth DateTime?
+  gender      String?
+
+  // Residential address
+  countryOfResidence String?
+  addressLine1       String?
+  addressLine2       String?
+  city               String?
+  state              String?
+  postalCode         String?
+
+  // Employment
+  employmentStatus String?
+  occupation       String?
+
+  // KYC workflow
+  status KycStatus @default(NOT_STARTED)
+
+  // Sumsub - used in Step 2 later
+  identityProvider  String?
+  providerSessionId String? @unique
+
+  // Progress timestamps
+  profileCompletedAt DateTime?
+  identityVerifiedAt DateTime?
+  completedAt        DateTime?
+  customer           Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 model Crypto {
@@ -65,7 +181,6 @@ model Order {
   updatedAt             DateTime    @updatedAt
 }
 
-
 model User {
   id                String             @id @default(uuid()) @db.Uuid
   email             String             @unique
@@ -88,7 +203,8 @@ model UserSession {
   revokedAt        DateTime?
   createdAt        DateTime  @default(now())
   lastUsedAt       DateTime?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
 
@@ -106,6 +222,7 @@ model PasswordResetOtp {
   usedAt     DateTime?
   attempts   Int       @default(0)
   createdAt  DateTime  @default(now())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

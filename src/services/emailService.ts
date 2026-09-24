@@ -15,10 +15,18 @@ if (!fromEmail) {
 
 sgMail.setApiKey(apiKey);
 
+export interface EmailAttachment {
+  content: string;
+  filename: string;
+  type?: string;
+  disposition?: "attachment" | "inline";
+}
+
 export const sendEmail = async (
   to: string,
   subject: string,
-  html: string
+  html: string,
+  attachments?: EmailAttachment[],
 ) => {
   await sgMail.send({
     to,
@@ -28,5 +36,8 @@ export const sendEmail = async (
     },
     subject,
     html,
+    ...(attachments?.length
+      ? { attachments }
+      : {}),
   });
 };

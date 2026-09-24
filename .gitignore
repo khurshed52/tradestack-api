@@ -5,3 +5,5 @@ src/generated/
 .env.*
 !.env.example
 *.log
+.DS_Store
+storage/kyc/signed/

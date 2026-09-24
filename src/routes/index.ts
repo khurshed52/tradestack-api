@@ -4,6 +4,8 @@ import cryptoRouter from "./cryptoRoute.js";
 import paymentRouter from "./paymentRoute.js";
 import authRoute from "./authRoute.js";
 import profileRoute from "./profileRoute.js";
+import kycRoute from "./kycRoute.js";
+import adminRouter from "./adminRoute.js";
 import miscRoute from "./miscRoute.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
@@ -38,5 +40,6 @@ routes.use("/customer", customerRouter);
 routes.use("/crypto", cryptoRouter);
 routes.use("/payment", paymentRouter);
 routes.use("/profile", profileRoute);
-
+routes.use("/kyc", kycRoute);
+routes.use("/admin", adminRouter);
 export default routes;

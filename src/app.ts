@@ -5,6 +5,8 @@ import cors from "cors";
 
 import routes from "./routes/index.js";
 import { stripeWebhook } from "./controller/StripeWebhookController.js";
+import { veriffWebhook } from "./controller/VeriffWebhookController.js";
+
 import { errorHandler } from "./middleware/errorHandler.js";
 export const app = express();
 
@@ -43,6 +45,15 @@ app.post(
   stripeWebhook
 );
 
+app.post(
+  "/api/kyc/veriff/webhook",
+  express.raw({
+    type: "application/json",
+  }),
+  veriffWebhook
+);
+
+
 // ==========================
 // BODY PARSER
 // ==========================
@@ -66,4 +77,3 @@ app.get("/customer", (_req, res) => {
 // ==========================
 
 app.use(errorHandler);
-  
