@@ -19,13 +19,16 @@ model Customer {
   reglink             String?
   isActive            Boolean @default(true)
 
+  consentAccepted   Boolean   @default(false)
+  consentAcceptedAt DateTime?
+
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   tradingAccounts TradingAccount[]
-  // KYC
   kycProfile      KycProfile?
   kycAgreement    KycAgreement?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model KycAgreement {
@@ -225,4 +228,29 @@ model PasswordResetOtp {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model PendingRegistration {
+  id String @id @default(uuid())
+
+  customerFirstName   String
+  customerLastName    String
+  email               String  @unique
+  passwordHash        String
+  customerNationality String
+  phoneNumber         String
+  reglink             String?
+
+  consentAccepted   Boolean
+  consentAcceptedAt DateTime
+
+  otpHash      String
+  otpExpiresAt DateTime
+  otpAttempts  Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([otpExpiresAt])
 }

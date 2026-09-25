@@ -13,6 +13,15 @@ import { normalizeEmail } from "../../utils/normalizeEmail.js";
  * Register User
  * POST /api/auth/register
  */
+/**
+ * Start User Registration
+ * POST /api/auth/register
+ *
+ * Validates registration details, stores a pending
+ * registration and sends an email verification OTP.
+ *
+ * User + Customer are NOT created until OTP verification.
+ */
 export const register = async (
   req: Request,
   res: Response
@@ -26,62 +35,42 @@ export const register = async (
       customerNationality,
       phoneNumber,
       reglink,
+      consentAccepted,
     } = req.body;
 
-    // Validate required fields
-    if (
-      typeof customerFirstName !== "string" ||
-      !customerFirstName.trim() ||
-      typeof customerLastName !== "string" ||
-      !customerLastName.trim() ||
-      typeof email !== "string" ||
-      !email.trim() ||
-      typeof password !== "string" ||
-      !password ||
-      typeof customerNationality !== "string" ||
-      !customerNationality.trim() ||
-      typeof phoneNumber !== "string" ||
-      !phoneNumber.trim()
-    ) {
+    /*
+     * Request validation is already handled by
+     * registerSchema before this controller.
+     *
+     * Keep a small defensive check for consent.
+     */
+    if (consentAccepted !== true) {
       return res.status(400).json({
         statusCode: 400,
-        message: "All required fields must be provided",
+        message:
+          "Privacy Policy and Terms consent is required",
         data: null,
       });
     }
 
-    // Validate optional reglink
-    if (
-      reglink !== undefined &&
-      reglink !== null &&
-      typeof reglink !== "string"
-    ) {
-      return res.status(400).json({
-        statusCode: 400,
-        message: "reglink must be a string",
-        data: null,
-      });
-    }
-
-    // Validate password length
-    if (password.length < 8) {
-      return res.status(400).json({
-        statusCode: 400,
-        message: "Password must be at least 8 characters",
-        data: null,
-      });
-    }
-
-    // Normalize values
     const normalizedEmail = normalizeEmail(email);
-    const normalizedPhoneNumber = phoneNumber.trim();
 
-    // Check whether email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: normalizedEmail,
-      },
-    });
+    const normalizedPhoneNumber =
+      phoneNumber.trim();
+
+    /*
+     * Check whether a real registered user
+     * already owns this email.
+     */
+    const existingUser =
+      await prisma.user.findUnique({
+        where: {
+          email: normalizedEmail,
+        },
+        select: {
+          id: true,
+        },
+      });
 
     if (existingUser) {
       return res.status(409).json({
@@ -91,23 +80,32 @@ export const register = async (
       });
     }
 
-    // Check whether phone number already exists
+    /*
+     * Check whether the phone number belongs
+     * to an existing customer.
+     */
     const existingCustomer =
       await prisma.customer.findUnique({
         where: {
           phoneNumber: normalizedPhoneNumber,
+        },
+        select: {
+          id: true,
         },
       });
 
     if (existingCustomer) {
       return res.status(409).json({
         statusCode: 409,
-        message: "Phone number already registered",
+        message:
+          "Phone number already registered",
         data: null,
       });
     }
 
-    // Hash password using Argon2id
+    /*
+     * Never store the plaintext password.
+     */
     const passwordHash = await argon2.hash(
       password,
       {
@@ -115,55 +113,356 @@ export const register = async (
       }
     );
 
-    // Create User + Customer together
+    /*
+     * Generate registration OTP.
+     */
+    const otp = generateOtp();
+
+    /*
+     * Store only the OTP hash.
+     */
+    const otpHash = hashOtp(otp);
+
+    /*
+     * OTP expires after 10 minutes.
+     */
+    const otpExpiresAt = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    const now = new Date();
+
+    /*
+     * There can only be one pending registration
+     * per email because email is unique.
+     *
+     * If the user submits the registration form
+     * again, replace the previous pending details
+     * and OTP.
+     */
+    await prisma.pendingRegistration.upsert({
+      where: {
+        email: normalizedEmail,
+      },
+
+      create: {
+        customerFirstName:
+          customerFirstName.trim(),
+
+        customerLastName:
+          customerLastName.trim(),
+
+        email: normalizedEmail,
+
+        passwordHash,
+
+        customerNationality:
+          customerNationality.trim(),
+
+        phoneNumber:
+          normalizedPhoneNumber,
+
+        reglink:
+          typeof reglink === "string" &&
+          reglink.trim()
+            ? reglink.trim()
+            : null,
+
+        consentAccepted: true,
+        consentAcceptedAt: now,
+
+        otpHash,
+        otpExpiresAt,
+        otpAttempts: 0,
+      },
+
+      update: {
+        customerFirstName:
+          customerFirstName.trim(),
+
+        customerLastName:
+          customerLastName.trim(),
+
+        passwordHash,
+
+        customerNationality:
+          customerNationality.trim(),
+
+        phoneNumber:
+          normalizedPhoneNumber,
+
+        reglink:
+          typeof reglink === "string" &&
+          reglink.trim()
+            ? reglink.trim()
+            : null,
+
+        consentAccepted: true,
+        consentAcceptedAt: now,
+
+        otpHash,
+        otpExpiresAt,
+        otpAttempts: 0,
+      },
+    });
+
+    /*
+     * Send registration verification email.
+     *
+     * Unlike the old welcome email, failure here
+     * SHOULD fail the request because the customer
+     * cannot continue registration without the OTP.
+     */
+    const safeName = customerFirstName
+      .trim()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+    const html = await renderEmailTemplate(
+      "auth/registration-otp",
+      {
+        name: safeName,
+        otp,
+        expiresIn: 10,
+        year: new Date().getFullYear(),
+      }
+    );
+
+    await sendEmail(
+      normalizedEmail,
+      "Verify your TradePro email",
+      html
+    );
+
+    return res.status(200).json({
+      statusCode: 200,
+      message:
+        "Verification code sent successfully",
+      data: {
+        email: normalizedEmail,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Registration initiation error:",
+      error
+    );
+
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
+/**
+ * Verify Registration OTP
+ * POST /api/auth/verify-registration-otp
+ *
+ * Verifies the email OTP and creates the real
+ * User + Customer records.
+ */
+export const verifyRegistrationOtp = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email, otp } = req.body;
+
+    const normalizedEmail = normalizeEmail(email);
+
+    /*
+     * Find pending registration.
+     */
+    const pendingRegistration =
+      await prisma.pendingRegistration.findUnique({
+        where: {
+          email: normalizedEmail,
+        },
+      });
+
+    if (!pendingRegistration) {
+      return res.status(404).json({
+        statusCode: 404,
+        message:
+          "No pending registration found for this email",
+        data: null,
+      });
+    }
+
+    /*
+     * Check OTP expiration.
+     */
+    if (
+      pendingRegistration.otpExpiresAt <= new Date()
+    ) {
+      return res.status(400).json({
+        statusCode: 400,
+        message:
+          "Verification code has expired",
+        data: null,
+      });
+    }
+
+    /*
+     * Maximum 5 failed attempts.
+     */
+    if (pendingRegistration.otpAttempts >= 5) {
+      return res.status(429).json({
+        statusCode: 429,
+        message:
+          "Too many invalid verification attempts",
+        data: null,
+      });
+    }
+
+    /*
+     * Hash incoming OTP.
+     *
+     * We never compare/store plaintext OTPs.
+     */
+    const incomingOtpHash = hashOtp(
+      String(otp)
+    );
+
+    /*
+     * Invalid OTP.
+     */
+    if (
+      incomingOtpHash !==
+      pendingRegistration.otpHash
+    ) {
+      await prisma.pendingRegistration.update({
+        where: {
+          id: pendingRegistration.id,
+        },
+        data: {
+          otpAttempts: {
+            increment: 1,
+          },
+        },
+      });
+
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Invalid verification code",
+        data: null,
+      });
+    }
+
+    /*
+     * OTP is valid.
+     *
+     * Re-check email and phone number before creating
+     * the account. This protects against another request
+     * registering them while this OTP was pending.
+     */
+    const existingUser =
+      await prisma.user.findUnique({
+        where: {
+          email: normalizedEmail,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+    if (existingUser) {
+      return res.status(409).json({
+        statusCode: 409,
+        message: "User already exists",
+        data: null,
+      });
+    }
+
+    const existingCustomer =
+      await prisma.customer.findUnique({
+        where: {
+          phoneNumber:
+            pendingRegistration.phoneNumber,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+    if (existingCustomer) {
+      return res.status(409).json({
+        statusCode: 409,
+        message:
+          "Phone number already registered",
+        data: null,
+      });
+    }
+
+    /*
+     * Create User + Customer and consume the
+     * PendingRegistration atomically.
+     *
+     * Either everything succeeds or nothing does.
+     */
     const result = await prisma.$transaction(
       async (tx) => {
         const user = await tx.user.create({
           data: {
             email: normalizedEmail,
-            passwordHash,
 
-            // Keep User.name for compatibility
-            name: `${customerFirstName.trim()} ${customerLastName.trim()}`,
-          },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
+            passwordHash:
+              pendingRegistration.passwordHash,
+
+            name: `${pendingRegistration.customerFirstName} ${pendingRegistration.customerLastName}`.trim(),
+
+            role: "USER",
+
             isActive: true,
-            createdAt: true,
           },
         });
 
-        const customer = await tx.customer.create({
-          data: {
-            userId: user.id,
-            customerFirstName:
-              customerFirstName.trim(),
-            customerLastName:
-              customerLastName.trim(),
-            email: normalizedEmail,
-            customerNationality:
-              customerNationality.trim(),
-            phoneNumber: normalizedPhoneNumber,
-            reglink:
-              typeof reglink === "string" &&
-              reglink.trim()
-                ? reglink.trim()
-                : null,
-          },
-          select: {
-            id: true,
-            userId: true,
-            customerFirstName: true,
-            customerLastName: true,
-            email: true,
-            customerNationality: true,
-            phoneNumber: true,
-            reglink: true,
-            isActive: true,
-            createdAt: true,
+        const customer =
+          await tx.customer.create({
+            data: {
+              userId: user.id,
+
+              customerFirstName:
+                pendingRegistration.customerFirstName,
+
+              customerLastName:
+                pendingRegistration.customerLastName,
+
+              email: normalizedEmail,
+
+              customerNationality:
+                pendingRegistration.customerNationality,
+
+              phoneNumber:
+                pendingRegistration.phoneNumber,
+
+              reglink:
+                pendingRegistration.reglink,
+
+                consentAccepted:
+                pendingRegistration.consentAccepted,
+
+              consentAcceptedAt:
+                pendingRegistration.consentAcceptedAt,
+
+              isActive: true,
+            },
+          });
+
+        /*
+         * OTP has now been consumed.
+         *
+         * Deleting this prevents the same OTP from
+         * being used again.
+         */
+        await tx.pendingRegistration.delete({
+          where: {
+            id: pendingRegistration.id,
           },
         });
 
@@ -174,40 +473,189 @@ export const register = async (
       }
     );
 
-    // The account is committed; email failure must not fail registration.
-    try {
-      const name = result.customer.customerFirstName
+    /*
+     * Registration completed successfully.
+     */
+    return res.status(201).json({
+      statusCode: 201,
+      message: "Registration successful",
+      data: {
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.name,
+          role: result.user.role,
+        },
+
+        customer: {
+          id: result.customer.id,
+
+          customerFirstName:
+            result.customer.customerFirstName,
+
+          customerLastName:
+            result.customer.customerLastName,
+
+          email: result.customer.email,
+
+          customerNationality:
+            result.customer.customerNationality,
+
+          phoneNumber:
+            result.customer.phoneNumber,
+
+          reglink:
+            result.customer.reglink,
+        },
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Registration OTP verification error:",
+      error
+    );
+
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
+/**
+ * Resend Registration OTP
+ * POST /api/auth/resend-registration-otp
+ */
+export const resendRegistrationOtp = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    const normalizedEmail = normalizeEmail(email);
+
+    /*
+     * Registration must already have been initiated.
+     */
+    const pendingRegistration =
+      await prisma.pendingRegistration.findUnique({
+        where: {
+          email: normalizedEmail,
+        },
+      });
+
+    if (!pendingRegistration) {
+      return res.status(404).json({
+        statusCode: 404,
+        message:
+          "No pending registration found for this email",
+        data: null,
+      });
+    }
+
+    /*
+     * Prevent OTP email spam.
+     * Customer must wait 60 seconds before requesting
+     * another registration OTP.
+     */
+    const cooldownMs = 60 * 1000;
+
+    const nextAllowedAt =
+      pendingRegistration.updatedAt.getTime() +
+      cooldownMs;
+
+    const now = Date.now();
+
+    if (now < nextAllowedAt) {
+      const retryAfterSeconds = Math.ceil(
+        (nextAllowedAt - now) / 1000
+      );
+
+      return res.status(429).json({
+        statusCode: 429,
+        message: `Please wait ${retryAfterSeconds} seconds before requesting another verification code`,
+        data: {
+          retryAfterSeconds,
+        },
+      });
+    }
+
+    /*
+     * Generate a completely new OTP.
+     */
+    const otp = generateOtp();
+    const otpHash = hashOtp(otp);
+
+    /*
+     * New OTP is valid for 10 minutes.
+     */
+    const otpExpiresAt = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    /*
+     * Replace old OTP and reset failed attempts.
+     *
+     * Updating the row also updates updatedAt,
+     * which starts a new resend cooldown.
+     */
+    await prisma.pendingRegistration.update({
+      where: {
+        id: pendingRegistration.id,
+      },
+      data: {
+        otpHash,
+        otpExpiresAt,
+        otpAttempts: 0,
+      },
+    });
+
+    /*
+     * Escape customer name before injecting it
+     * into the HTML template.
+     */
+    const safeName =
+      pendingRegistration.customerFirstName
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
 
-      const html = await renderEmailTemplate(
-        "auth/welcome",
-        {
-          name,
-          supportUrl: "#",
-          year: new Date().getFullYear(),
-        }
-      );
+    /*
+     * Reuse registration OTP email template.
+     */
+    const html = await renderEmailTemplate(
+      "auth/registration-otp",
+      {
+        name: safeName,
+        otp,
+        expiresIn: 10,
+        year: new Date().getFullYear(),
+      }
+    );
 
-      await sendEmail(
-        result.user.email,
-        "Welcome to TradePro",
-        html
-      );
-    } catch (emailError) {
-      console.error("Welcome email failed:", emailError);
-    }
+    await sendEmail(
+      normalizedEmail,
+      "Verify your TradePro email",
+      html
+    );
 
-    return res.status(201).json({
-      statusCode: 201,
-      message: "User registered successfully",
-      data: result,
+    return res.status(200).json({
+      statusCode: 200,
+      message:
+        "Verification code resent successfully",
+      data: {
+        email: normalizedEmail,
+      },
     });
   } catch (error) {
-    console.error("Register error:", error);
+    console.error(
+      "Resend registration OTP error:",
+      error
+    );
 
     return res.status(500).json({
       statusCode: 500,
