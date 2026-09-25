@@ -6,15 +6,15 @@ import { app } from './app.js';
 
 import {
   attachCryptoSocket,
-} from './websocket/cryptoSocket.js';
+} from './modules/market/crypto.socket.js';
 
 import {
   attachMt5Socket,
-} from './websocket/mt5Socket.js';
+} from './modules/market/mt5.socket.js';
 
 import {
   startTwelveDataStream,
-} from './services/twelveDataStream.js';
+} from './modules/market/twelveDataStream.service.js';
 
 
 const port = Number(

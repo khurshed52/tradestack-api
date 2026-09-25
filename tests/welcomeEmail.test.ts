@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sgMail from '@sendgrid/mail';
 import prisma from '../src/db/db.config.js';
-import { register } from '../src/controller/AuthController.js';
+import { register } from '../src/modules/auth/auth.controller.js';
 
  test('welcome email follows commit, uses normalized email, and cannot fail registration', async () => {
   const originals = {

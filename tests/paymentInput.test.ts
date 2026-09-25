@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Request, Response } from 'express';
-import { createCheckout } from '../src/controller/PaymentController.js';
+import { createCheckout } from '../src/modules/payment/payment.controller.js';
 
 test('rejects invalid checkout inputs before creating an order', async () => {
     for (const body of [undefined, {amount:-10,currency:'usd'}, {amount:1.5,currency:'usd'},

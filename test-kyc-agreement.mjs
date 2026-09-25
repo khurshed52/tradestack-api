@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { generateSignedKycAgreement } from "./services/kycAgreementService.js";
+import { generateSignedKycAgreement } from "./dist/modules/kyc/kycAgreement.service.js";
 
 async function test() {
   try {

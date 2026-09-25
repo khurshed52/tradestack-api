@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Request, Response } from 'express';
 import prisma from '../src/db/db.config.js';
-import { getOrderStatus } from '../src/controller/PaymentController.js';
+import { getOrderStatus } from '../src/modules/payment/payment.controller.js';
 
 test('order lookup validates session, handles missing orders and reflects stored payment state', async () => {
  const original = prisma.order.findUnique;

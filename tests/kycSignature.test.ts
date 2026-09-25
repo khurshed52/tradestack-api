@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { PDFDocument } from 'pdf-lib';
-import { decodePngSignature, InvalidSignatureError, generateSignedKycAgreement } from '../src/services/kycAgreementService.js';
-import { signKycAgreementSchema } from '../src/validation/kycSignatureValidation.js';
-import { signKycAgreement } from '../src/controller/KycController.js';
+import { decodePngSignature, InvalidSignatureError, generateSignedKycAgreement } from '../src/modules/kyc/kycAgreement.service.js';
+import { signKycAgreementSchema } from '../src/modules/kyc/kycSignature.validation.js';
+import { signKycAgreement } from '../src/modules/kyc/kyc.controller.js';
 import prisma from '../src/db/db.config.js';
 
 const prefix = 'data:image/png;base64,';

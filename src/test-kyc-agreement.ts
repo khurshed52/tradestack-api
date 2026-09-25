@@ -3,7 +3,7 @@ import path from "node:path";
 
 import {
   generateSignedKycAgreement,
-} from "./services/kycAgreementService.js";
+} from "./modules/kyc/kycAgreement.service.js";
 
 async function test() {
   try {

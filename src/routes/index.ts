@@ -1,13 +1,13 @@
 import { Router } from "express";
-import customerRouter from "./customerRoute.js";
-import cryptoRouter from "./cryptoRoute.js";
-import paymentRouter from "./paymentRoute.js";
-import authRoute from "./authRoute.js";
-import profileRoute from "./profileRoute.js";
-import kycRoute from "./kycRoute.js";
-import adminRouter from "./adminRoute.js";
-import miscRoute from "./miscRoute.js";
-import accountRouter from "./accountRoute.js";
+import customerRouter from "../modules/customer/customer.route.js";
+import cryptoRouter from "../modules/market/crypto.route.js";
+import paymentRouter from "../modules/payment/payment.route.js";
+import authRoute from "../modules/auth/auth.route.js";
+import profileRoute from "../modules/profile/profile.route.js";
+import kycRoute from "../modules/kyc/kyc.route.js";
+import adminRouter from "../modules/kyc/adminKyc.route.js";
+import miscRoute from "../modules/misc/misc.route.js";
+import accountRouter from "../modules/account/account.route.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
 

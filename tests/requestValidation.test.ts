@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import { app } from '../src/app.js';
 import { createAccessToken } from '../src/utils/jwt.js';
-import { registerSchema, loginSchema, emailOnlySchema, verifyResetOtpSchema, resetPasswordSchema } from '../src/validation/authValidation.js';
-import { listCustomersSchema, updateCustomerSchema } from '../src/validation/customerValidation.js';
-import { createCheckoutSchema, orderStatusSchema } from '../src/validation/paymentValidation.js';
-import { saveCryptoSchema } from '../src/validation/cryptoValidation.js';
-import { mt5EventSchema } from '../src/validation/mt5Validation.js';
-import { parseCrypto } from '../src/services/cryptoService.js';
+import { registerSchema, loginSchema, emailOnlySchema, verifyResetOtpSchema, resetPasswordSchema } from '../src/modules/auth/auth.validation.js';
+import { listCustomersSchema, updateCustomerSchema } from '../src/modules/customer/customer.validation.js';
+import { createCheckoutSchema, orderStatusSchema } from '../src/modules/payment/payment.validation.js';
+import { saveCryptoSchema } from '../src/modules/market/crypto.validation.js';
+import { mt5EventSchema } from '../src/modules/market/mt5.validation.js';
+import { parseCrypto } from '../src/modules/market/crypto.service.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
 const registration = {

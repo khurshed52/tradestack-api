@@ -4,8 +4,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import routes from "./routes/index.js";
-import { stripeWebhook } from "./controller/StripeWebhookController.js";
-import { veriffWebhook } from "./controller/VeriffWebhookController.js";
+import { stripeWebhook } from "./modules/payment/stripeWebhook.controller.js";
+import { veriffWebhook } from "./modules/kyc/veriffWebhook.controller.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 export const app = express();

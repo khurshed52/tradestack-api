@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseCrypto, CryptoInputError } from '../src/services/cryptoService.js';
+import { parseCrypto, CryptoInputError } from '../src/modules/market/crypto.service.js';
 
 const quote = { symbol: 'btcusdt', buyPrice: '100.0000000001', spread: '0.1', price: '100', changePercent: '-1.25', high: '110', low: '90' };
 

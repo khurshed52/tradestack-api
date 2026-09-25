@@ -4,7 +4,7 @@ import { once } from 'node:events';
 import { WebSocket } from 'ws';
 import { app } from '../src/app.js';
 import prisma from '../src/db/db.config.js';
-import { attachCryptoSocket } from '../src/websocket/cryptoSocket.js';
+import { attachCryptoSocket } from '../src/modules/market/crypto.socket.js';
 
 const server = createServer(app);
 const wss = attachCryptoSocket(server);

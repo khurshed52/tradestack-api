@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Request, Response } from 'express';
-import { stripeWebhook } from '../src/controller/StripeWebhookController.js';
+import { stripeWebhook } from '../src/modules/payment/stripeWebhook.controller.js';
 import { stripe } from '../src/config/stripe.js';
 import prisma from '../src/db/db.config.js';
 

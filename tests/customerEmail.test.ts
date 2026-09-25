@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import prisma from '../src/db/db.config.js';
 import { Prisma } from '../src/generated/prisma/client.js';
-import { updateCustomer } from '../src/controller/CustomerController.js';
+import { updateCustomer } from '../src/modules/customer/customer.controller.js';
 
 test('customer email uses the linked user and atomic writes; other updates remain unchanged', async () => {
   const originals = [prisma.customer.findFirst, prisma.user.findFirst, prisma.customer.update, prisma.$transaction] as const;

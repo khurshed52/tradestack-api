@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import prisma from '../src/db/db.config.js';
-import { getCustomerDetails, updateCustomer } from '../src/controller/CustomerController.js';
-import { updateCustomerSchema } from '../src/validation/customerValidation.js';
+import { getCustomerDetails, updateCustomer } from '../src/modules/customer/customer.controller.js';
+import { updateCustomerSchema } from '../src/modules/customer/customer.validation.js';
 
  test('customer details and updates enforce database ownership without leaking data', async () => {
   const originals = [prisma.customer.findFirst, prisma.customer.update, prisma.$transaction, prisma.user.findFirst] as const;
