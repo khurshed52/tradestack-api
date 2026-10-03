@@ -677,7 +677,11 @@ export const login = async (
     const { email, password } = req.body;
 
     // Validate required fields
-    if (typeof email !== "string" || !email.trim() || !password) {
+    if (
+      typeof email !== "string" ||
+      !email.trim() ||
+      !password
+    ) {
       return res.status(400).json({
         statusCode: 400,
         message: "Email and password are required",
@@ -685,16 +689,66 @@ export const login = async (
       });
     }
 
-    // Find user
     const normalizedEmail = normalizeEmail(email);
+
+    // --------------------------------
+    // FIND REGISTERED USER
+    // --------------------------------
+
     const user = await prisma.user.findUnique({
       where: {
         email: normalizedEmail,
       },
     });
 
-    // Don't reveal whether email exists
+    // --------------------------------
+    // PENDING REGISTRATION RECOVERY
+    // --------------------------------
+
+    /*
+     * If no real User exists, check whether this
+     * customer previously started registration
+     * but did not complete email verification.
+     */
     if (!user) {
+      const pendingRegistration =
+        await prisma.pendingRegistration.findUnique({
+          where: {
+            email: normalizedEmail,
+          },
+        });
+
+      /*
+       * Do not reveal a pending registration unless
+       * the submitted password matches the password
+       * used when registration was started.
+       */
+      if (pendingRegistration) {
+        const pendingPasswordValid =
+          await argon2.verify(
+            pendingRegistration.passwordHash,
+            password
+          );
+
+        if (pendingPasswordValid) {
+         return res.status(200).json({
+          statusCode: 200,
+          message: "Email verification required",
+          data: {
+            code: "REGISTRATION_VERIFICATION_REQUIRED",
+            email: pendingRegistration.email,
+          },
+        });
+        }
+      }
+
+      /*
+       * Same response for:
+       * - unknown email
+       * - pending registration with wrong password
+       *
+       * This avoids exposing account information.
+       */
       return res.status(401).json({
         statusCode: 401,
         message: "Invalid email or password",
@@ -702,7 +756,10 @@ export const login = async (
       });
     }
 
-    // Check account status
+    // --------------------------------
+    // ACCOUNT STATUS
+    // --------------------------------
+
     if (!user.isActive) {
       return res.status(403).json({
         statusCode: 403,
@@ -711,7 +768,10 @@ export const login = async (
       });
     }
 
-    // Verify password
+    // --------------------------------
+    // VERIFY PASSWORD
+    // --------------------------------
+
     const passwordValid = await argon2.verify(
       user.passwordHash,
       password
@@ -738,10 +798,8 @@ export const login = async (
     // REFRESH TOKEN
     // --------------------------------
 
-    // Generate random refresh token
     const refreshToken = generateRefreshToken();
 
-    // Hash refresh token before saving to DB
     const refreshTokenHash =
       hashRefreshToken(refreshToken);
 
@@ -771,14 +829,11 @@ export const login = async (
       {
         httpOnly: true,
 
-        // false on localhost
-        // true in production HTTPS
         secure:
           process.env.NODE_ENV === "production",
 
         sameSite: "lax",
 
-        // 7 days
         maxAge:
           7 * 24 * 60 * 60 * 1000,
       }
@@ -1311,10 +1366,13 @@ export const resetPassword = async (
         where: {
           id: otpId,
           userId: user.id,
+
           verifiedAt: {
             not: null,
           },
+
           usedAt: null,
+
           expiresAt: {
             gt: new Date(),
           },
@@ -1340,15 +1398,29 @@ export const resetPassword = async (
 
     const now = new Date();
 
-    // Update password, consume OTP
-    // and revoke existing sessions
+    /*
+     * Update password and record exactly when
+     * the password was changed.
+     *
+     * passwordChangedAt is later used by the
+     * withdrawal service to enforce the
+     * 24-hour withdrawal security cooldown.
+     *
+     * Also consume the OTP and revoke all
+     * existing sessions atomically.
+     */
     await prisma.$transaction([
       prisma.user.update({
         where: {
           id: user.id,
         },
+
         data: {
           passwordHash,
+
+          // IMPORTANT:
+          // Required for withdrawal 24-hour cooldown
+          passwordChangedAt: now,
         },
       }),
 
@@ -1356,6 +1428,7 @@ export const resetPassword = async (
         where: {
           id: resetOtp.id,
         },
+
         data: {
           usedAt: now,
         },
@@ -1366,6 +1439,7 @@ export const resetPassword = async (
           userId: user.id,
           revokedAt: null,
         },
+
         data: {
           revokedAt: now,
         },
@@ -1375,13 +1449,19 @@ export const resetPassword = async (
     // Clear refresh token cookie
     res.clearCookie("refreshToken", {
       httpOnly: true,
+
       secure:
         process.env.NODE_ENV === "production",
+
       sameSite: "lax",
     });
 
-    // Send password changed security notification
-    // Email failure should NOT fail the password reset
+    /*
+     * Send password changed security notification.
+     *
+     * Email failure must NOT fail the password reset
+     * because the password has already been changed.
+     */
     try {
       const html = await renderEmailTemplate(
         "auth/password-changed",

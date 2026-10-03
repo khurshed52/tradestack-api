@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createTradingAccount, getTradingAccounts } from "./tradingAccount.controller.js";
+import { createTradingAccount, getTradingAccounts, getAllAccounts } from "./tradingAccount.controller.js";
 import { validateBody } from "../../middleware/validate.js";
 import { createTradingAccountSchema } from "./tradingAccount.validation.js";
 
@@ -22,7 +22,8 @@ accountRouter.post(
 accountRouter.post(
   "/getAccounts",
   getTradingAccounts,
-);
+); 
+accountRouter.get("/all", getAllAccounts);
 
 
 export default accountRouter;

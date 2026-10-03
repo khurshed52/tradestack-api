@@ -4,10 +4,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import routes from "./routes/index.js";
+
 import { stripeWebhook } from "./modules/payment/stripeWebhook.controller.js";
+import { stripeFundsWebhook } from "./modules/funds/providers/stripeWebhook.controller.js";
 import { veriffWebhook } from "./modules/kyc/veriffWebhook.controller.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
+
 export const app = express();
 
 // ==========================
@@ -33,17 +36,45 @@ app.use(
 
 app.use(cookieParser());
 
+// ======================================================
+// RAW BODY WEBHOOKS
+//
+// IMPORTANT:
+// These routes MUST remain BEFORE express.json().
+//
+// Stripe and Veriff signature verification require
+// the original raw request body.
+// ======================================================
+
 // ==========================
 // STRIPE WEBHOOK
+// LEGACY PAYMENT / ORDER
 // ==========================
 
-// Stripe signature verification requires the original bytes,
-// so this must stay BEFORE express.json().
 app.post(
   "/api/payment/webhook",
-  express.raw({ type: "application/json" }),
+  express.raw({
+    type: "application/json",
+  }),
   stripeWebhook
 );
+
+// ==========================
+// STRIPE WEBHOOK
+// FUNDS / DEPOSIT
+// ==========================
+
+app.post(
+  "/api/funds/webhooks/stripe",
+  express.raw({
+    type: "application/json",
+  }),
+  stripeFundsWebhook
+);
+
+// ==========================
+// VERIFF WEBHOOK
+// ==========================
 
 app.post(
   "/api/kyc/veriff/webhook",
@@ -53,11 +84,11 @@ app.post(
   veriffWebhook
 );
 
-
 // ==========================
 // BODY PARSER
 // ==========================
 
+// Must remain AFTER raw-body webhook routes.
 app.use(express.json());
 
 // ==========================
@@ -66,7 +97,10 @@ app.use(express.json());
 
 app.use("/api", routes);
 
-// Test route
+// ==========================
+// TEST ROUTE
+// ==========================
+
 app.get("/customer", (_req, res) => {
   return res.send("hello everybody");
 });

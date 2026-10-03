@@ -419,3 +419,106 @@ export const getTradingAccounts = async (
     });
   }
 };
+
+
+export const getAllAccounts = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        statusCode: 401,
+        message: "Authentication required",
+        data: null,
+      });
+    }
+
+    // --------------------------------
+    // FIND CUSTOMER
+    // --------------------------------
+
+    const customer = await prisma.customer.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        id: true,
+        isActive: true,
+      },
+    });
+
+    if (!customer) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: "Customer not found",
+        data: null,
+      });
+    }
+
+    if (!customer.isActive) {
+      return res.status(403).json({
+        statusCode: 403,
+        message: "Customer account is inactive",
+        data: null,
+      });
+    }
+
+    // --------------------------------
+    // GET CUSTOMER ACCOUNTS
+    // --------------------------------
+
+    const accounts = await prisma.tradingAccount.findMany({
+      where: {
+        customerId: customer.id,
+      },
+
+      select: {
+        id: true,
+        accountNumber: true,
+        platform: true,
+        currency: true,
+        balance: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    // --------------------------------
+    // RESPONSE
+    // --------------------------------
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Trading accounts retrieved successfully",
+      data: accounts.map((account) => ({
+        id: account.id,
+        accountNumber: account.accountNumber,
+        platform: account.platform,
+        currency: account.currency,
+        balance: account.balance.toString(),
+        status: account.status,
+        createdAt: account.createdAt,
+        updatedAt: account.updatedAt,
+      })),
+    });
+  } catch (error) {
+    console.error(
+      "Get all accounts error:",
+      error
+    );
+
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Unable to retrieve trading accounts",
+      data: null,
+    });
+  }
+};

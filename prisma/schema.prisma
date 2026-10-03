@@ -8,6 +8,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// ======================================================
+// CUSTOMER
+// ======================================================
+
 model Customer {
   id                  String  @id @default(uuid()) @db.Uuid
   userId              String  @unique @db.Uuid
@@ -27,9 +31,16 @@ model Customer {
   kycProfile      KycProfile?
   kycAgreement    KycAgreement?
 
+  // Funds history for this customer.
+  fundTransactions FundTransaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ======================================================
+// KYC AGREEMENT
+// ======================================================
 
 model KycAgreement {
   id         String @id @default(uuid()) @db.Uuid
@@ -49,10 +60,15 @@ model KycAgreement {
   ipAddress String?
   userAgent String?
 
-  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ======================================================
+// KYC
+// ======================================================
 
 enum KycStatus {
   NOT_STARTED
@@ -67,6 +83,48 @@ enum KycStatus {
   APPROVED
   REJECTED
 }
+
+model KycProfile {
+  id         String @id @default(uuid()) @db.Uuid
+  customerId String @unique @db.Uuid
+
+  // Personal information
+  dateOfBirth DateTime?
+  gender      String?
+
+  // Residential address
+  countryOfResidence String?
+  addressLine1       String?
+  addressLine2       String?
+  city               String?
+  state              String?
+  postalCode         String?
+
+  // Employment
+  employmentStatus String?
+  occupation       String?
+
+  // KYC workflow
+  status KycStatus @default(NOT_STARTED)
+
+  // Identity provider
+  identityProvider  String?
+  providerSessionId String? @unique
+
+  // Progress timestamps
+  profileCompletedAt DateTime?
+  identityVerifiedAt DateTime?
+  completedAt        DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ======================================================
+// TRADING ACCOUNT
+// ======================================================
 
 enum TradingPlatform {
   MT4
@@ -93,53 +151,415 @@ model TradingAccount {
   // Base account currency
   currency String @default("USD")
 
-  // Account balance
+  // Current account balance
   balance Decimal @default(0) @db.Decimal(18, 2)
 
   status TradingAccountStatus @default(ACTIVE)
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Deposit / withdrawal transactions involving
+  // this account.
+  fundTransactions FundTransaction[] @relation("FundTransactionAccount")
+
+  // Transfers sent FROM this account.
+  outgoingFundTransfers FundTransaction[] @relation("FundTransactionSourceAccount")
+
+  // Transfers received INTO this account.
+  incomingFundTransfers FundTransaction[] @relation("FundTransactionDestinationAccount")
+
+  // Funds temporarily reserved for pending withdrawals
+  reservedBalance Decimal  @default(0) @db.Decimal(18, 2)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([customerId])
 }
 
-model KycProfile {
+// ======================================================
+// FUNDS
+// ======================================================
+
+enum FundTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+enum FundTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REJECTED
+  CANCELLED
+}
+
+model FundTransaction {
   id         String @id @default(uuid()) @db.Uuid
-  customerId String @unique @db.Uuid
+  customerId String @db.Uuid
 
-  // Personal information
-  dateOfBirth DateTime?
-  gender      String?
+  type   FundTransactionType
+  status FundTransactionStatus @default(PENDING)
 
-  // Residential address
-  countryOfResidence String?
-  addressLine1       String?
-  addressLine2       String?
-  city               String?
-  state              String?
-  postalCode         String?
+  // ----------------------------------------------------
+  // REQUESTED AMOUNT
+  // ----------------------------------------------------
+  //
+  // Example:
+  //
+  // Customer deposits 1000 EUR:
+  //
+  // amount   = 1000.00
+  // currency = EUR
+  //
+  amount   Decimal @db.Decimal(18, 2)
+  currency String
 
-  // Employment
-  employmentStatus String?
-  occupation       String?
+  // ----------------------------------------------------
+  // CONVERTED / ACCOUNT AMOUNT
+  // ----------------------------------------------------
+  //
+  // Example:
+  //
+  // Customer pays 1000 EUR.
+  // Trading account currency is USD.
+  //
+  // convertedAmount   = final USD amount
+  // convertedCurrency = USD
+  //
+  convertedAmount   Decimal? @db.Decimal(18, 2)
+  convertedCurrency String?
 
-  // KYC workflow
-  status KycStatus @default(NOT_STARTED)
+  // Exact FX rate applied to this transaction.
+  //
+  // Historical transactions must always retain
+  // the rate that was actually used.
+  //
+  // Same-currency transaction:
+  // exchangeRate = 1
+  //
+  exchangeRate Decimal? @db.Decimal(18, 8)
 
-  // Sumsub - used in Step 2 later
-  identityProvider  String?
-  providerSessionId String? @unique
+  // Where the FX rate came from.
+  //
+  // Examples:
+  // INTERNAL
+  // TWELVE_DATA
+  // MANUAL
+  // PSP
+  //
+  exchangeRateSource String?
 
-  // Progress timestamps
-  profileCompletedAt DateTime?
-  identityVerifiedAt DateTime?
-  completedAt        DateTime?
-  customer           Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  // ----------------------------------------------------
+  // DEPOSIT / WITHDRAWAL ACCOUNT
+  // ----------------------------------------------------
+
+  accountId String? @db.Uuid
+
+  account TradingAccount? @relation("FundTransactionAccount", fields: [accountId], references: [id], onDelete: Restrict)
+
+  // ----------------------------------------------------
+  // TRANSFER ACCOUNTS
+  // ----------------------------------------------------
+
+  sourceAccountId String? @db.Uuid
+
+  sourceAccount TradingAccount? @relation("FundTransactionSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+
+  destinationAccountId String? @db.Uuid
+
+  destinationAccount TradingAccount? @relation("FundTransactionDestinationAccount", fields: [destinationAccountId], references: [id], onDelete: Restrict)
+
+  // ----------------------------------------------------
+  // CUSTOMER
+  // ----------------------------------------------------
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  // ----------------------------------------------------
+  // REFERENCE
+  // ----------------------------------------------------
+
+  // Internal/public transaction reference.
+  //
+  // Examples:
+  // DEP-XXXXXXXX
+  // WDR-XXXXXXXX
+  // TRF-XXXXXXXX
+  //
+  reference String @unique
+
+  // ----------------------------------------------------
+  // PSP PAYMENT / PAYOUT ATTEMPTS
+  // ----------------------------------------------------
+
+  paymentAttempts PaymentAttempt[]
+
+  // Used for withdrawals.
+  payoutAttempts           PayoutAttempt[]
+  // ----------------------------------------------------
+  // TIMESTAMPS
+  // ----------------------------------------------------
+  withdrawalApprovalStatus WithdrawalApprovalStatus @default(NOT_REQUIRED)
+
+  approvedById String?   @db.Uuid
+  approvedAt   DateTime?
+
+  rejectedById String?   @db.Uuid
+  rejectedAt   DateTime?
+
+  approvalRemarks String?
+  completedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([accountId])
+  @@index([sourceAccountId])
+  @@index([destinationAccountId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ======================================================
+// PAYMENT SERVICE PROVIDERS
+// ======================================================
+//
+// Funds must NOT depend directly on Stripe.
+//
+// Stripe is simply one PSP.
+//
+// Future providers can be added here without changing
+// the FundTransaction model.
+//
+
+enum PaymentProvider {
+  STRIPE
+  MOCK
+
+  // Future examples:
+  // ADYEN
+  // CHECKOUT_COM
+  // NUVEI
+}
+
+// ======================================================
+// PAYMENT ATTEMPT
+// ======================================================
+
+enum PaymentAttemptStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model PaymentAttempt {
+  id                String @id @default(uuid()) @db.Uuid
+  fundTransactionId String @db.Uuid
+
+  provider PaymentProvider
+
+  status PaymentAttemptStatus @default(PENDING)
+
+  // Amount submitted to the PSP.
+  //
+  // IMPORTANT:
+  //
+  // Our domain stores major units:
+  //
+  // 1000.00 EUR
+  //
+  // A PSP adapter can convert this to minor units
+  // when required.
+  amount Decimal @db.Decimal(18, 2)
+
+  currency String
+
+  // ----------------------------------------------------
+  // GENERIC PSP REFERENCES
+  // ----------------------------------------------------
+
+  // Provider checkout/session/order reference.
+  //
+  // Stripe example:
+  // cs_test_...
+  //
+  providerReference String?
+
+  // Provider final payment reference.
+  //
+  // Stripe example:
+  // pi_...
+  //
+  providerPaymentId String?
+
+  // ----------------------------------------------------
+  // RELATION
+  // ----------------------------------------------------
+
+  fundTransaction FundTransaction @relation(fields: [fundTransactionId], references: [id], onDelete: Cascade)
+
+  // ----------------------------------------------------
+  // TIMESTAMPS
+  // ----------------------------------------------------
+
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Protect against duplicate PSP events/references.
+  @@unique([provider, providerReference])
+  @@unique([provider, providerPaymentId])
+  @@index([fundTransactionId])
+  @@index([provider])
+  @@index([status])
+}
+
+enum IdempotencyOperation {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+enum IdempotencyStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model IdempotencyRequest {
+  id String @id @default(uuid()) @db.Uuid
+
+  // User who made the request.
+  userId String @db.Uuid
+
+  // Unique key supplied by the client.
+  //
+  // Example:
+  // 550e8400-e29b-41d4-a716-446655440000
+  key String
+
+  // Which financial operation this key belongs to.
+  operation IdempotencyOperation
+
+  // Helps us detect someone reusing the same key
+  // with a different request body.
+  requestHash String
+
+  status IdempotencyStatus @default(PROCESSING)
+
+  // FundTransaction created by this request.
+  // Null while processing or if creation fails.
+  fundTransactionId String? @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Same user cannot use the same key twice.
+  @@unique([userId, key])
+
+  @@index([userId])
+  @@index([operation])
+  @@index([status])
+  @@index([fundTransactionId])
+}
+
+
+// ======================================================
+// CRYPTO MARKET DATA
+// ======================================================
+
+// ======================================================
+// PAYOUT ATTEMPT
+// ======================================================
+
+enum PayoutAttemptStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REJECTED
+  CANCELLED
+}
+
+model PayoutAttempt {
+  id                String @id @default(uuid()) @db.Uuid
+  fundTransactionId String @db.Uuid
+
+  // PSP responsible for this payout.
+  provider PaymentProvider
+
+  status PayoutAttemptStatus @default(PENDING)
+
+  // ----------------------------------------------------
+  // PAYOUT AMOUNT
+  // ----------------------------------------------------
+
+  // Amount that should be sent to the customer.
+  //
+  // Example:
+  //
+  // Trading account withdrawal:
+  //   50 USD
+  //
+  // Customer payout after FX:
+  //   183.63 AED
+  //
+  // amount   = 183.63
+  // currency = AED
+  //
+  amount   Decimal @db.Decimal(18, 2)
+  currency String
+
+  // ----------------------------------------------------
+  // GENERIC PSP REFERENCES
+  // ----------------------------------------------------
+
+  // PSP payout / transfer / order reference.
+  //
+  // Examples:
+  // Stripe payout/transfer ID
+  // Skrill transaction ID
+  // Other PSP payout reference
+  //
+  providerReference String?
+
+  // ----------------------------------------------------
+  // FAILURE INFORMATION
+  // ----------------------------------------------------
+
+  // Provider error/rejection code when available.
+  failureCode String?
+
+  // Human-readable provider failure reason.
+  failureMessage String?
+
+  // ----------------------------------------------------
+  // RELATION
+  // ----------------------------------------------------
+
+  fundTransaction FundTransaction @relation(fields: [fundTransactionId], references: [id], onDelete: Cascade)
+
+  // ----------------------------------------------------
+  // TIMESTAMPS
+  // ----------------------------------------------------
+
+  completedAt DateTime?
+  failedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Provider references should not be processed twice.
+  @@unique([provider, providerReference])
+  @@index([fundTransactionId])
+  @@index([provider])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Crypto {
@@ -159,10 +579,29 @@ model CryptoPriceHistory {
   symbol     String
   price      Decimal  @db.Decimal(28, 10)
   recordedAt DateTime @default(now())
-  crypto     Crypto   @relation(fields: [symbol], references: [symbol])
+
+  crypto Crypto @relation(fields: [symbol], references: [symbol])
 
   @@index([symbol, recordedAt])
 }
+
+// ======================================================
+// LEGACY STRIPE TEST ORDER
+// ======================================================
+//
+// KEEP THIS MODEL FOR NOW.
+//
+// Existing:
+// payment.controller.ts
+// stripeWebhook.controller.ts
+//
+// still depend on it.
+//
+// New Funds APIs will NOT use Order as their ledger.
+//
+// Once the new deposit architecture is working and
+// tested, we can migrate/remove this safely.
+//
 
 enum OrderStatus {
   PENDING
@@ -172,17 +611,35 @@ enum OrderStatus {
 }
 
 model Order {
-  id                    String      @id @default(uuid()) @db.Uuid
-  // Nullable only for orders created before account selection was required.
-  tradingAccountId      String?
-  amount                Int
-  currency              String      @default("usd")
-  status                OrderStatus @default(PENDING)
-  stripeCheckoutId      String?     @unique
-  stripePaymentIntentId String?     @unique
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
+  id String @id @default(uuid()) @db.Uuid
+
+  // Legacy field.
+  //
+  // Despite its name, the current code treats this as
+  // the user-facing trading account number.
+  tradingAccountId String?
+
+  // Legacy Stripe endpoint stores minor units.
+  //
+  // Example:
+  // 1000 = USD 10.00
+  amount Int
+
+  currency String @default("usd")
+
+  status OrderStatus @default(PENDING)
+
+  stripeCheckoutId String? @unique
+
+  stripePaymentIntentId String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// ======================================================
+// USER
+// ======================================================
 
 model User {
   id                String             @id @default(uuid()) @db.Uuid
@@ -191,22 +648,33 @@ model User {
   name              String?
   role              UserRole           @default(USER)
   isActive          Boolean            @default(true)
+  // Security
+  passwordChangedAt DateTime?
   sessions          UserSession[]
   passwordResetOtps PasswordResetOtp[]
-  customer          Customer?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+
+  customer Customer?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+// ======================================================
+// USER SESSION
+// ======================================================
+
 model UserSession {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @db.Uuid
-  refreshTokenHash String    @unique
-  expiresAt        DateTime
-  revokedAt        DateTime?
-  createdAt        DateTime  @default(now())
-  lastUsedAt       DateTime?
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String @id @default(uuid()) @db.Uuid
+  userId           String @db.Uuid
+  refreshTokenHash String @unique
+
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -216,19 +684,33 @@ enum UserRole {
   ADMIN
 }
 
+// ======================================================
+// PASSWORD RESET OTP
+// ======================================================
+
 model PasswordResetOtp {
-  id         String    @id @default(uuid()) @db.Uuid
-  userId     String    @db.Uuid
-  otpHash    String
-  expiresAt  DateTime
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+
+  otpHash String
+
+  expiresAt DateTime
+
   verifiedAt DateTime?
   usedAt     DateTime?
-  attempts   Int       @default(0)
-  createdAt  DateTime  @default(now())
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  attempts Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
+
+// ======================================================
+// PENDING REGISTRATION
+// ======================================================
 
 model PendingRegistration {
   id String @id @default(uuid())
@@ -253,4 +735,11 @@ model PendingRegistration {
 
   @@index([email])
   @@index([otpExpiresAt])
+}
+
+enum WithdrawalApprovalStatus {
+  NOT_REQUIRED
+  PENDING
+  APPROVED
+  REJECTED
 }
