@@ -194,7 +194,7 @@ export async function generateSignedKycAgreement(
    * Don't use customer email/name in filename.
    * customerId is sufficient.
    */
-  const filename = `${customerId}-${Date.now()}.pdf`;
+  const filename = `${customerId}-${crypto.randomUUID()}.pdf`;
 
   const outputPath = path.join(
     outputDirectory,

@@ -13,26 +13,29 @@ datasource db {
 // ======================================================
 
 model Customer {
-  id                  String  @id @default(uuid()) @db.Uuid
-  userId              String  @unique @db.Uuid
+  id                  String    @id @default(uuid()) @db.Uuid
+  sid                 String    @unique
+  userId              String    @unique @db.Uuid
   customerFirstName   String
   customerLastName    String
-  email               String  @unique
+  email               String    @unique
   customerNationality String
-  phoneNumber         String  @unique
+  phoneNumber         String    @unique
   reglink             String?
-  isActive            Boolean @default(true)
 
-  consentAccepted   Boolean   @default(false)
-  consentAcceptedAt DateTime?
+  // Customer lifecycle / onboarding status
+  status              KycStatus @default(REGISTERED)
 
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tradingAccounts TradingAccount[]
-  kycProfile      KycProfile?
-  kycAgreement    KycAgreement?
+  isActive             Boolean   @default(true)
 
-  // Funds history for this customer.
-  fundTransactions FundTransaction[]
+  consentAccepted      Boolean   @default(false)
+  consentAcceptedAt    DateTime?
+
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingAccounts      TradingAccount[]
+  kycProfile           KycProfile?
+  kycAgreement         KycAgreement?
+  fundTransactions     FundTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,7 +74,7 @@ model KycAgreement {
 // ======================================================
 
 enum KycStatus {
-  NOT_STARTED
+  REGISTERED
   PROFILE_IN_PROGRESS
   PROFILE_COMPLETED
   IDENTITY_PENDING
@@ -104,12 +107,10 @@ model KycProfile {
   employmentStatus String?
   occupation       String?
 
-  // KYC workflow
-  status KycStatus @default(NOT_STARTED)
-
   // Identity provider
   identityProvider  String?
   providerSessionId String? @unique
+  providerSessionUrl String?
 
   // Progress timestamps
   profileCompletedAt DateTime?

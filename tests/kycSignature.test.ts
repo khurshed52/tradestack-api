@@ -37,7 +37,7 @@ test('decoder rejects disguised SVG, malformed base64, empty payload, and unsupp
 test('controller maps invalid PNG bytes to 400 without starting a database transaction', async () => {
   const originalFind = prisma.customer.findUnique;
   const originalTransaction = prisma.$transaction;
-  (prisma.customer as any).findUnique = async () => ({ id: 'test', customerFirstName: 'Test', customerLastName: 'Customer', kycProfile: { status: 'IDENTITY_VERIFIED' }, kycAgreement: null });
+  (prisma.customer as any).findUnique = async () => ({ id: 'test', customerFirstName: 'Test', customerLastName: 'Customer', status: 'IDENTITY_VERIFIED', kycProfile: {}, kycAgreement: null });
   (prisma as any).$transaction = async () => { assert.fail('Invalid signature must not reach transaction'); };
   try {
     let status = 0;

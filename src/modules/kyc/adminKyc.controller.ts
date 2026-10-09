@@ -1,3 +1,4 @@
+import { claimKycTransition, KycLifecycleConflictError } from "./kycLifecycle.js";
 import type { Request, Response } from "express";
 
 import prisma from "../../db/db.config.js";
@@ -34,11 +35,15 @@ export const reviewKyc = async (
 
     /*
      * Load customer and KYC information.
+     *
+     * Customer.status is the source of truth for
+     * the KYC/onboarding lifecycle.
      */
     const customer = await prisma.customer.findUnique({
       where: {
         id: customerId,
       },
+
       include: {
         kycProfile: true,
         tradingAccounts: true,
@@ -64,8 +69,12 @@ export const reviewKyc = async (
     /*
      * Admin can make the final decision only after
      * the customer has completed the KYC process.
+     *
+     * IMPORTANT:
+     * Read the lifecycle state from Customer.status,
+     * not KycProfile.status.
      */
-    if (customer.kycProfile.status !== "COMPLETED") {
+    if (customer.status !== "COMPLETED") {
       return res.status(409).json({
         statusCode: 409,
         message:
@@ -79,64 +88,60 @@ export const reviewKyc = async (
      * REJECT
      * ==================================================
      */
-  if (decision === "REJECTED") {
-  /*
-   * Update KYC first.
-   *
-   * No trading account is created for rejected KYC.
-   */
-  const kycProfile =
-    await prisma.kycProfile.update({
-      where: {
-        customerId: customer.id,
-      },
-      data: {
-        status: "REJECTED",
-      },
-    });
+    if (decision === "REJECTED") {
+      /*
+       * Customer.status is the lifecycle source of truth.
+       *
+       * No trading account is created for rejected KYC.
+       */
+      const updatedCustomer = await prisma.$transaction(async (tx) => {
+        await claimKycTransition(tx, customer.id, "COMPLETED", "REJECTED");
+        return { status: "REJECTED" };
+      });
 
-  /*
-   * Send rejection email after the database
-   * update has completed successfully.
-   *
-   * Email failure must not change the KYC decision.
-   */
-  try {
-    const html = await renderEmailTemplate(
-      "notification/kyc-rejected",
-      {
-        name: customer.customerFirstName,
+      /*
+       * Send rejection email after the database
+       * update has completed successfully.
+       *
+       * Email failure must not change the KYC decision.
+       */
+      try {
+        const html = await renderEmailTemplate(
+          "notification/kyc-rejected",
+          {
+            name: customer.customerFirstName,
 
-        supportUrl:
-          process.env.SUPPORT_URL ??
-          "http://localhost:3001/support",
-      },
-    );
+            supportUrl:
+              process.env.SUPPORT_URL ??
+              "http://localhost:3001/support",
+          },
+        );
 
-    await sendEmail(
-      customer.email,
-      "Update on your TradePro KYC application",
-      html,
-    );
+        await sendEmail(
+          customer.email,
+          "Update on your TradePro KYC application",
+          html,
+        );
 
-    console.log(
-      `[KYC] Rejection email sent for customer ${customer.id}`,
-    );
-  } catch (emailError) {
-    console.error(
-      `[KYC] Failed to send rejection email for customer ${customer.id}:`,
-      emailError,
-    );
-  }
+        console.log(
+          `[KYC] Rejection email sent for customer ${customer.id}`,
+        );
+      } catch (emailError) {
+        console.error(
+          `[KYC] Failed to send rejection email for customer ${customer.id}:`,
+          emailError,
+        );
+      }
 
-  return res.status(200).json({
-    statusCode: 200,
-    message: "KYC rejected successfully",
-    data: {
-      status: kycProfile.status,
-    },
-  });
-}
+      return res.status(200).json({
+        statusCode: 200,
+        message: "KYC rejected successfully",
+
+        data: {
+          status: updatedCustomer.status,
+        },
+      });
+    }
 
     /*
      * ==================================================
@@ -148,6 +153,7 @@ export const reviewKyc = async (
      */
     const result = await prisma.$transaction(
       async (tx) => {
+        await claimKycTransition(tx, customer.id, "COMPLETED", "APPROVED");
         /*
          * A customer reaching final approval should not
          * already have a trading account.
@@ -186,6 +192,7 @@ export const reviewKyc = async (
               where: {
                 accountNumber: candidate,
               },
+
               select: {
                 id: true,
               },
@@ -222,19 +229,13 @@ export const reviewKyc = async (
 
         /*
          * Final KYC approval.
+         *
+         * Customer.status is the source of truth.
          */
-        const kycProfile =
-          await tx.kycProfile.update({
-            where: {
-              customerId: customer.id,
-            },
-            data: {
-              status: "APPROVED",
-            },
-          });
+        const updatedCustomer = { status: "APPROVED" };
 
         return {
-          kycProfile,
+          customer: updatedCustomer,
           tradingAccount,
         };
       },
@@ -294,7 +295,7 @@ export const reviewKyc = async (
       message: "KYC approved successfully",
 
       data: {
-        status: result.kycProfile.status,
+        status: result.customer.status,
 
         tradingAccount: {
           id: result.tradingAccount.id,
@@ -317,6 +318,9 @@ export const reviewKyc = async (
       },
     });
   } catch (error) {
+    if (error instanceof KycLifecycleConflictError) {
+      return res.status(409).json({ statusCode: 409, message: error.message, data: null });
+    }
     console.error(
       "Review KYC error:",
       error,

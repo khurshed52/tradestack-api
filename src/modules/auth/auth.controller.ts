@@ -9,6 +9,7 @@ import { sendEmail } from "../../services/emailService.js";
 import { createPasswordResetToken, verifyPasswordResetToken} from "../../utils/passwordResetToken.js";
 import { renderEmailTemplate } from "../../utils/emailTemplate.js";
 import { normalizeEmail } from "../../utils/normalizeEmail.js";
+import { generateCustomerSid } from "../customer/customer.utils.js";
 /**
  * Register User
  * POST /api/auth/register
@@ -298,7 +299,8 @@ export const verifyRegistrationOtp = async (
      * Check OTP expiration.
      */
     if (
-      pendingRegistration.otpExpiresAt <= new Date()
+      pendingRegistration.otpExpiresAt <=
+      new Date()
     ) {
       return res.status(400).json({
         statusCode: 400,
@@ -311,7 +313,9 @@ export const verifyRegistrationOtp = async (
     /*
      * Maximum 5 failed attempts.
      */
-    if (pendingRegistration.otpAttempts >= 5) {
+    if (
+      pendingRegistration.otpAttempts >= 5
+    ) {
       return res.status(429).json({
         statusCode: 429,
         message:
@@ -349,7 +353,8 @@ export const verifyRegistrationOtp = async (
 
       return res.status(400).json({
         statusCode: 400,
-        message: "Invalid verification code",
+        message:
+          "Invalid verification code",
         data: null,
       });
     }
@@ -400,6 +405,15 @@ export const verifyRegistrationOtp = async (
     }
 
     /*
+     * Generate public customer SID.
+     *
+     * Example:
+     * 866668
+     */
+    const customerSid =
+      await generateCustomerSid();
+
+    /*
      * Create User + Customer and consume the
      * PendingRegistration atomically.
      *
@@ -407,25 +421,34 @@ export const verifyRegistrationOtp = async (
      */
     const result = await prisma.$transaction(
       async (tx) => {
-        const user = await tx.user.create({
-          data: {
-            email: normalizedEmail,
+        const user =
+          await tx.user.create({
+            data: {
+              email: normalizedEmail,
 
-            passwordHash:
-              pendingRegistration.passwordHash,
+              passwordHash:
+                pendingRegistration.passwordHash,
 
-            name: `${pendingRegistration.customerFirstName} ${pendingRegistration.customerLastName}`.trim(),
+              name: `${pendingRegistration.customerFirstName} ${pendingRegistration.customerLastName}`.trim(),
 
-            role: "USER",
+              role: "USER",
 
-            isActive: true,
-          },
-        });
+              isActive: true,
+            },
+          });
 
         const customer =
           await tx.customer.create({
             data: {
               userId: user.id,
+
+              /*
+               * Public customer identifier.
+               *
+               * UUID remains our internal
+               * database identifier.
+               */
+              sid: customerSid,
 
               customerFirstName:
                 pendingRegistration.customerFirstName,
@@ -444,7 +467,7 @@ export const verifyRegistrationOtp = async (
               reglink:
                 pendingRegistration.reglink,
 
-                consentAccepted:
+              consentAccepted:
                 pendingRegistration.consentAccepted,
 
               consentAcceptedAt:
@@ -478,7 +501,9 @@ export const verifyRegistrationOtp = async (
      */
     return res.status(201).json({
       statusCode: 201,
-      message: "Registration successful",
+      message:
+        "Registration successful",
+
       data: {
         user: {
           id: result.user.id,
@@ -490,16 +515,23 @@ export const verifyRegistrationOtp = async (
         customer: {
           id: result.customer.id,
 
+          /*
+           * Customer-facing identifier.
+           */
+          sid: result.customer.sid,
+
           customerFirstName:
             result.customer.customerFirstName,
 
           customerLastName:
             result.customer.customerLastName,
 
-          email: result.customer.email,
+          email:
+            result.customer.email,
 
           customerNationality:
-            result.customer.customerNationality,
+            result.customer
+              .customerNationality,
 
           phoneNumber:
             result.customer.phoneNumber,
@@ -517,7 +549,8 @@ export const verifyRegistrationOtp = async (
 
     return res.status(500).json({
       statusCode: 500,
-      message: "Internal server error",
+      message:
+        "Internal server error",
       data: null,
     });
   }

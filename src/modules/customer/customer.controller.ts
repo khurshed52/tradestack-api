@@ -44,14 +44,19 @@ export const getAllCustomer = async (
       filters = {},
     } = body;
 
-    // Validate pagination
+    // --------------------------------
+    // VALIDATE PAGINATION
+    // --------------------------------
+
     if (
       !Number.isSafeInteger(page) ||
       page < 1 ||
       !Number.isSafeInteger(pageSize) ||
       pageSize < 1 ||
       pageSize > 100 ||
-      !Number.isSafeInteger((page - 1) * pageSize)
+      !Number.isSafeInteger(
+        (page - 1) * pageSize
+      )
     ) {
       return res.status(400).json({
         statusCode: 400,
@@ -61,7 +66,10 @@ export const getAllCustomer = async (
       });
     }
 
-    // Validate filters object
+    // --------------------------------
+    // VALIDATE FILTERS
+    // --------------------------------
+
     if (
       !filters ||
       typeof filters !== "object" ||
@@ -75,6 +83,7 @@ export const getAllCustomer = async (
     }
 
     const allowedFilters = [
+      "sid",
       "customerFirstName",
       "customerLastName",
       "email",
@@ -82,7 +91,10 @@ export const getAllCustomer = async (
       "phoneNumber",
     ] as const;
 
-    // Reject unsupported filters
+    // --------------------------------
+    // REJECT UNSUPPORTED FILTERS
+    // --------------------------------
+
     if (
       Object.keys(filters).some(
         (key) =>
@@ -95,16 +107,23 @@ export const getAllCustomer = async (
       return res.status(400).json({
         statusCode: 400,
         message:
-          "Supported filters are customerFirstName, customerLastName, email, customerNationality, and phoneNumber",
+          "Supported filters are sid, customerFirstName, customerLastName, email, customerNationality, and phoneNumber",
         data: null,
       });
     }
+
+    // --------------------------------
+    // BASE QUERY
+    // --------------------------------
 
     const where: Prisma.CustomerWhereInput = {
       isActive: true,
     };
 
-    // Build filters
+    // --------------------------------
+    // BUILD FILTERS
+    // --------------------------------
+
     for (const field of allowedFilters) {
       const value = filters[field]?.trim();
 
@@ -116,8 +135,11 @@ export const getAllCustomer = async (
       }
     }
 
-    // Fetch count + paginated customers
-    const [dataCount, pageData] =
+    // --------------------------------
+    // FETCH COUNT + CUSTOMERS
+    // --------------------------------
+
+    const [dataCount, customers] =
       await prisma.$transaction(
         [
           prisma.customer.count({
@@ -126,6 +148,7 @@ export const getAllCustomer = async (
 
           prisma.customer.findMany({
             where,
+
             skip: (page - 1) * pageSize,
             take: pageSize,
 
@@ -140,13 +163,22 @@ export const getAllCustomer = async (
 
             select: {
               id: true,
+              sid: true,
               userId: true,
+
               customerFirstName: true,
               customerLastName: true,
+
               email: true,
               customerNationality: true,
               phoneNumber: true,
+
+              // Customer is now the source of truth
+              // for KYC / onboarding status.
+              status: true,
+
               isActive: true,
+
               createdAt: true,
               updatedAt: true,
             },
@@ -157,17 +189,24 @@ export const getAllCustomer = async (
         }
       );
 
+    // --------------------------------
+    // RESPONSE
+    // --------------------------------
+
     return res.status(200).json({
       statusCode: 200,
       message: "Data fetched successfully",
+
       data: {
         page,
         pageSize,
         dataCount,
+
         pageCount: Math.ceil(
           dataCount / pageSize
         ),
-        pageData,
+
+        pageData: customers,
       },
     });
   } catch (error) {
@@ -194,6 +233,10 @@ export const getCustomerDetails = async (
   try {
     const customerId = req.body?.id;
 
+    // --------------------------------
+    // VALIDATE CUSTOMER ID
+    // --------------------------------
+
     if (!isUuid(customerId)) {
       return res.status(400).json({
         statusCode: 400,
@@ -202,6 +245,10 @@ export const getCustomerDetails = async (
         data: null,
       });
     }
+
+    // --------------------------------
+    // FETCH CUSTOMER
+    // --------------------------------
 
     const customer =
       await prisma.customer.findFirst({
@@ -212,17 +259,33 @@ export const getCustomerDetails = async (
 
         select: {
           id: true,
+
+          // Customer-facing ID
+          sid: true,
+
           userId: true,
+
           customerFirstName: true,
           customerLastName: true,
+
           email: true,
           customerNationality: true,
           phoneNumber: true,
+
+          // Customer is the source of truth
+          // for KYC / onboarding status.
+          status: true,
+
           isActive: true,
+
           createdAt: true,
           updatedAt: true,
         },
       });
+
+    // --------------------------------
+    // CUSTOMER NOT FOUND
+    // --------------------------------
 
     if (!customer) {
       return res.status(404).json({
@@ -232,17 +295,35 @@ export const getCustomerDetails = async (
       });
     }
 
-    // Ownership comes from the stored relationship, never request data.
+    // --------------------------------
+    // AUTHORIZATION / OWNERSHIP
+    // --------------------------------
+    //
+    // Ownership comes from the stored relationship,
+    // never from request data.
+    //
+    // ADMIN can access any customer.
+    // USER can only access their own customer record.
+    // --------------------------------
+
     if (
       req.user?.role !== "ADMIN" &&
-      !(req.user?.role === "USER" && customer.userId === req.user.id)
+      !(
+        req.user?.role === "USER" &&
+        customer.userId === req.user.id
+      )
     ) {
       return res.status(403).json({
         statusCode: 403,
-        message: "You are not authorized to access this customer",
+        message:
+          "You are not authorized to access this customer",
         data: null,
       });
     }
+
+    // --------------------------------
+    // RESPONSE
+    // --------------------------------
 
     return res.status(200).json({
       statusCode: 200,
@@ -263,7 +344,6 @@ export const getCustomerDetails = async (
     });
   }
 };
-
 /**
  * DELETE CUSTOMER
  *

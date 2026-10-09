@@ -1,4 +1,9 @@
-import type { Request, Response } from "express";
+import { claimKycTransition, KycLifecycleConflictError } from "./kycLifecycle.js";
+import type {
+  Request,
+  Response,
+} from "express";
+
 import crypto from "node:crypto";
 
 import prisma from "../../db/db.config.js";
@@ -21,24 +26,42 @@ export const veriffWebhook = async (
   res: Response
 ) => {
   try {
-    const secret = process.env.VERIFF_SHARED_SECRET;
-    const apiKey = process.env.VERIFF_API_KEY;
+    const secret =
+      process.env.VERIFF_SHARED_SECRET;
+
+    const apiKey =
+      process.env.VERIFF_API_KEY;
+
+    // --------------------------------------------------
+    // CONFIGURATION CHECK
+    // --------------------------------------------------
 
     if (!secret || !apiKey) {
-      console.error("Veriff webhook credentials missing");
+      console.error(
+        "Veriff webhook credentials missing"
+      );
 
       return res.status(500).json({
         statusCode: 500,
-        message: "Webhook configuration error",
+        message:
+          "Webhook configuration error",
         data: null,
       });
     }
 
-    // Because express.raw() is used for this endpoint.
+    // --------------------------------------------------
+    // RAW BODY CHECK
+    // --------------------------------------------------
+    //
+    // express.raw() must be used for this endpoint
+    // because Veriff signs the exact raw request body.
+    // --------------------------------------------------
+
     if (!Buffer.isBuffer(req.body)) {
       return res.status(400).json({
         statusCode: 400,
-        message: "Invalid webhook body",
+        message:
+          "Invalid webhook body",
         data: null,
       });
     }
@@ -51,37 +74,82 @@ export const veriffWebhook = async (
     const receivedApiKey =
       req.header("x-auth-client");
 
-    if (!receivedSignature || !receivedApiKey) {
+    // --------------------------------------------------
+    // AUTHENTICATION HEADERS
+    // --------------------------------------------------
+
+    if (
+      !receivedSignature ||
+      !receivedApiKey
+    ) {
       return res.status(401).json({
         statusCode: 401,
-        message: "Invalid webhook authentication",
+        message:
+          "Invalid webhook authentication",
         data: null,
       });
     }
 
-    // Verify that webhook belongs to our Veriff integration.
+    // --------------------------------------------------
+    // VERIFY API KEY
+    // --------------------------------------------------
+
     if (receivedApiKey !== apiKey) {
       return res.status(401).json({
         statusCode: 401,
-        message: "Invalid webhook authentication",
+        message:
+          "Invalid webhook authentication",
         data: null,
       });
     }
 
-    // Veriff signs the RAW request body using HMAC-SHA256.
-    const expectedSignature = crypto
-      .createHmac("sha256", secret)
-      .update(rawBody)
-      .digest("hex");
+    // --------------------------------------------------
+    // VERIFY HMAC SIGNATURE
+    // --------------------------------------------------
+
+    const expectedSignature =
+      crypto
+        .createHmac(
+          "sha256",
+          secret
+        )
+        .update(rawBody)
+        .digest("hex");
+
+    /*
+     * Validate hexadecimal input before converting it.
+     *
+     * A SHA-256 hex digest must contain exactly
+     * 64 hexadecimal characters.
+     */
+    if (
+      !/^[a-fA-F0-9]{64}$/.test(
+        receivedSignature
+      )
+    ) {
+      return res.status(401).json({
+        statusCode: 401,
+        message:
+          "Invalid webhook signature",
+        data: null,
+      });
+    }
 
     const receivedBuffer =
-      Buffer.from(receivedSignature, "hex");
+      Buffer.from(
+        receivedSignature,
+        "hex"
+      );
 
     const expectedBuffer =
-      Buffer.from(expectedSignature, "hex");
+      Buffer.from(
+        expectedSignature,
+        "hex"
+      );
 
     if (
-      receivedBuffer.length !== expectedBuffer.length ||
+      receivedBuffer.length !==
+        expectedBuffer.length ||
       !crypto.timingSafeEqual(
         receivedBuffer,
         expectedBuffer
@@ -89,12 +157,18 @@ export const veriffWebhook = async (
     ) {
       return res.status(401).json({
         statusCode: 401,
-        message: "Invalid webhook signature",
+        message:
+          "Invalid webhook signature",
         data: null,
       });
     }
 
-    let payload: VeriffDecisionPayload;
+    // --------------------------------------------------
+    // PARSE PAYLOAD
+    // --------------------------------------------------
+
+    let payload:
+      VeriffDecisionPayload;
 
     try {
       payload = JSON.parse(
@@ -103,33 +177,48 @@ export const veriffWebhook = async (
     } catch {
       return res.status(400).json({
         statusCode: 400,
-        message: "Invalid webhook JSON",
+        message:
+          "Invalid webhook JSON",
         data: null,
       });
     }
 
-    const verification = payload.verification;
+    const verification =
+      payload.verification;
 
     if (!verification?.id) {
       return res.status(400).json({
         statusCode: 400,
-        message: "Verification ID missing",
+        message:
+          "Verification ID missing",
         data: null,
       });
     }
 
-    const sessionId = verification.id;
-    const decision = verification.status;
+    const sessionId =
+      verification.id;
+
+    const decision =
+      verification.status;
+
+    // --------------------------------------------------
+    // FIND KYC PROFILE
+    // --------------------------------------------------
+    //
+    // providerSessionId identifies the KYC profile.
+    // customerId lets us update Customer.status.
+    // --------------------------------------------------
 
     const kycProfile =
       await prisma.kycProfile.findUnique({
         where: {
-          providerSessionId: sessionId,
+          providerSessionId:
+            sessionId,
         },
 
         select: {
           id: true,
-          status: true,
+          customerId: true,
         },
       });
 
@@ -138,87 +227,68 @@ export const veriffWebhook = async (
         `Veriff webhook received for unknown session: ${sessionId}`
       );
 
-      // Return 200 so Veriff doesn't repeatedly retry
-      // an otherwise valid webhook we cannot associate.
+      /*
+       * Return 200 so Veriff does not repeatedly
+       * retry a valid webhook that cannot be
+       * associated with a local KYC profile.
+       */
       return res.status(200).json({
         statusCode: 200,
-        message: "Webhook received",
+        message:
+          "Webhook received",
         data: null,
       });
     }
 
-    switch (decision) {
-      case "approved":
-        await prisma.kycProfile.update({
-          where: {
-            id: kycProfile.id,
-          },
+    // --------------------------------------------------
+    // PROCESS VERIFF DECISION
+    // --------------------------------------------------
 
-          data: {
-            status: "IDENTITY_VERIFIED",
-            identityVerifiedAt: new Date(),
-          },
+    const nextStatus = decision === "approved" ? "IDENTITY_VERIFIED"
+      : ["declined", "expired", "abandoned"].includes(decision ?? "") ? "IDENTITY_REJECTED"
+      : ["review", "resubmission_requested"].includes(decision ?? "") ? "IDENTITY_IN_PROGRESS"
+      : null;
+
+    if (nextStatus) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await claimKycTransition(tx, kycProfile.customerId, "IDENTITY_IN_PROGRESS", nextStatus);
+          // Recheck after claiming the customer row: a retry may have replaced
+          // this session since the initial lookup. Throw to roll back the claim.
+          const currentProfile = await tx.kycProfile.findUnique({
+            where: { id: kycProfile.id },
+            select: { providerSessionId: true },
+          });
+          if (currentProfile?.providerSessionId !== sessionId) {
+            throw new KycLifecycleConflictError();
+          }
+          if (nextStatus !== "IDENTITY_IN_PROGRESS") {
+            await tx.kycProfile.update({
+              where: { id: kycProfile.id },
+              data: { identityVerifiedAt: nextStatus === "IDENTITY_VERIFIED" ? new Date() : null },
+            });
+          }
         });
-
-        break;
-
-      case "declined":
-        await prisma.kycProfile.update({
-          where: {
-            id: kycProfile.id,
-          },
-
-          data: {
-            status: "IDENTITY_REJECTED",
-            identityVerifiedAt: null,
-          },
-        });
-
-        break;
-
-      case "resubmission_requested":
-      case "review":
-        // Verification isn't final yet.
-        await prisma.kycProfile.update({
-          where: {
-            id: kycProfile.id,
-          },
-
-          data: {
-            status: "IDENTITY_IN_PROGRESS",
-          },
-        });
-
-        break;
-
-      case "expired":
-      case "abandoned":
-        await prisma.kycProfile.update({
-          where: {
-            id: kycProfile.id,
-          },
-
-          data: {
-            status: "IDENTITY_REJECTED",
-            identityVerifiedAt: null,
-          },
-        });
-
-        break;
-
-      default:
-        console.warn(
-          `Unhandled Veriff decision: ${decision}`
-        );
+      } catch (error) {
+        // Stale or duplicate callbacks are acknowledged without mutation.
+        if (!(error instanceof KycLifecycleConflictError)) throw error;
+      }
+    } else {
+      console.warn(`Unhandled Veriff decision: ${decision}`);
     }
 
     console.log(
       `Veriff webhook processed: ${sessionId} → ${decision}`
     );
 
+    // --------------------------------------------------
+    // RESPONSE
+    // --------------------------------------------------
+
     return res.status(200).json({
       statusCode: 200,
-      message: "Webhook received",
+      message:
+        "Webhook received",
       data: null,
     });
   } catch (error) {
@@ -229,7 +299,8 @@ export const veriffWebhook = async (
 
     return res.status(500).json({
       statusCode: 500,
-      message: "Webhook processing failed",
+      message:
+        "Webhook processing failed",
       data: null,
     });
   }

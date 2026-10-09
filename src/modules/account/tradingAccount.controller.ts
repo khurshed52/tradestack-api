@@ -34,9 +34,6 @@ export const createTradingAccount = async (
       where: {
         userId,
       },
-      include: {
-        kycProfile: true,
-      },
     });
 
     if (!customer) {
@@ -51,7 +48,7 @@ export const createTradingAccount = async (
      * Only approved customers may create
      * additional trading accounts.
      */
-    if (customer.kycProfile?.status !== "APPROVED") {
+    if (customer.status !== "APPROVED") {
       return res.status(403).json({
         statusCode: 403,
         message:
