@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch src --ext ts,json --exec tsx src/server.ts",
-    "build": "npm run prisma:generate && tsc",
+    "build": "npm run prisma:generate && tsc && node scripts/copy-static-assets.mjs",
     "start": "node dist/server.js",
     "typecheck": "npm run prisma:generate && tsc --noEmit && tsc --noEmit --module NodeNext --moduleResolution NodeNext --target ES2023 --strict --skipLibCheck prisma.config.ts",
     "prisma:generate": "prisma generate",
