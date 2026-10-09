@@ -8,7 +8,7 @@ export function listenForCryptoChanges(onChange: () => void, onError: () => void
     let retry: NodeJS.Timeout | undefined;
     const connect = async () => {
         if (stopped) return;
-        const client = new Client({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 5000 });
+        const client = new Client({ connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL, connectionTimeoutMillis: 5000 });
         current = client;
         let failed = false;
         const reconnect = () => {
