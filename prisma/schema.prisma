@@ -339,13 +339,8 @@ model FundTransaction {
 enum PaymentProvider {
   STRIPE
   MOCK
-
-  // Future examples:
-  // ADYEN
-  // CHECKOUT_COM
-  // NUVEI
+  COINPAYMENTS
 }
-
 // ======================================================
 // PAYMENT ATTEMPT
 // ======================================================

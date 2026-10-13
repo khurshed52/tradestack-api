@@ -8,7 +8,7 @@ import routes from "./routes/index.js";
 import { stripeWebhook } from "./modules/payment/stripeWebhook.controller.js";
 import { stripeFundsWebhook } from "./modules/funds/providers/stripeWebhook.controller.js";
 import { veriffWebhook } from "./modules/kyc/veriffWebhook.controller.js";
-
+import { coinPaymentsWebhook } from "./modules/funds/providers/coinpaymentsWebhook.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export const app = express();
@@ -70,6 +70,19 @@ app.post(
     type: "application/json",
   }),
   stripeFundsWebhook
+);
+
+// ==========================
+// COINPAYMENTS WEBHOOK
+// FUNDS / CRYPTO DEPOSIT
+// ==========================
+
+app.post(
+  "/api/funds/webhooks/coinpayments",
+  express.raw({
+    type: "application/json",
+  }),
+  coinPaymentsWebhook
 );
 
 // ==========================

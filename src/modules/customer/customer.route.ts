@@ -57,12 +57,14 @@ customerRouter.post(
 
 customerRouter.post(
   "/getCustomerDetails",
+   authorize("ADMIN"),
   validateBody(customerDetailsSchema),
   getCustomerDetails
 );
 
 customerRouter.post(
   "/updateCustomer",
+   authorize("ADMIN"),
   validateBody(updateCustomerSchema),
   updateCustomer
 );

@@ -9,6 +9,7 @@ import adminRouter from "../modules/kyc/adminKyc.route.js";
 import miscRoute from "../modules/misc/misc.route.js";
 import accountRouter from "../modules/account/account.route.js";
 import fundsRouter from "../modules/funds/funds.route.js";
+import reportsRouter from "../modules/reports/reports.routes.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -46,4 +47,5 @@ routes.use("/kyc", kycRoute);
 routes.use("/admin", adminRouter);
 routes.use("/accounts", accountRouter);
 routes.use("/funds", fundsRouter);
+routes.use("/reports", reportsRouter);
 export default routes;

@@ -8,6 +8,7 @@ export type CreateDepositPaymentInput = {
   accountNumber: string;
   amount: string;
   currency: string;
+  network?: "TRC20" | "ERC20";
 };
 
 export type CreateDepositPaymentResult = {
