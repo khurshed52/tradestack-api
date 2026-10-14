@@ -13,29 +13,29 @@ datasource db {
 // ======================================================
 
 model Customer {
-  id                  String    @id @default(uuid()) @db.Uuid
-  sid                 String    @unique
-  userId              String    @unique @db.Uuid
+  id                  String  @id @default(uuid()) @db.Uuid
+  sid                 String  @unique
+  userId              String  @unique @db.Uuid
   customerFirstName   String
   customerLastName    String
-  email               String    @unique
+  email               String  @unique
   customerNationality String
-  phoneNumber         String    @unique
+  phoneNumber         String  @unique
   reglink             String?
 
   // Customer lifecycle / onboarding status
-  status              KycStatus @default(REGISTERED)
+  status KycStatus @default(REGISTERED)
 
-  isActive             Boolean   @default(true)
+  isActive Boolean @default(true)
 
-  consentAccepted      Boolean   @default(false)
-  consentAcceptedAt    DateTime?
+  consentAccepted   Boolean   @default(false)
+  consentAcceptedAt DateTime?
 
-  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tradingAccounts      TradingAccount[]
-  kycProfile           KycProfile?
-  kycAgreement         KycAgreement?
-  fundTransactions     FundTransaction[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingAccounts  TradingAccount[]
+  kycProfile       KycProfile?
+  kycAgreement     KycAgreement?
+  fundTransactions FundTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -108,8 +108,8 @@ model KycProfile {
   occupation       String?
 
   // Identity provider
-  identityProvider  String?
-  providerSessionId String? @unique
+  identityProvider   String?
+  providerSessionId  String? @unique
   providerSessionUrl String?
 
   // Progress timestamps
@@ -341,6 +341,7 @@ enum PaymentProvider {
   MOCK
   COINPAYMENTS
 }
+
 // ======================================================
 // PAYMENT ATTEMPT
 // ======================================================
@@ -457,13 +458,11 @@ model IdempotencyRequest {
 
   // Same user cannot use the same key twice.
   @@unique([userId, key])
-
   @@index([userId])
   @@index([operation])
   @@index([status])
   @@index([fundTransactionId])
 }
-
 
 // ======================================================
 // CRYPTO MARKET DATA
@@ -649,10 +648,44 @@ model User {
   sessions          UserSession[]
   passwordResetOtps PasswordResetOtp[]
 
-  customer Customer?
+  customer      Customer?
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+// ======================================================
+// NOTIFICATIONS
+// ======================================================
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+model Notification {
+  id      String           @id @default(uuid()) @db.Uuid
+  userId  String           @db.Uuid
+  type    NotificationType @default(INFO)
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+  readAt  DateTime?
+
+  // Optional link to a relevant frontend page
+  actionUrl String?
+
+  // Optional reference for deduplicating event notifications
+  eventKey String? @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
 }
 
 // ======================================================
@@ -671,7 +704,8 @@ model UserSession {
   lastUsedAt DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  ipAddress String?
+  userAgent String?
   @@index([userId])
 }
 

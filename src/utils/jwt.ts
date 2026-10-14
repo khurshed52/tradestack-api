@@ -1,3 +1,4 @@
+
 import { SignJWT, jwtVerify } from "jose";
 
 const getSecret = () => {
@@ -18,11 +19,13 @@ const audience =
 
 export const createAccessToken = async (
   userId: string,
-  role: string
+  role: string,
+  sessionId?: string
 ) => {
   return new SignJWT({
     role,
     type: "access",
+    ...(sessionId ? { sid: sessionId } : {}),
   })
     .setProtectedHeader({
       alg: "HS256",

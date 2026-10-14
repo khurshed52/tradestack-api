@@ -1,3 +1,4 @@
+
 import type { Request, Response } from "express";
 import prisma from "../../db/db.config.js";
 
@@ -113,6 +114,35 @@ export const getMyProfile = async (
     }
 
     // ----------------------------------------------------
+    // LAST SEEN
+    // ----------------------------------------------------
+
+    /*
+     * Fetch only the most recent login session.
+     *
+     * This avoids returning all login sessions
+     * when the frontend needs only one timestamp.
+     *
+     * Currently, lastSeenAt represents the user's
+     * most recent successful login time.
+     */
+    const latestSession =
+      await prisma.userSession.findFirst({
+        where: {
+          userId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          createdAt: true,
+        },
+      });
+
+    const lastSeenAt =
+      latestSession?.createdAt ?? null;
+
+    // ----------------------------------------------------
     // RESPONSE
     // ----------------------------------------------------
 
@@ -182,6 +212,12 @@ export const getMyProfile = async (
                 user.customer.updatedAt,
             }
           : null,
+
+        // --------------------------------
+        // LAST SEEN
+        // --------------------------------
+
+        lastSeenAt,
       },
     });
   } catch (error) {

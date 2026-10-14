@@ -10,6 +10,7 @@ import miscRoute from "../modules/misc/misc.route.js";
 import accountRouter from "../modules/account/account.route.js";
 import fundsRouter from "../modules/funds/funds.route.js";
 import reportsRouter from "../modules/reports/reports.routes.js";
+import notificationRouter from "../modules/notification/notification.route.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -48,4 +49,5 @@ routes.use("/admin", adminRouter);
 routes.use("/accounts", accountRouter);
 routes.use("/funds", fundsRouter);
 routes.use("/reports", reportsRouter);
+routes.use("/notifications", notificationRouter);
 export default routes;

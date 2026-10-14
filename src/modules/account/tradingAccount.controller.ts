@@ -4,6 +4,7 @@ import type { Prisma } from "../../generated/prisma/client.js";
 import prisma from "../../db/db.config.js";
 import { generateTradingAccountNumber } from "../../utils/tradingAccount.js";
 
+
 export const createTradingAccount = async (
   req: Request,
   res: Response,
@@ -131,6 +132,40 @@ export const createTradingAccount = async (
       },
     );
 
+    /*
+     * NOTIFICATION CENTER
+     *
+     * The trading account has been created successfully.
+     * Notification failure must not affect account creation.
+     *
+     * The account ID provides a unique event key.
+     */
+    try {
+      const eventKey =
+        `account:created:${tradingAccount.id}`;
+
+      await prisma.notification.upsert({
+        where: {
+          eventKey,
+        },
+        create: {
+          userId,
+          type: "SUCCESS",
+          title: "Trading Account Created",
+          message:
+            `Your ${tradingAccount.platform} trading account ` +
+            `${tradingAccount.accountNumber} has been created successfully.`,
+          eventKey,
+        },
+        update: {},
+      });
+    } catch (notificationError) {
+      console.error(
+        `[Accounts] Failed to create trading account notification for account ${tradingAccount.id}:`,
+        notificationError,
+      );
+    }
+
     return res.status(201).json({
       statusCode: 201,
       message: "Trading account created successfully",
@@ -175,6 +210,7 @@ export const createTradingAccount = async (
     });
   }
 };
+
 
 
 export const getTradingAccounts = async (

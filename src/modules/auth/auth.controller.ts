@@ -267,6 +267,7 @@ export const register = async (
  * Verifies the email OTP and creates the real
  * User + Customer records.
  */
+
 export const verifyRegistrationOtp = async (
   req: Request,
   res: Response
@@ -497,6 +498,34 @@ export const verifyRegistrationOtp = async (
     );
 
     /*
+     * NOTIFICATION CENTER
+     *
+     * Registration has been committed successfully.
+     * Notification failures must not affect registration.
+     */
+    try {
+      await prisma.notification.upsert({
+        where: {
+          eventKey: `auth:welcome:${result.user.id}`,
+        },
+        create: {
+          userId: result.user.id,
+          type: "SUCCESS",
+          title: "Welcome to TradePro",
+          message:
+            "Your TradePro account has been created successfully. Complete your identity verification to get started.",
+          eventKey: `auth:welcome:${result.user.id}`,
+        },
+        update: {},
+      });
+    } catch (notificationError) {
+      console.error(
+        `[Auth] Failed to create welcome notification for user ${result.user.id}:`,
+        notificationError
+      );
+    }
+
+    /*
      * Registration completed successfully.
      */
     return res.status(201).json({
@@ -702,6 +731,7 @@ export const resendRegistrationOtp = async (
  * Login User
  * POST /api/auth/login
  */
+
 export const login = async (
   req: Request,
   res: Response
@@ -764,14 +794,14 @@ export const login = async (
           );
 
         if (pendingPasswordValid) {
-         return res.status(200).json({
-          statusCode: 200,
-          message: "Email verification required",
-          data: {
-            code: "REGISTRATION_VERIFICATION_REQUIRED",
-            email: pendingRegistration.email,
-          },
-        });
+          return res.status(200).json({
+            statusCode: 200,
+            message: "Email verification required",
+            data: {
+              code: "REGISTRATION_VERIFICATION_REQUIRED",
+              email: pendingRegistration.email,
+            },
+          });
         }
       }
 
@@ -819,15 +849,6 @@ export const login = async (
     }
 
     // --------------------------------
-    // ACCESS TOKEN
-    // --------------------------------
-
-    const accessToken = await createAccessToken(
-      user.id,
-      user.role
-    );
-
-    // --------------------------------
     // REFRESH TOKEN
     // --------------------------------
 
@@ -843,14 +864,34 @@ export const login = async (
       expiresAt.getDate() + 7
     );
 
-    // Create login session in PostgreSQL
-    await prisma.userSession.create({
+    // --------------------------------
+    // CREATE LOGIN SESSION
+    // --------------------------------
+
+    // Store the refresh token hash, IP address,
+    // and browser information in PostgreSQL.
+    const session = await prisma.userSession.create({
       data: {
         userId: user.id,
         refreshTokenHash,
         expiresAt,
+        ipAddress: req.ip ?? null,
+        userAgent:
+          req.get("user-agent")?.slice(0, 512) ?? null,
       },
     });
+
+    // --------------------------------
+    // ACCESS TOKEN
+    // --------------------------------
+
+    // Link this access token to the database
+    // session using the JWT "sid" claim.
+    const accessToken = await createAccessToken(
+      user.id,
+      user.role,
+      session.id
+    );
 
     // --------------------------------
     // REFRESH TOKEN COOKIE
@@ -901,6 +942,7 @@ export const login = async (
     });
   }
 };
+
 
 export const refreshAccessToken = async (
   req: Request,
@@ -970,10 +1012,12 @@ export const refreshAccessToken = async (
     }
 
     // Generate NEW short-lived access token
+    // linked to the existing login session.
     const accessToken =
       await createAccessToken(
         session.user.id,
-        session.user.role
+        session.user.role,
+        session.id
       );
 
     // Update session usage
@@ -1003,6 +1047,7 @@ export const refreshAccessToken = async (
     });
   }
 };
+
 
 export const logout = async (
   req: Request,
@@ -1319,6 +1364,7 @@ export const verifyResetOtp = async (
   }
 };
 
+
 export const resetPassword = async (
   req: Request,
   res: Response
@@ -1517,6 +1563,34 @@ export const resetPassword = async (
       );
     }
 
+    /*
+     * NOTIFICATION CENTER
+     *
+     * Password reset has been committed successfully.
+     * Notification failures must not affect the reset.
+     */
+    try {
+      await prisma.notification.upsert({
+        where: {
+          eventKey: `auth:password-reset:${resetOtp.id}`,
+        },
+        create: {
+          userId: user.id,
+          type: "SUCCESS",
+          title: "Password Reset Successfully",
+          message:
+            "Your TradePro account password has been changed successfully. If you did not make this change, contact support immediately.",
+          eventKey: `auth:password-reset:${resetOtp.id}`,
+        },
+        update: {},
+      });
+    } catch (notificationError) {
+      console.error(
+        `[Auth] Failed to create password reset notification for user ${user.id}:`,
+        notificationError
+      );
+    }
+
     return res.status(200).json({
       statusCode: 200,
       message: "Password reset successfully",
@@ -1535,6 +1609,7 @@ export const resetPassword = async (
     });
   }
 };
+
 
 export const resendResetOtp = async (
   req: Request,

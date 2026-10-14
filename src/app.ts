@@ -12,6 +12,7 @@ import { coinPaymentsWebhook } from "./modules/funds/providers/coinpaymentsWebho
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export const app = express();
+app.set("trust proxy", 1);
 
 // ==========================
 // SECURITY

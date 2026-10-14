@@ -12,6 +12,61 @@ import { randomUUID } from "node:crypto";
 import { getPaymentProvider } from "./providers/index.js";
 import { createIdempotencyRequestHash } from "./utils/idempotency.js";
 const WITHDRAWAL_APPROVAL_THRESHOLD_USD = new Prisma.Decimal("100");
+
+// ======================================================
+// FUNDS NOTIFICATIONS (BEST EFFORT)
+// ======================================================
+// Notification errors must not change the outcome of an
+// already committed financial transaction.
+type FundsNotificationType = "INFO" | "SUCCESS" | "WARNING" | "ERROR";
+
+const createFundsNotification = async (input: {
+  userId: string;
+  eventKey: string;
+  type: FundsNotificationType;
+  title: string;
+  message: string;
+}) => {
+  try {
+    await prisma.notification.upsert({
+      where: { eventKey: input.eventKey },
+      create: input,
+      update: {},
+    });
+  } catch (error) {
+    console.error("Funds notification creation failed:", input.eventKey, error);
+  }
+};
+
+const notifyWithdrawalStatus = async (input: {
+  transactionId: string;
+  event: string;
+  type: FundsNotificationType;
+  title: string;
+  message: string;
+}) => {
+  try {
+    const transaction = await prisma.fundTransaction.findUnique({
+      where: { id: input.transactionId },
+      select: { customer: { select: { userId: true } } },
+    });
+    const userId = transaction?.customer?.userId;
+    if (!userId) {
+      console.error("Funds notification customer not found:", input.transactionId);
+      return;
+    }
+    await createFundsNotification({
+      userId,
+      eventKey: `withdrawal:${input.event}:${input.transactionId}`,
+      type: input.type,
+      title: input.title,
+      message: input.message,
+    });
+  } catch (error) {
+    console.error("Funds notification lookup failed:", input.transactionId, error);
+  }
+};
+
 // ======================================================
 // DEPOSIT TYPES
 // ======================================================
@@ -664,6 +719,14 @@ export const createDeposit = async ({
         return paymentAttempt;
       }
     );
+
+  await createFundsNotification({
+    userId,
+    eventKey: `deposit:submitted:${result.fundTransaction.id}`,
+    type: "INFO",
+    title: "Deposit Initiated",
+    message: `Your deposit of ${result.fundTransaction.amount.toFixed(2)} ${result.fundTransaction.currency} has been initiated. Reference: ${result.fundTransaction.reference}. Payment is not yet confirmed.`,
+  });
 
   // --------------------------------
   // RESPONSE
@@ -1529,6 +1592,14 @@ export const createWithdrawal = async ({
       }
     );
 
+  await createFundsNotification({
+    userId,
+    eventKey: `withdrawal:submitted:${result.id}`,
+    type: "INFO",
+    title: "Withdrawal Request Submitted",
+    message: `Your withdrawal request of ${result.amount.toFixed(2)} ${result.currency} is pending processing. Reference: ${result.reference}`,
+  });
+
   // --------------------------------
   // RESPONSE
   // --------------------------------
@@ -1623,7 +1694,7 @@ export const approveWithdrawal = async (
     );
   }
 
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       // --------------------------------
       // FIND WITHDRAWAL
@@ -1802,6 +1873,16 @@ export const approveWithdrawal = async (
           .Serializable,
     }
   );
+
+  await notifyWithdrawalStatus({
+    transactionId: result.id,
+    event: "approved",
+    type: "SUCCESS",
+    title: "Withdrawal Approved",
+    message: `Your withdrawal request ${result.reference} has been approved and is awaiting processing.`,
+  });
+
+  return result;
 };
 
 
@@ -1830,7 +1911,7 @@ export const rejectWithdrawal = async (
     );
   }
 
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       // --------------------------------
       // FIND WITHDRAWAL
@@ -2068,6 +2149,16 @@ export const rejectWithdrawal = async (
           .Serializable,
     }
   );
+
+  await notifyWithdrawalStatus({
+    transactionId: result.id,
+    event: "rejected",
+    type: "WARNING",
+    title: "Withdrawal Rejected",
+    message: `Your withdrawal request ${result.reference} was rejected.`,
+  });
+
+  return result;
 };
 
 
@@ -2080,7 +2171,7 @@ export const rejectWithdrawal = async (
 export const completeWithdrawal = async (
   transactionId: string
 ) => {
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       // --------------------------------
       // FIND WITHDRAWAL
@@ -2289,6 +2380,16 @@ export const completeWithdrawal = async (
           .Serializable,
     }
   );
+
+  await notifyWithdrawalStatus({
+    transactionId: result.id,
+    event: "completed",
+    type: "SUCCESS",
+    title: "Withdrawal Completed",
+    message: `Your withdrawal has been completed successfully.`,
+  });
+
+  return result;
 };
 
 
@@ -2304,7 +2405,7 @@ export const failWithdrawal = async (
   failureCode?: string,
   failureMessage?: string
 ) => {
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       // --------------------------------
       // FIND WITHDRAWAL
@@ -2500,6 +2601,16 @@ export const failWithdrawal = async (
           .Serializable,
     }
   );
+
+  await notifyWithdrawalStatus({
+    transactionId: result.id,
+    event: "failed",
+    type: "ERROR",
+    title: "Withdrawal Failed",
+    message: `Your withdrawal could not be completed.`,
+  });
+
+  return result;
 };
 
 // ============================================================
@@ -2517,7 +2628,7 @@ export const processWithdrawal = async ({
   transactionId,
   provider,
 }: ProcessWithdrawalInput) => {
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       // --------------------------------
       // FIND WITHDRAWAL
@@ -2720,6 +2831,16 @@ export const processWithdrawal = async ({
           .Serializable,
     }
   );
+
+  await notifyWithdrawalStatus({
+    transactionId: result.withdrawal.id,
+    event: "processing",
+    type: "INFO",
+    title: "Withdrawal Processing",
+    message: `Your withdrawal request ${result.withdrawal.reference} is being processed.`,
+  });
+
+  return result;
 };
 
 // ======================================================
@@ -3603,6 +3724,14 @@ export const createTransfer = async ({
       "INVALID_TRANSFER_TRANSACTION"
     );
   }
+
+  await createFundsNotification({
+    userId,
+    eventKey: `transfer:completed:${result.fundTransaction.id}`,
+    type: "SUCCESS",
+    title: "Transfer Completed",
+    message: `Your transfer of ${result.fundTransaction.amount.toFixed(2)} ${result.fundTransaction.currency} has been completed. Reference: ${result.fundTransaction.reference}`,
+  });
 
   // --------------------------------
   // RESPONSE

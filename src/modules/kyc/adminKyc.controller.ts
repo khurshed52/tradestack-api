@@ -1,21 +1,32 @@
-import { claimKycTransition, KycLifecycleConflictError } from "./kycLifecycle.js";
+import {
+  claimKycTransition,
+  KycLifecycleConflictError,
+} from "./kycLifecycle.js";
+
 import type { Request, Response } from "express";
 
 import prisma from "../../db/db.config.js";
+
 import { sendEmail } from "../../services/emailService.js";
+
 import { renderEmailTemplate } from "../../utils/emailTemplate.js";
+
 import { generateTradingAccountNumber } from "../../utils/tradingAccount.js";
 
 export const reviewKyc = async (
   req: Request,
+
   res: Response,
 ) => {
   try {
     const { customerId } = req.params;
 
     /*
+
      * Validate customer UUID.
+
      */
+
     if (
       typeof customerId !== "string" ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -24,7 +35,9 @@ export const reviewKyc = async (
     ) {
       return res.status(400).json({
         statusCode: 400,
+
         message: "A valid customer UUID is required",
+
         data: null,
       });
     }
@@ -34,11 +47,17 @@ export const reviewKyc = async (
     };
 
     /*
+
      * Load customer and KYC information.
+
      *
+
      * Customer.status is the source of truth for
+
      * the KYC/onboarding lifecycle.
+
      */
+
     const customer = await prisma.customer.findUnique({
       where: {
         id: customerId,
@@ -46,6 +65,7 @@ export const reviewKyc = async (
 
       include: {
         kycProfile: true,
+
         tradingAccounts: true,
       },
     });
@@ -53,7 +73,9 @@ export const reviewKyc = async (
     if (!customer) {
       return res.status(404).json({
         statusCode: 404,
+
         message: "Customer not found",
+
         data: null,
       });
     }
@@ -61,80 +83,130 @@ export const reviewKyc = async (
     if (!customer.kycProfile) {
       return res.status(400).json({
         statusCode: 400,
+
         message: "KYC profile not found",
+
         data: null,
       });
     }
 
     /*
+
      * Admin can make the final decision only after
+
      * the customer has completed the KYC process.
+
      *
+
      * IMPORTANT:
+
      * Read the lifecycle state from Customer.status,
+
      * not KycProfile.status.
+
      */
+
     if (customer.status !== "COMPLETED") {
       return res.status(409).json({
         statusCode: 409,
-        message:
-          "Only completed KYC applications can be reviewed",
+
+        message: "Only completed KYC applications can be reviewed",
+
         data: null,
       });
     }
 
     /*
+
      * ==================================================
+
      * REJECT
+
      * ==================================================
+
      */
+
     if (decision === "REJECTED") {
       /*
+
        * Customer.status is the lifecycle source of truth.
+
        *
+
        * No trading account is created for rejected KYC.
+
        */
+
       const updatedCustomer = await prisma.$transaction(async (tx) => {
         await claimKycTransition(tx, customer.id, "COMPLETED", "REJECTED");
+
         return { status: "REJECTED" };
       });
 
       /*
+
        * Send rejection email after the database
+
        * update has completed successfully.
+
        *
+
        * Email failure must not change the KYC decision.
+
        */
+
       try {
         const html = await renderEmailTemplate(
           "notification/kyc-rejected",
+
           {
             name: customer.customerFirstName,
 
             supportUrl:
-              process.env.SUPPORT_URL ??
-              "http://localhost:3001/support",
+              process.env.SUPPORT_URL ?? "http://localhost:3001/support",
           },
         );
 
         await sendEmail(
           customer.email,
+
           "Update on your TradePro KYC application",
+
           html,
         );
 
-        console.log(
-          `[KYC] Rejection email sent for customer ${customer.id}`,
-        );
+        console.log(`[KYC] Rejection email sent for customer ${customer.id}`);
       } catch (emailError) {
         console.error(
           `[KYC] Failed to send rejection email for customer ${customer.id}:`,
+
           emailError,
+        );
+      }
+      // Notification Center: best effort after successful KYC commit.
+      try {
+        await prisma.notification.upsert({
+          where: { eventKey: `kyc:rejected:${customer.id}` },
+          create: {
+            userId: customer.userId,
+            type: "WARNING",
+            title: "KYC Application Rejected",
+            message:
+              "Your KYC application has been rejected. Please contact support for assistance.",
+            eventKey: `kyc:rejected:${customer.id}`,
+          },
+          update: {},
+        });
+      } catch (notificationError) {
+        console.error(
+          "[KYC] Failed to create rejected notification:",
+          notificationError,
         );
       }
 
       return res.status(200).json({
         statusCode: 200,
+
         message: "KYC rejected successfully",
 
         data: {
@@ -144,154 +216,214 @@ export const reviewKyc = async (
     }
 
     /*
+
      * ==================================================
+
      * APPROVE
+
      * ==================================================
+
      *
+
      * KYC approval and creation of the customer's
+
      * first trading account must happen together.
+
      */
-    const result = await prisma.$transaction(
-      async (tx) => {
-        await claimKycTransition(tx, customer.id, "COMPLETED", "APPROVED");
-        /*
+
+    const result = await prisma.$transaction(async (tx) => {
+      await claimKycTransition(tx, customer.id, "COMPLETED", "APPROVED");
+
+      /*
+
          * A customer reaching final approval should not
+
          * already have a trading account.
+
          */
-        const existingAccountCount =
-          await tx.tradingAccount.count({
-            where: {
-              customerId: customer.id,
-            },
-          });
 
-        if (existingAccountCount > 0) {
-          throw new Error(
-            "Customer already has a trading account before KYC approval",
-          );
-        }
+      const existingAccountCount = await tx.tradingAccount.count({
+        where: {
+          customerId: customer.id,
+        },
+      });
 
-        /*
+      if (existingAccountCount > 0) {
+        throw new Error(
+          "Customer already has a trading account before KYC approval",
+        );
+      }
+
+      /*
+
          * Generate a unique customer-facing account number.
+
          *
+
          * The database UNIQUE constraint remains the final
+
          * protection against duplicate account numbers.
+
          */
-        let accountNumber: string | null = null;
 
-        for (
-          let attempt = 0;
-          attempt < 5;
-          attempt += 1
-        ) {
-          const candidate =
-            generateTradingAccountNumber();
+      let accountNumber: string | null = null;
 
-          const existing =
-            await tx.tradingAccount.findUnique({
-              where: {
-                accountNumber: candidate,
-              },
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const candidate = generateTradingAccountNumber();
 
-              select: {
-                id: true,
-              },
-            });
+        const existing = await tx.tradingAccount.findUnique({
+          where: {
+            accountNumber: candidate,
+          },
 
-          if (!existing) {
-            accountNumber = candidate;
-            break;
-          }
+          select: {
+            id: true,
+          },
+        });
+
+        if (!existing) {
+          accountNumber = candidate;
+
+          break;
         }
+      }
 
-        if (!accountNumber) {
-          throw new Error(
-            "Unable to generate unique trading account number",
-          );
-        }
+      if (!accountNumber) {
+        throw new Error("Unable to generate unique trading account number");
+      }
 
-        /*
+      /*
+
          * Create Account #1.
+
          *
+
          * MT5 is display-only for now.
-         */
-        const tradingAccount =
-          await tx.tradingAccount.create({
-            data: {
-              customerId: customer.id,
-              accountNumber,
-              platform: "MT5",
-              currency: "USD",
-              balance: 0,
-              status: "ACTIVE",
-            },
-          });
 
-        /*
+         */
+
+      const tradingAccount = await tx.tradingAccount.create({
+        data: {
+          customerId: customer.id,
+
+          accountNumber,
+
+          platform: "MT5",
+
+          currency: "USD",
+
+          balance: 0,
+
+          status: "ACTIVE",
+        },
+      });
+
+      /*
+
          * Final KYC approval.
-         *
-         * Customer.status is the source of truth.
-         */
-        const updatedCustomer = { status: "APPROVED" };
 
-        return {
-          customer: updatedCustomer,
-          tradingAccount,
-        };
-      },
-    );
+         *
+
+         * Customer.status is the source of truth.
+
+         */
+
+      const updatedCustomer = { status: "APPROVED" };
+
+      return {
+        customer: updatedCustomer,
+
+        tradingAccount,
+      };
+    });
 
     /*
+
      * ==================================================
+
      * APPROVAL EMAIL
+
      * ==================================================
+
      *
+
      * IMPORTANT:
+
      * We are now OUTSIDE the Prisma transaction.
+
      *
+
      * If SendGrid fails, the customer's KYC remains
+
      * APPROVED and Account #1 remains created.
+
      */
+
     try {
       const html = await renderEmailTemplate(
         "notification/kyc-approved",
+
         {
           name: customer.customerFirstName,
 
-          accountNumber:
-            result.tradingAccount.accountNumber,
+          accountNumber: result.tradingAccount.accountNumber,
 
-          platform:
-            result.tradingAccount.platform,
+          platform: result.tradingAccount.platform,
 
-          currency:
-            result.tradingAccount.currency,
+          currency: result.tradingAccount.currency,
         },
       );
 
       await sendEmail(
         customer.email,
+
         "Your TradePro account has been approved",
+
         html,
       );
 
-      console.log(
-        `[KYC] Approval email sent for customer ${customer.id}`,
-      );
+      console.log(`[KYC] Approval email sent for customer ${customer.id}`);
     } catch (emailError) {
       console.error(
         `[KYC] Failed to send approval email for customer ${customer.id}:`,
+
         emailError,
       );
     }
 
     /*
+
      * ==================================================
+
      * SUCCESS RESPONSE
+
      * ==================================================
+
      */
+    // Notification Center: best effort after successful KYC commit.
+    try {
+      await prisma.notification.upsert({
+        where: { eventKey: `kyc:approved:${customer.id}` },
+        create: {
+          userId: customer.userId,
+          type: "SUCCESS",
+          title: "KYC Application Approved",
+          message:
+            "Your KYC application has been approved and your trading account is ready.",
+          eventKey: `kyc:approved:${customer.id}`,
+        },
+        update: {},
+      });
+    } catch (notificationError) {
+      console.error(
+        "[KYC] Failed to create approved notification:",
+        notificationError,
+      );
+    }
+
     return res.status(200).json({
       statusCode: 200,
+
       message: "KYC approved successfully",
 
       data: {
@@ -300,35 +432,36 @@ export const reviewKyc = async (
         tradingAccount: {
           id: result.tradingAccount.id,
 
-          accountNumber:
-            result.tradingAccount.accountNumber,
+          accountNumber: result.tradingAccount.accountNumber,
 
-          platform:
-            result.tradingAccount.platform,
+          platform: result.tradingAccount.platform,
 
-          currency:
-            result.tradingAccount.currency,
+          currency: result.tradingAccount.currency,
 
-          balance:
-            result.tradingAccount.balance,
+          balance: result.tradingAccount.balance,
 
-          status:
-            result.tradingAccount.status,
+          status: result.tradingAccount.status,
         },
       },
     });
   } catch (error) {
     if (error instanceof KycLifecycleConflictError) {
-      return res.status(409).json({ statusCode: 409, message: error.message, data: null });
+      return res
+        .status(409)
+        .json({ statusCode: 409, message: error.message, data: null });
     }
+
     console.error(
       "Review KYC error:",
+
       error,
     );
 
     return res.status(500).json({
       statusCode: 500,
+
       message: "Failed to review KYC",
+
       data: null,
     });
   }
