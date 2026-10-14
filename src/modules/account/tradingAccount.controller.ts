@@ -176,6 +176,7 @@ export const createTradingAccount = async (
   }
 };
 
+
 export const getTradingAccounts = async (
   req: Request,
   res: Response,
@@ -262,8 +263,6 @@ export const getTradingAccounts = async (
 
     /*
      * Get customer from authenticated user.
-     *
-     * customerId never comes from the request.
      */
     const customer = await prisma.customer.findUnique({
       where: {
@@ -283,14 +282,14 @@ export const getTradingAccounts = async (
     }
 
     /*
-     * Always restrict results to the logged-in customer.
+     * Restrict results to the logged-in customer.
      */
     const where: Prisma.TradingAccountWhereInput = {
       customerId: customer.id,
     };
 
     /*
-     * Account number can use partial search.
+     * Account number partial search.
      */
     const accountNumber =
       filters.accountNumber?.trim();
@@ -302,7 +301,7 @@ export const getTradingAccounts = async (
     }
 
     /*
-     * Exact enum/value filters.
+     * Platform filter.
      */
     const platform = filters.platform?.trim();
 
@@ -313,8 +312,7 @@ export const getTradingAccounts = async (
       ) {
         return res.status(400).json({
           statusCode: 400,
-          message:
-            "platform must be MT4 or MT5",
+          message: "platform must be MT4 or MT5",
           data: null,
         });
       }
@@ -322,6 +320,9 @@ export const getTradingAccounts = async (
       where.platform = platform;
     }
 
+    /*
+     * Currency filter.
+     */
     const currency =
       filters.currency?.trim().toUpperCase();
 
@@ -329,6 +330,9 @@ export const getTradingAccounts = async (
       where.currency = currency;
     }
 
+    /*
+     * Status filter.
+     */
     const status = filters.status?.trim();
 
     if (status) {
@@ -379,6 +383,7 @@ export const getTradingAccounts = async (
               platform: true,
               currency: true,
               balance: true,
+              reservedBalance: true,
               status: true,
               createdAt: true,
               updatedAt: true,
@@ -390,6 +395,29 @@ export const getTradingAccounts = async (
         },
       );
 
+    /*
+     * Calculate available balance.
+     *
+     * Keep reservedBalance internal.
+     * Return monetary values as strings.
+     */
+   const accountsWithAvailableBalance = pageData.map(
+  ({ reservedBalance, balance, ...account }) => {
+    const availableBalance = balance.minus(reservedBalance);
+
+    return {
+      ...account,
+      balance: balance.toString(),
+      availableBalance: availableBalance.isNegative()
+        ? "0.00"
+        : availableBalance.toFixed(2),
+    };
+    },
+  );
+
+    /*
+     * Response.
+     */
     return res.status(200).json({
       statusCode: 200,
       message: "Data fetched successfully",
@@ -400,7 +428,7 @@ export const getTradingAccounts = async (
         pageCount: Math.ceil(
           dataCount / pageSize,
         ),
-        pageData,
+        pageData: accountsWithAvailableBalance,
       },
     });
   } catch (error) {
@@ -416,6 +444,7 @@ export const getTradingAccounts = async (
     });
   }
 };
+
 
 
 export const getAllAccounts = async (
