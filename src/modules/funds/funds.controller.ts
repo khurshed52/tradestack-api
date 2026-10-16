@@ -17,6 +17,8 @@ import {
   getTransactionHistory
 } from "./funds.service.js";
 
+import { getCachedExchangeRate } from "./fx-cache.service.js";
+
 import {
   getExchangeRate,
 } from "./fx.service.js";
@@ -315,11 +317,17 @@ export const getExchangeRateController =
         amount,
       } = req.body ?? {};
 
+      // const quote =
+      //   await getExchangeRate(
+      //     fromCurrency,
+      //     toCurrency
+      //   );
+
       const quote =
-        await getExchangeRate(
-          fromCurrency,
-          toCurrency
-        );
+      await getCachedExchangeRate(
+        fromCurrency,
+        toCurrency
+      );
 
       const requestedAmount =
         new Prisma.Decimal(

@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { createServer } from 'node:http';
 
 import { app } from './app.js';
-
+import { connectRedis, disconnectRedis } from './config/redis.js';
 import {
   attachCryptoSocket,
 } from './modules/market/crypto.socket.js';
@@ -157,7 +157,13 @@ const shutdown = () => {
     console.log('Shutting down server...');
 
     await stopTwelveData?.();
-
+    // Gracefully disconnect Redis
+    try {
+      await disconnectRedis();
+      console.log('Redis disconnected');
+    } catch (error) {
+      console.error('Redis shutdown failed:', error);
+    }
 
     // Close WebSocket clients
     for (const client of cryptoWss.clients) {
@@ -206,6 +212,10 @@ server.listen(
     console.log(
       `Server listening on http://localhost:${port}`,
     );
+
+    // Redis is optional: connection failure must not
+    // prevent existing APIs from starting.
+    void connectRedis();
 
     console.log(
       `Crypto WebSocket: ws://localhost:${port}/ws/crypto`,
