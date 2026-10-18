@@ -703,9 +703,10 @@ model UserSession {
   createdAt  DateTime  @default(now())
   lastUsedAt DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   ipAddress String?
   userAgent String?
+
   @@index([userId])
 }
 
@@ -772,4 +773,46 @@ enum WithdrawalApprovalStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum EmailOutboxStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model EmailOutbox {
+  id String @id @default(uuid()) @db.Uuid
+
+  // Prevent duplicate email events
+  eventKey String @unique
+
+  // Email category, e.g. welcome-email
+  type String
+
+  // Reference to the intended user
+  userId String @db.Uuid
+
+  status EmailOutboxStatus @default(PENDING)
+
+  attempts Int @default(0)
+
+  lastError String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sentAt    DateTime?
+
+  // Unique token identifying the current processing attempt
+  claimToken String? @unique
+
+  // Time when the processing claim expires
+  lockedUntil DateTime?
+
+  // Time when processing began
+  processingStartedAt DateTime?
+
+  @@index([status, createdAt])
+  @@index([userId])
 }

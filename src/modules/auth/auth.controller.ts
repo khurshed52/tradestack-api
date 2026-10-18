@@ -10,6 +10,7 @@ import { createPasswordResetToken, verifyPasswordResetToken} from "../../utils/p
 import { renderEmailTemplate } from "../../utils/emailTemplate.js";
 import { normalizeEmail } from "../../utils/normalizeEmail.js";
 import { generateCustomerSid } from "../customer/customer.utils.js";
+import { createEmailOutboxEvent } from "../../jobs/services/emailOutbox.service.js";
 /**
  * Register User
  * POST /api/auth/register
@@ -489,6 +490,21 @@ export const verifyRegistrationOtp = async (
             id: pendingRegistration.id,
           },
         });
+
+      /*
+      * EMAIL OUTBOX
+      *
+      * Record the welcome email event in the same
+      * transaction as customer registration.
+      *
+      * No email is sent here.
+      */
+      await createEmailOutboxEvent(tx, {
+        eventKey: `auth:welcome:${user.id}`,
+        type: "welcome-email",
+        userId: user.id,
+      });
+
 
         return {
           user,
