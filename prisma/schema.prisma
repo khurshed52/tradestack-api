@@ -31,12 +31,14 @@ model Customer {
   consentAccepted   Boolean   @default(false)
   consentAcceptedAt DateTime?
 
+  emailOutboxEvents EmailOutbox[] @relation("CustomerEmailOutbox")
+
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   tradingAccounts  TradingAccount[]
   kycProfile       KycProfile?
   kycAgreement     KycAgreement?
   fundTransactions FundTransaction[]
-
+ 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -813,6 +815,7 @@ model EmailOutbox {
   // Time when processing began
   processingStartedAt DateTime?
 
+  customer Customer? @relation("CustomerEmailOutbox", fields: [userId], references: [userId])
   @@index([status, createdAt])
   @@index([userId])
 }
