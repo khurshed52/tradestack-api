@@ -1381,6 +1381,7 @@ export const verifyResetOtp = async (
 };
 
 
+
 export const resetPassword = async (
   req: Request,
   res: Response
@@ -1417,10 +1418,9 @@ export const resetPassword = async (
 
     // Verify password reset token
     try {
-      payload =
-        await verifyPasswordResetToken(
-          resetToken
-        );
+      payload = await verifyPasswordResetToken(
+        resetToken
+      );
     } catch {
       return res.status(401).json({
         statusCode: 401,
@@ -1433,8 +1433,7 @@ export const resetPassword = async (
     const userId = payload.sub!;
     const otpId = payload.otpId as string;
 
-    // Find user for password update
-    // and security notification email
+    // Find user
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -1454,8 +1453,7 @@ export const resetPassword = async (
       });
     }
 
-    // Make sure the OTP connected to this token
-    // is verified, unused and unexpired
+    // Verify OTP is valid, verified and unused
     const resetOtp =
       await prisma.passwordResetOtp.findFirst({
         where: {
@@ -1494,50 +1492,66 @@ export const resetPassword = async (
     const now = new Date();
 
     /*
-     * Update password and record exactly when
-     * the password was changed.
+     * ATOMIC PASSWORD RESET TRANSACTION
      *
-     * passwordChangedAt is later used by the
-     * withdrawal service to enforce the
+     * 1. Update password
+     * 2. Record passwordChangedAt
+     * 3. Consume OTP
+     * 4. Revoke existing sessions
+     * 5. Create BullMQ EmailOutbox event
+     *
+     * IMPORTANT:
+     * passwordChangedAt is required for the
      * 24-hour withdrawal security cooldown.
-     *
-     * Also consume the OTP and revoke all
-     * existing sessions atomically.
      */
     await prisma.$transaction([
+      // Update password
       prisma.user.update({
         where: {
           id: user.id,
         },
-
         data: {
           passwordHash,
 
-          // IMPORTANT:
-          // Required for withdrawal 24-hour cooldown
+          // Preserve withdrawal security cooldown
           passwordChangedAt: now,
         },
       }),
 
+      // Mark reset OTP as used
       prisma.passwordResetOtp.update({
         where: {
           id: resetOtp.id,
         },
-
         data: {
           usedAt: now,
         },
       }),
 
+      // Revoke existing sessions
       prisma.userSession.updateMany({
         where: {
           userId: user.id,
           revokedAt: null,
         },
-
         data: {
           revokedAt: now,
         },
+      }),
+
+      // NEW: Queue password-changed security notification
+      // through PostgreSQL EmailOutbox.
+      prisma.emailOutbox.upsert({
+        where: {
+          eventKey: `auth:password-changed:${resetOtp.id}`,
+        },
+        create: {
+          eventKey: `auth:password-changed:${resetOtp.id}`,
+          type: "password-changed-email",
+          userId: user.id,
+          status: "PENDING",
+        },
+        update: {},
       }),
     ]);
 
@@ -1552,32 +1566,19 @@ export const resetPassword = async (
     });
 
     /*
-     * Send password changed security notification.
+     * PASSWORD-CHANGED SECURITY EMAIL
      *
-     * Email failure must NOT fail the password reset
-     * because the password has already been changed.
+     * No direct SendGrid call here.
+     *
+     * The existing EmailOutbox dispatcher
+     * automatically creates the BullMQ job.
+     *
+     * The BullMQ worker sends the email
+     * asynchronously using SendGrid.
+     *
+     * A temporary email delivery failure
+     * does not undo the password reset.
      */
-    try {
-      const html = await renderEmailTemplate(
-        "auth/password-changed",
-        {
-          name: user.name ?? "User",
-          supportUrl: "#",
-          year: new Date().getFullYear(),
-        }
-      );
-
-      await sendEmail(
-        user.email,
-        "Your TradePro Password Has Been Changed",
-        html
-      );
-    } catch (emailError) {
-      console.error(
-        "Password changed notification email failed:",
-        emailError
-      );
-    }
 
     /*
      * NOTIFICATION CENTER
@@ -1625,6 +1626,7 @@ export const resetPassword = async (
     });
   }
 };
+
 
 
 export const resendResetOtp = async (

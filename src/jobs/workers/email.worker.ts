@@ -2,7 +2,6 @@
 import { Worker } from "bullmq";
 
 import prisma from "../../db/db.config.js";
-
 import {
   getEmailRedisConnection,
 } from "../../config/bullmq.config.js";
@@ -19,12 +18,17 @@ import {
 
 import {
   sendWelcomeEmail,
+  sendPasswordChangedEmail,
 } from "../handlers/welcomeEmail.handler.js";
+
+type EmailJobName =
+  | "welcome-email"
+  | "password-changed-email";
 
 export const emailWorker = new Worker<
   EmailJobData,
   void,
-  "welcome-email"
+  EmailJobName
 >(
   "tradestack-emails",
 
@@ -32,7 +36,8 @@ export const emailWorker = new Worker<
     const { userId, outboxEventId } = job.data;
 
     if (
-      job.name !== "welcome-email" ||
+      !["welcome-email", "password-changed-email"]
+        .includes(job.name) ||
       !userId ||
       !outboxEventId ||
       job.id !== `email-${outboxEventId}`
@@ -51,12 +56,41 @@ export const emailWorker = new Worker<
     if (
       !event ||
       event.userId !== userId ||
-      event.type !== job.name ||
-      event.eventKey !== `auth:welcome:${userId}`
+      event.type !== job.name
     ) {
       throw new Error(
         "Email outbox event validation failed"
       );
+    }
+
+    if (job.name === "welcome-email") {
+      if (event.eventKey !== `auth:welcome:${userId}`) {
+        throw new Error("Invalid welcome email event");
+      }
+    } else {
+      const prefix = "auth:password-changed:";
+
+      if (!event.eventKey.startsWith(prefix)) {
+        throw new Error("Invalid password email event");
+      }
+
+      const otpId = event.eventKey.slice(prefix.length);
+
+      const resetOtp = await prisma.passwordResetOtp.findFirst({
+        where: {
+          id: otpId,
+          userId,
+          usedAt: { not: null },
+          verifiedAt: { not: null },
+        },
+        select: { id: true },
+      });
+
+      if (!resetOtp) {
+        throw new Error(
+          "Password reset event validation failed"
+        );
+      }
     }
 
     if (event.status === "SENT") {
@@ -66,9 +100,7 @@ export const emailWorker = new Worker<
       return;
     }
 
-    const claim = await claimEmailOutboxEvent(
-      event.id
-    );
+    const claim = await claimEmailOutboxEvent(event.id);
 
     if (!claim) {
       const latest = await prisma.emailOutbox.findUnique({
@@ -77,7 +109,9 @@ export const emailWorker = new Worker<
       });
 
       if (latest?.status === "SENT") {
-        console.log(`[Email Worker] Already sent: ${event.id}`);
+        console.log(
+          `[Email Worker] Already sent: ${event.id}`
+        );
         return;
       }
 
@@ -87,13 +121,17 @@ export const emailWorker = new Worker<
     }
 
     try {
-      await sendWelcomeEmail({
-        userId: event.userId,
-      });
+      if (job.name === "welcome-email") {
+        await sendWelcomeEmail({
+          userId: event.userId,
+        });
+      } else {
+        await sendPasswordChangedEmail({
+          userId: event.userId,
+        });
+      }
 
-      const marked = await markEmailOutboxSent(
-        claim
-      );
+      const marked = await markEmailOutboxSent(claim);
 
       if (!marked) {
         throw new Error(
@@ -135,9 +173,7 @@ export const emailWorker = new Worker<
 );
 
 emailWorker.on("completed", (job) => {
-  console.log(
-    `[Email Worker] Job ${job.id} completed`
-  );
+  console.log(`[Email Worker] Job ${job.id} completed`);
 });
 
 emailWorker.on("failed", (job, error) => {

@@ -2,8 +2,6 @@
 import prisma from "../../db/db.config.js";
 import { emailQueue } from "../queues/email.queue.js";
 
-// Track our position without depending on an event
-// remaining in PENDING status.
 let lastScanned: {
   createdAt: Date;
   id: string;
@@ -14,7 +12,12 @@ export const getPendingEmailOutboxEvents = async () => {
     prisma.emailOutbox.findMany({
       where: {
         status: "PENDING",
-        type: "welcome-email",
+        type: {
+          in: [
+            "welcome-email",
+            "password-changed-email",
+          ],
+        },
         ...(lastScanned
           ? {
               OR: [
@@ -49,8 +52,6 @@ export const getPendingEmailOutboxEvents = async () => {
 
   let events = await findEvents();
 
-  // Once we've reached the end, start scanning
-  // from the oldest pending event again.
   if (events.length === 0 && lastScanned) {
     lastScanned = null;
     events = await findEvents();
@@ -79,7 +80,6 @@ export const dispatchPendingEmailEvents =
         }
       );
 
-      // Advance only after BullMQ accepts the request.
       lastScanned = {
         createdAt: event.createdAt,
         id: event.id,
