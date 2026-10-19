@@ -166,4 +166,8 @@ Before writing implementation:
 
 ---
 
+Never change this code before my Permission
+Registration and OTP.
+MT5, balances, deposits, withdrawals, and payments.
+
 *Maintained as a living guide. Update whenever source code establishes or changes a convention; distinguish verified facts from proposals.*
