@@ -107,3 +107,85 @@ export const sendPasswordChangedEmail = async ({
     `[Email Worker] Password changed notification accepted by SendGrid for user ${userId}`
   );
 };
+
+
+
+export const sendKycReminderEmail = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<boolean> => {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    select: {
+      email: true,
+      customerFirstName: true,
+      isActive: true,
+      status: true,
+    },
+  });
+
+  if (!customer || !customer.isActive) {
+    return false;
+  }
+
+  const messages: Record<string, string> = {
+    REGISTERED:
+      "Please complete your personal profile to begin KYC verification.",
+
+    PROFILE_IN_PROGRESS:
+      "Please finish your personal profile to continue KYC verification.",
+
+    PROFILE_COMPLETED:
+      "Please continue with your identity verification.",
+
+    IDENTITY_PENDING:
+      "Please complete your identity verification.",
+
+    IDENTITY_IN_PROGRESS:
+      "Please finish your identity verification.",
+
+    IDENTITY_VERIFIED:
+      "Please sign your KYC agreement to complete onboarding.",
+
+    SIGNATURE_PENDING:
+      "Please sign your KYC agreement to complete onboarding.",
+  };
+
+  const message = messages[customer.status];
+
+  // No reminder after KYC completion, approval or rejection.
+  if (!message) {
+    return false;
+  }
+
+  const safe = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const html = await renderEmailTemplate(
+    "kyc/kyc-reminder",
+    {
+      name: safe(customer.customerFirstName),
+      message: safe(message),
+      year: new Date().getFullYear(),
+    }
+  );
+
+  await sendEmail(
+    customer.email,
+    "Reminder: Complete Your TradePro KYC",
+    html
+  );
+
+  console.log(
+    `[Email Worker] KYC reminder accepted by SendGrid for user ${userId}`
+  );
+
+  return true;
+};
+
