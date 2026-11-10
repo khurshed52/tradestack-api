@@ -2,16 +2,8 @@
 import prisma from "../../db/db.config.js";
 import { emailQueue } from "../queues/email.queue.js";
 
-// ======================================================
-// CONFIGURATION — LOCAL TEST ONLY
-// ======================================================
-
-// 2 minutes for local testing.
-// IMPORTANT: Restore 48 hours before production.
 const KYC_REMINDER_DELAY_MS = 48 * 60 * 60 * 1000;
 
-// Scan every 30 seconds.
-// Production recommendation: 10 minutes.
 const KYC_REMINDER_SCAN_MS = 10 * 60 * 1000;
 
 // ======================================================
@@ -37,6 +29,8 @@ export const getPendingEmailOutboxEvents = async () => {
             "welcome-email",
             "password-changed-email",
             "kyc-reminder-email",
+             "kyc-approved-email",
+             "kyc-rejected-email",
           ],
         },
         ...(lastScanned

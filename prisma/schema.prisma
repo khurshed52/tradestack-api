@@ -38,7 +38,7 @@ model Customer {
   kycProfile       KycProfile?
   kycAgreement     KycAgreement?
   fundTransactions FundTransaction[]
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -649,11 +649,11 @@ model User {
   passwordChangedAt DateTime?
   sessions          UserSession[]
   passwordResetOtps PasswordResetOtp[]
-
-  customer      Customer?
-  notifications Notification[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  aiConversations   AiConversation[]
+  customer          Customer?
+  notifications     Notification[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 // ======================================================
@@ -816,6 +816,49 @@ model EmailOutbox {
   processingStartedAt DateTime?
 
   customer Customer? @relation("CustomerEmailOutbox", fields: [userId], references: [userId])
+
   @@index([status, createdAt])
   @@index([userId])
+}
+
+// ======================================================
+// AI CONVERSATIONS
+// ======================================================
+
+model AiConversation {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AiMessage[]
+  summary                 String?   @db.Text
+  lastSummarizedMessageId String?   @db.Uuid
+  summaryUpdatedAt        DateTime?
+  @@index([userId, updatedAt])
+}
+
+enum AiMessageRole {
+  USER
+  ASSISTANT
+}
+
+model AiMessage {
+  id             String        @id @default(uuid()) @db.Uuid
+  conversationId String        @db.Uuid
+  role           AiMessageRole
+  content        String        @db.Text
+
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int?
+  model        String?
+  marketQuote Json?
+  createdAt DateTime @default(now())
+  sources Json?
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
 }

@@ -5,7 +5,9 @@ import type {
 } from "express";
 
 import prisma from "../../db/db.config.js";
-
+import {
+  getMyKycProfileData,
+} from "./kyc-status.service.js";
 import {
   createVeriffSession,
 } from "./veriff.service.js";
@@ -27,53 +29,24 @@ import {
 // GET MY KYC PROFILE
 // ======================================================
 
+
 export const getMyKycProfile = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        statusCode: 401,
+        message: "Unauthorized",
+        data: null,
+      });
+    }
 
     const customer =
-      await prisma.customer.findUnique({
-        where: {
-          userId,
-        },
-
-        select: {
-          id: true,
-
-          // Customer lifecycle status
-          status: true,
-
-          customerFirstName: true,
-          customerLastName: true,
-          email: true,
-          customerNationality: true,
-          phoneNumber: true,
-
-          kycProfile: {
-            select: {
-              dateOfBirth: true,
-              gender: true,
-
-              countryOfResidence: true,
-              addressLine1: true,
-              addressLine2: true,
-              city: true,
-              state: true,
-              postalCode: true,
-
-              employmentStatus: true,
-              occupation: true,
-
-              profileCompletedAt: true,
-              identityVerifiedAt: true,
-              completedAt: true,
-            },
-          },
-        },
-      });
+      await getMyKycProfileData(userId);
 
     if (!customer) {
       return res.status(404).json({
@@ -85,15 +58,11 @@ export const getMyKycProfile = async (
 
     return res.status(200).json({
       statusCode: 200,
-      message:
-        "KYC profile fetched successfully",
+      message: "KYC profile fetched successfully",
       data: customer,
     });
   } catch (error) {
-    console.error(
-      "Get KYC profile error:",
-      error
-    );
+    console.error("Get KYC profile error:", error);
 
     return res.status(500).json({
       statusCode: 500,
@@ -102,6 +71,7 @@ export const getMyKycProfile = async (
     });
   }
 };
+
 
 // ======================================================
 // UPDATE / COMPLETE MY KYC PROFILE

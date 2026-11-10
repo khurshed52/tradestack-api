@@ -12,6 +12,24 @@ import { randomUUID } from "node:crypto";
 import { getPaymentProvider } from "./providers/index.js";
 import { createIdempotencyRequestHash } from "./utils/idempotency.js";
 const WITHDRAWAL_APPROVAL_THRESHOLD_USD = new Prisma.Decimal("100");
+const WITHDRAWAL_PASSWORD_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+export const enforceWithdrawalPasswordCooldown = (
+  passwordChangedAt: Date | null,
+): void => {
+  if (!passwordChangedAt) return;
+
+  const withdrawalAllowedAt = new Date(
+    passwordChangedAt.getTime() + WITHDRAWAL_PASSWORD_COOLDOWN_MS,
+  );
+
+  if (Date.now() < withdrawalAllowedAt.getTime()) {
+    throw Object.assign(new Error("WITHDRAWAL_PASSWORD_COOLDOWN"), {
+      withdrawalAllowedAt,
+    });
+  }
+};
+
 
 // ======================================================
 // FUNDS NOTIFICATIONS (BEST EFFORT)
@@ -1223,13 +1241,8 @@ export const createWithdrawal = async ({
   // --------------------------------
   // PASSWORD CHANGE COOLDOWN
   // --------------------------------
-  //
-  // Currently intentionally disabled.
-  // --------------------------------
 
-  // if (user.passwordChangedAt) {
-  //   ...
-  // }
+  enforceWithdrawalPasswordCooldown(user.passwordChangedAt);
 
   // --------------------------------
   // FIND TRADING ACCOUNT
@@ -1446,6 +1459,17 @@ export const createWithdrawal = async ({
             "IDEMPOTENCY_REQUEST_PROCESSING"
           );
         }
+
+        // Recheck security state inside the serializable transaction before
+        // reserving funds, including password changes since the initial read.
+        const currentUser = await tx.user.findUnique({
+          where: { id: userId },
+          select: { isActive: true, passwordChangedAt: true },
+        });
+
+        if (!currentUser) throw new Error("CUSTOMER_NOT_FOUND");
+        if (!currentUser.isActive) throw new Error("CUSTOMER_INACTIVE");
+        enforceWithdrawalPasswordCooldown(currentUser.passwordChangedAt);
 
         // --------------------------------
         // RE-READ ACCOUNT

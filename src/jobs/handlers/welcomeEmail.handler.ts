@@ -189,3 +189,139 @@ export const sendKycReminderEmail = async ({
   return true;
 };
 
+
+
+// ======================================================
+// KYC APPROVED EMAIL
+// ======================================================
+
+export const sendKycApprovedEmail = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<boolean> => {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    select: {
+      id: true,
+      email: true,
+      customerFirstName: true,
+      isActive: true,
+      status: true,
+      tradingAccounts: {
+        select: {
+          accountNumber: true,
+          platform: true,
+          currency: true,
+        },
+        take: 1,
+      },
+    },
+  });
+
+  if (
+    !customer ||
+    !customer.isActive ||
+    customer.status !== "APPROVED"
+  ) {
+    return false;
+  }
+
+  const account = customer.tradingAccounts[0];
+
+  if (!account) {
+    throw new Error(
+      "KYC approved but trading account not found"
+    );
+  }
+
+  const safe = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const html = await renderEmailTemplate(
+    "notification/kyc-approved",
+    {
+      name: safe(customer.customerFirstName),
+      accountNumber: safe(account.accountNumber),
+      platform: safe(account.platform),
+      currency: safe(account.currency),
+    }
+  );
+
+  await sendEmail(
+    customer.email,
+    "Your TradePro account has been approved",
+    html
+  );
+
+  console.log(
+    `[Email Worker] KYC approval email accepted for customer ${customer.id}`
+  );
+
+  return true;
+};
+
+// ======================================================
+// KYC REJECTED EMAIL
+// ======================================================
+
+export const sendKycRejectedEmail = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<boolean> => {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    select: {
+      id: true,
+      email: true,
+      customerFirstName: true,
+      isActive: true,
+      status: true,
+    },
+  });
+
+  if (
+    !customer ||
+    !customer.isActive ||
+    customer.status !== "REJECTED"
+  ) {
+    return false;
+  }
+
+  const safe = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const html = await renderEmailTemplate(
+    "notification/kyc-rejected",
+    {
+      name: safe(customer.customerFirstName),
+      supportUrl:
+        process.env.SUPPORT_URL ??
+        "http://localhost:3001/support",
+    }
+  );
+
+  await sendEmail(
+    customer.email,
+    "Update on your TradePro KYC application",
+    html
+  );
+
+  console.log(
+    `[Email Worker] KYC rejection email accepted for customer ${customer.id}`
+  );
+
+  return true;
+};
+

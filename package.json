@@ -16,6 +16,7 @@
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@google/genai": "^2.32.0",
     "@prisma/adapter-pg": "~7.0.0",
     "@prisma/client": "~7.0.0",
     "@sendgrid/mail": "^8.1.6",

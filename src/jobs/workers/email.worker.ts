@@ -2,7 +2,6 @@
 import { Worker } from "bullmq";
 
 import prisma from "../../db/db.config.js";
-
 import {
   getEmailRedisConnection,
 } from "../../config/bullmq.config.js";
@@ -21,12 +20,16 @@ import {
   sendWelcomeEmail,
   sendPasswordChangedEmail,
   sendKycReminderEmail,
+  sendKycApprovedEmail,
+  sendKycRejectedEmail,
 } from "../handlers/welcomeEmail.handler.js";
 
 type EmailJobName =
   | "welcome-email"
   | "password-changed-email"
-  | "kyc-reminder-email";
+  | "kyc-reminder-email"
+  | "kyc-approved-email"
+  | "kyc-rejected-email";
 
 export const emailWorker = new Worker<
   EmailJobData,
@@ -38,11 +41,17 @@ export const emailWorker = new Worker<
   async (job) => {
     const { userId, outboxEventId } = job.data;
 
+    // ==================================================
+    // VALIDATE JOB
+    // ==================================================
+
     if (
       ![
         "welcome-email",
         "password-changed-email",
         "kyc-reminder-email",
+        "kyc-approved-email",
+        "kyc-rejected-email",
       ].includes(job.name) ||
       !userId ||
       !outboxEventId ||
@@ -54,9 +63,7 @@ export const emailWorker = new Worker<
     }
 
     const event = await prisma.emailOutbox.findUnique({
-      where: {
-        id: outboxEventId,
-      },
+      where: { id: outboxEventId },
     });
 
     if (
@@ -69,7 +76,10 @@ export const emailWorker = new Worker<
       );
     }
 
-    // Validate the business event for each email type.
+    // ==================================================
+    // VALIDATE BUSINESS EVENT KEY
+    // ==================================================
+
     if (job.name === "welcome-email") {
       if (
         event.eventKey !== `auth:welcome:${userId}`
@@ -114,16 +124,42 @@ export const emailWorker = new Worker<
       job.name === "kyc-reminder-email"
     ) {
       if (
-        event.eventKey !==
-        `kyc:reminder:${userId}`
+        event.eventKey !== `kyc:reminder:${userId}`
       ) {
         throw new Error(
           "Invalid KYC reminder event"
         );
       }
+    } else if (
+      job.name === "kyc-approved-email" ||
+      job.name === "kyc-rejected-email"
+    ) {
+      const customer =
+        await prisma.customer.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+
+      const expectedEventKey = customer
+        ? job.name === "kyc-approved-email"
+          ? `kyc:approved:${customer.id}`
+          : `kyc:rejected:${customer.id}`
+        : null;
+
+      if (
+        !expectedEventKey ||
+        event.eventKey !== expectedEventKey
+      ) {
+        throw new Error(
+          "Invalid KYC review email event"
+        );
+      }
     }
 
-    // Avoid processing already sent emails.
+    // ==================================================
+    // CHECK EXISTING STATUS
+    // ==================================================
+
     if (event.status === "SENT") {
       console.log(
         `[Email Worker] Event already SENT: ${event.id}`
@@ -131,19 +167,18 @@ export const emailWorker = new Worker<
       return;
     }
 
-    // Atomically claim this event.
+    // ==================================================
+    // ATOMICALLY CLAIM EMAIL EVENT
+    // ==================================================
+
     const claim =
       await claimEmailOutboxEvent(event.id);
 
     if (!claim) {
       const latest =
         await prisma.emailOutbox.findUnique({
-          where: {
-            id: event.id,
-          },
-          select: {
-            status: true,
-          },
+          where: { id: event.id },
+          select: { status: true },
         });
 
       if (latest?.status === "SENT") {
@@ -158,7 +193,13 @@ export const emailWorker = new Worker<
       );
     }
 
+    // ==================================================
+    // SEND EMAIL
+    // ==================================================
+
     try {
+      let sent = true;
+
       if (job.name === "welcome-email") {
         await sendWelcomeEmail({
           userId: event.userId,
@@ -172,48 +213,56 @@ export const emailWorker = new Worker<
       } else if (
         job.name === "kyc-reminder-email"
       ) {
-        const sent = await sendKycReminderEmail({
+        sent = await sendKycReminderEmail({
           userId: event.userId,
         });
-
-        if (!sent) {
-          // Customer is no longer eligible.
-          // Do not mark an unsent email as SENT.
-          //
-          // Keep the event instead of deleting the
-          // audit record. FAILED indicates the
-          // reminder was not delivered; lastError
-          // explains why it was skipped.
-          const updated =
-            await prisma.emailOutbox.updateMany({
-              where: {
-                id: claim.eventId,
-                status: "PROCESSING",
-                claimToken: claim.claimToken,
-              },
-              data: {
-                status: "FAILED",
-                lastError:
-                  "KYC reminder skipped: customer no longer eligible",
-                lockedUntil: null,
-                claimToken: null,
-              },
-            });
-
-          if (updated.count !== 1) {
-            throw new Error(
-              "Unable to record skipped KYC reminder"
-            );
-          }
-
-          console.log(
-            `[Email Worker] KYC reminder skipped: ${event.id}`
-          );
-
-          return;
-        }
+      } else if (
+        job.name === "kyc-approved-email"
+      ) {
+        sent = await sendKycApprovedEmail({
+          userId: event.userId,
+        });
+      } else if (
+        job.name === "kyc-rejected-email"
+      ) {
+        sent = await sendKycRejectedEmail({
+          userId: event.userId,
+        });
       }
 
+      // Customer is no longer eligible.
+      // Do not mark an unsent email as SENT.
+      if (!sent) {
+        const updated =
+          await prisma.emailOutbox.updateMany({
+            where: {
+              id: claim.eventId,
+              status: "PROCESSING",
+              claimToken: claim.claimToken,
+            },
+            data: {
+              status: "FAILED",
+              lastError:
+                "Email skipped: customer no longer eligible",
+              lockedUntil: null,
+              claimToken: null,
+            },
+          });
+
+        if (updated.count !== 1) {
+          throw new Error(
+            "Unable to record skipped email"
+          );
+        }
+
+        console.log(
+          `[Email Worker] Email skipped: ${event.id}`
+        );
+
+        return;
+      }
+
+      // Mark SENT only after SendGrid accepts email.
       const marked =
         await markEmailOutboxSent(claim);
 
@@ -256,6 +305,10 @@ export const emailWorker = new Worker<
     autorun: false,
   }
 );
+
+// ======================================================
+// WORKER EVENTS
+// ======================================================
 
 emailWorker.on("completed", (job) => {
   console.log(
