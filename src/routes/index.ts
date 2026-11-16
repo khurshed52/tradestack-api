@@ -1,4 +1,6 @@
+
 import { Router } from "express";
+
 import customerRouter from "../modules/customer/customer.route.js";
 import cryptoRouter from "../modules/market/crypto.route.js";
 import paymentRouter from "../modules/payment/payment.route.js";
@@ -12,6 +14,10 @@ import fundsRouter from "../modules/funds/funds.route.js";
 import reportsRouter from "../modules/reports/reports.routes.js";
 import aiRouter from "../modules/ai/ai.route.js";
 import notificationRouter from "../modules/notification/notification.route.js";
+
+// NEW: PDF document management routes
+import knowledgeAdminRoutes from "../modules/ai/pdf/knowledge-admin.routes.js";
+
 import { authenticate } from "../middleware/authenticate.js";
 import { apiRateLimiter } from "../middleware/rateLimiter.js";
 
@@ -21,7 +27,6 @@ const routes = Router();
 // GENERAL RATE LIMIT
 // ==========================
 
-// Applies to everything mounted under /api
 routes.use(apiRateLimiter);
 
 // ==========================
@@ -32,7 +37,7 @@ routes.use("/auth", authRoute);
 routes.use("/misc", miscRoute);
 
 // ==========================
-// Everything below requires login
+// EVERYTHING BELOW REQUIRES LOGIN
 // ==========================
 
 routes.use(authenticate);
@@ -43,7 +48,7 @@ routes.use(authenticate);
 
 routes.use("/customer", customerRouter);
 routes.use("/crypto", cryptoRouter);
-routes.use("/payment", paymentRouter);  
+routes.use("/payment", paymentRouter);
 routes.use("/profile", profileRoute);
 routes.use("/kyc", kycRoute);
 routes.use("/admin", adminRouter);
@@ -52,4 +57,11 @@ routes.use("/funds", fundsRouter);
 routes.use("/reports", reportsRouter);
 routes.use("/notifications", notificationRouter);
 routes.use("/ai", aiRouter);
+
+// ==========================
+// ADMIN PDF KNOWLEDGE MANAGEMENT
+// ==========================
+
+routes.use("/admin/knowledge", knowledgeAdminRoutes);
+
 export default routes;

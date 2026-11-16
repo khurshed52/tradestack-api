@@ -1,0 +1,694 @@
+{
+  "before": {
+    "model": "gemini-3.5-flash-lite",
+    "attempted": 12,
+    "completed": 11,
+    "failed": [
+      {
+        "round": 2,
+        "id": 5,
+        "error": {
+          "code": "AI_STREAM_FAILED",
+          "message": "The response could not be completed. Please try again."
+        }
+      }
+    ],
+    "medians": {
+      "firstAnswerMs": 4182,
+      "totalMs": 4938,
+      "geminiRequests": 4,
+      "inputTokens": 9410,
+      "outputTokens": 151,
+      "totalTokens": 9580,
+      "retrievalMs": 576,
+      "attributionMs": 832
+    },
+    "rows": [
+      {
+        "round": 1,
+        "question": 1,
+        "firstAnswerMs": 3892,
+        "totalMs": 4810,
+        "geminiRequests": 4,
+        "inputTokens": 9970,
+        "outputTokens": 104,
+        "totalTokens": 10074,
+        "retrievalMs": 584,
+        "attributionMs": 781,
+        "persisted": false
+      },
+      {
+        "round": 1,
+        "question": 2,
+        "firstAnswerMs": 4182,
+        "totalMs": 5451,
+        "geminiRequests": 4,
+        "inputTokens": 9410,
+        "outputTokens": 184,
+        "totalTokens": 9594,
+        "retrievalMs": 459,
+        "attributionMs": 1032,
+        "persisted": false
+      },
+      {
+        "round": 1,
+        "question": 3,
+        "firstAnswerMs": 3718,
+        "totalMs": 4746,
+        "geminiRequests": 4,
+        "inputTokens": 9876,
+        "outputTokens": 160,
+        "totalTokens": 10036,
+        "retrievalMs": 515,
+        "attributionMs": 887,
+        "persisted": false
+      },
+      {
+        "round": 1,
+        "question": 4,
+        "firstAnswerMs": 4626,
+        "totalMs": 5460,
+        "geminiRequests": 4,
+        "inputTokens": 9383,
+        "outputTokens": 151,
+        "totalTokens": 9534,
+        "retrievalMs": 483,
+        "attributionMs": 706,
+        "persisted": false
+      },
+      {
+        "round": 1,
+        "question": 5,
+        "firstAnswerMs": 4251,
+        "totalMs": 5317,
+        "geminiRequests": 4,
+        "inputTokens": 9415,
+        "outputTokens": 165,
+        "totalTokens": 9580,
+        "retrievalMs": 521,
+        "attributionMs": 832,
+        "persisted": false
+      },
+      {
+        "round": 1,
+        "question": 6,
+        "firstAnswerMs": 3458,
+        "totalMs": 3499,
+        "geminiRequests": 3,
+        "inputTokens": 8813,
+        "outputTokens": 82,
+        "totalTokens": 8895,
+        "retrievalMs": 507,
+        "attributionMs": 0,
+        "persisted": false
+      },
+      {
+        "round": 2,
+        "question": 1,
+        "firstAnswerMs": 4360,
+        "totalMs": 5514,
+        "geminiRequests": 4,
+        "inputTokens": 9972,
+        "outputTokens": 106,
+        "totalTokens": 10078,
+        "retrievalMs": 892,
+        "attributionMs": 1053,
+        "persisted": false
+      },
+      {
+        "round": 2,
+        "question": 2,
+        "firstAnswerMs": 4961,
+        "totalMs": 6168,
+        "geminiRequests": 4,
+        "inputTokens": 9385,
+        "outputTokens": 159,
+        "totalTokens": 9544,
+        "retrievalMs": 576,
+        "attributionMs": 1082,
+        "persisted": false
+      },
+      {
+        "round": 2,
+        "question": 3,
+        "firstAnswerMs": 3580,
+        "totalMs": 4588,
+        "geminiRequests": 4,
+        "inputTokens": 9853,
+        "outputTokens": 91,
+        "totalTokens": 9944,
+        "retrievalMs": 739,
+        "attributionMs": 936,
+        "persisted": false
+      },
+      {
+        "round": 2,
+        "question": 4,
+        "firstAnswerMs": 4043,
+        "totalMs": 4938,
+        "geminiRequests": 4,
+        "inputTokens": 9387,
+        "outputTokens": 155,
+        "totalTokens": 9542,
+        "retrievalMs": 685,
+        "attributionMs": 757,
+        "persisted": false
+      },
+      {
+        "round": 2,
+        "question": 6,
+        "firstAnswerMs": 4663,
+        "totalMs": 4762,
+        "geminiRequests": 3,
+        "inputTokens": 8813,
+        "outputTokens": 86,
+        "totalTokens": 8899,
+        "retrievalMs": 686,
+        "attributionMs": 0,
+        "persisted": false
+      }
+    ],
+    "byQuestion": [
+      {
+        "id": 1,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4126,
+        "totalMs": 5162
+      },
+      {
+        "id": 2,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4571.5,
+        "totalMs": 5809.5
+      },
+      {
+        "id": 3,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 3649,
+        "totalMs": 4667
+      },
+      {
+        "id": 4,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4334.5,
+        "totalMs": 5199
+      },
+      {
+        "id": 5,
+        "attempts": 2,
+        "completed": 1,
+        "firstAnswerMs": 4251,
+        "totalMs": 5317
+      },
+      {
+        "id": 6,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4060.5,
+        "totalMs": 4130.5
+      }
+    ]
+  },
+  "after-first": {
+    "model": "gemini-3.5-flash-lite",
+    "attempted": 12,
+    "completed": 11,
+    "failed": [
+      {
+        "round": 1,
+        "id": 6,
+        "error": {
+          "code": "AI_STREAM_FAILED",
+          "message": "The response could not be completed. Please try again."
+        }
+      }
+    ],
+    "medians": {
+      "firstAnswerMs": 3715,
+      "totalMs": 4950,
+      "geminiRequests": 4,
+      "inputTokens": 9510,
+      "outputTokens": 96,
+      "totalTokens": 9614,
+      "retrievalMs": 492,
+      "attributionMs": 833
+    },
+    "rows": [
+      {
+        "round": 1,
+        "question": 1,
+        "firstAnswerMs": 3655,
+        "totalMs": 4599,
+        "geminiRequests": 4,
+        "inputTokens": 10092,
+        "outputTokens": 100,
+        "totalTokens": 10192,
+        "retrievalMs": 526,
+        "attributionMs": 797,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 2,
+        "firstAnswerMs": 4490,
+        "totalMs": 5569,
+        "geminiRequests": 4,
+        "inputTokens": 9477,
+        "outputTokens": 96,
+        "totalTokens": 9573,
+        "retrievalMs": 697,
+        "attributionMs": 839,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 3,
+        "firstAnswerMs": 4218,
+        "totalMs": 4983,
+        "geminiRequests": 4,
+        "inputTokens": 9976,
+        "outputTokens": 101,
+        "totalTokens": 10077,
+        "retrievalMs": 524,
+        "attributionMs": 708,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 4,
+        "firstAnswerMs": 4147,
+        "totalMs": 5115,
+        "geminiRequests": 4,
+        "inputTokens": 9514,
+        "outputTokens": 127,
+        "totalTokens": 9641,
+        "retrievalMs": 615,
+        "attributionMs": 832,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 5,
+        "firstAnswerMs": 3559,
+        "totalMs": 4750,
+        "geminiRequests": 4,
+        "inputTokens": 9496,
+        "outputTokens": 96,
+        "totalTokens": 9592,
+        "retrievalMs": 492,
+        "attributionMs": 1177,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 1,
+        "firstAnswerMs": 4966,
+        "totalMs": 5885,
+        "geminiRequests": 4,
+        "inputTokens": 10096,
+        "outputTokens": 116,
+        "totalTokens": 10212,
+        "retrievalMs": 456,
+        "attributionMs": 833,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 2,
+        "firstAnswerMs": 3695,
+        "totalMs": 4530,
+        "geminiRequests": 4,
+        "inputTokens": 9471,
+        "outputTokens": 90,
+        "totalTokens": 9561,
+        "retrievalMs": 464,
+        "attributionMs": 773,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 3,
+        "firstAnswerMs": 5167,
+        "totalMs": 6313,
+        "geminiRequests": 4,
+        "inputTokens": 9963,
+        "outputTokens": 87,
+        "totalTokens": 10050,
+        "retrievalMs": 631,
+        "attributionMs": 1062,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 4,
+        "firstAnswerMs": 3500,
+        "totalMs": 4950,
+        "geminiRequests": 4,
+        "inputTokens": 9480,
+        "outputTokens": 134,
+        "totalTokens": 9614,
+        "retrievalMs": 465,
+        "attributionMs": 1394,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 5,
+        "firstAnswerMs": 3715,
+        "totalMs": 4606,
+        "geminiRequests": 4,
+        "inputTokens": 9510,
+        "outputTokens": 94,
+        "totalTokens": 9604,
+        "retrievalMs": 453,
+        "attributionMs": 834,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 6,
+        "firstAnswerMs": 2454,
+        "totalMs": 2455,
+        "geminiRequests": 2,
+        "inputTokens": 5122,
+        "outputTokens": 43,
+        "totalTokens": 5165,
+        "retrievalMs": 461,
+        "attributionMs": 0,
+        "persisted": true
+      }
+    ],
+    "security": {
+      "unauthenticated": 401,
+      "crossUserRead": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "crossUserContinue": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "cancellation": {
+        "conversationCreated": true,
+        "assistantMessages": 0
+      },
+      "rateLimit": {
+        "status": 429,
+        "invalidRequests": 82
+      }
+    },
+    "byQuestion": [
+      {
+        "id": 1,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4310.5,
+        "totalMs": 5242
+      },
+      {
+        "id": 2,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4092.5,
+        "totalMs": 5049.5
+      },
+      {
+        "id": 3,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4692.5,
+        "totalMs": 5648
+      },
+      {
+        "id": 4,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 3823.5,
+        "totalMs": 5032.5
+      },
+      {
+        "id": 5,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 3637,
+        "totalMs": 4678
+      },
+      {
+        "id": 6,
+        "attempts": 2,
+        "completed": 1,
+        "firstAnswerMs": 2454,
+        "totalMs": 2455
+      }
+    ]
+  },
+  "after": {
+    "model": "gemini-3.5-flash-lite",
+    "attempted": 12,
+    "completed": 11,
+    "failed": [
+      {
+        "round": 2,
+        "id": 2,
+        "error": {
+          "code": "AI_STREAM_FAILED",
+          "message": "The response could not be completed. Please try again."
+        }
+      }
+    ],
+    "medians": {
+      "firstAnswerMs": 4506,
+      "totalMs": 5561,
+      "geminiRequests": 4,
+      "inputTokens": 9513,
+      "outputTokens": 117,
+      "totalTokens": 9648,
+      "retrievalMs": 502,
+      "attributionMs": 885
+    },
+    "rows": [
+      {
+        "round": 1,
+        "question": 1,
+        "firstAnswerMs": 4126,
+        "totalMs": 5483,
+        "geminiRequests": 4,
+        "inputTokens": 10082,
+        "outputTokens": 120,
+        "totalTokens": 10202,
+        "retrievalMs": 487,
+        "attributionMs": 1147,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 2,
+        "firstAnswerMs": 6660,
+        "totalMs": 7634,
+        "geminiRequests": 5,
+        "inputTokens": 9472,
+        "outputTokens": 85,
+        "totalTokens": 9557,
+        "retrievalMs": 503,
+        "attributionMs": 951,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 3,
+        "firstAnswerMs": 4260,
+        "totalMs": 5071,
+        "geminiRequests": 4,
+        "inputTokens": 9978,
+        "outputTokens": 109,
+        "totalTokens": 10087,
+        "retrievalMs": 521,
+        "attributionMs": 697,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 4,
+        "firstAnswerMs": 4163,
+        "totalMs": 5603,
+        "geminiRequests": 4,
+        "inputTokens": 9497,
+        "outputTokens": 151,
+        "totalTokens": 9648,
+        "retrievalMs": 501,
+        "attributionMs": 1320,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 5,
+        "firstAnswerMs": 4510,
+        "totalMs": 5332,
+        "geminiRequests": 4,
+        "inputTokens": 9515,
+        "outputTokens": 118,
+        "totalTokens": 9633,
+        "retrievalMs": 566,
+        "attributionMs": 725,
+        "persisted": true
+      },
+      {
+        "round": 1,
+        "question": 6,
+        "firstAnswerMs": 7170,
+        "totalMs": 7174,
+        "geminiRequests": 2,
+        "inputTokens": 5122,
+        "outputTokens": 43,
+        "totalTokens": 5165,
+        "retrievalMs": 494,
+        "attributionMs": 0,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 1,
+        "firstAnswerMs": 4506,
+        "totalMs": 5561,
+        "geminiRequests": 4,
+        "inputTokens": 10079,
+        "outputTokens": 117,
+        "totalTokens": 10196,
+        "retrievalMs": 430,
+        "attributionMs": 979,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 3,
+        "firstAnswerMs": 4351,
+        "totalMs": 7630,
+        "geminiRequests": 5,
+        "inputTokens": 9976,
+        "outputTokens": 107,
+        "totalTokens": 10083,
+        "retrievalMs": 502,
+        "attributionMs": 1874,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 4,
+        "firstAnswerMs": 4579,
+        "totalMs": 5487,
+        "geminiRequests": 4,
+        "inputTokens": 9487,
+        "outputTokens": 130,
+        "totalTokens": 9617,
+        "retrievalMs": 465,
+        "attributionMs": 830,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 5,
+        "firstAnswerMs": 6234,
+        "totalMs": 7230,
+        "geminiRequests": 5,
+        "inputTokens": 9513,
+        "outputTokens": 155,
+        "totalTokens": 9668,
+        "retrievalMs": 507,
+        "attributionMs": 885,
+        "persisted": true
+      },
+      {
+        "round": 2,
+        "question": 6,
+        "firstAnswerMs": 2403,
+        "totalMs": 2407,
+        "geminiRequests": 2,
+        "inputTokens": 5122,
+        "outputTokens": 43,
+        "totalTokens": 5165,
+        "retrievalMs": 532,
+        "attributionMs": 0,
+        "persisted": true
+      }
+    ],
+    "security": {
+      "unauthenticated": 401,
+      "crossUserRead": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "crossUserContinue": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "cancellation": {
+        "conversationCreated": true,
+        "assistantMessages": 0
+      },
+      "rateLimit": {
+        "status": 429,
+        "invalidRequests": 78
+      }
+    },
+    "byQuestion": [
+      {
+        "id": 1,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4316,
+        "totalMs": 5522
+      },
+      {
+        "id": 2,
+        "attempts": 2,
+        "completed": 1,
+        "firstAnswerMs": 6660,
+        "totalMs": 7634
+      },
+      {
+        "id": 3,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4305.5,
+        "totalMs": 6350.5
+      },
+      {
+        "id": 4,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4371,
+        "totalMs": 5545
+      },
+      {
+        "id": 5,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 5372,
+        "totalMs": 6281
+      },
+      {
+        "id": 6,
+        "attempts": 2,
+        "completed": 2,
+        "firstAnswerMs": 4786.5,
+        "totalMs": 4790.5
+      }
+    ]
+  }
+}

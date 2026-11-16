@@ -1,0 +1,637 @@
+{
+  "startedAt": "2026-11-11T08:02:31.862Z",
+  "baseUrl": "http://localhost:3001",
+  "isolationBasis": "User confirmed test-only database and running checkout; verified live session linkage below",
+  "api": [
+    {
+      "id": "transfer",
+      "question": "In the synthetic TradePro transfer demo, what do I select after opening Funds, and what is its unique support reference?",
+      "routingExpectedFromCurrentCode": "ANY",
+      "retrieval": [
+        {
+          "chunkId": "3c194163-a673-4f3d-bc69-d52b8d00bd34",
+          "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+          "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+          "category": "DEV_EVALUATION",
+          "sourceUrl": null,
+          "version": 1,
+          "chunkIndex": 1,
+          "pageNumber": 2,
+          "sectionTitle": null,
+          "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 SYNTHETIC TRANSFER WALKTHROUGH In the synthetic TradePro demo, open Funds, select Transfer rehearsal, and\nchoose the Preview route tab.\nThe sender field is labeled Origin pocket and the recipient field is labeled\nTarget pocket.\nBefore completing the rehearsal, read the Violet checklist and choose Finish\npreview. This is a fictional preview, not a funds transfer.\nThe unique transfer support reference is TP-XFER-ORCHID-611. Quote this\nreference when asking about this synthetic walkthrough. Page 2 of 2",
+          "similarity": 0.8001688718797197
+        },
+        {
+          "chunkId": "6f8434d4-55e4-4748-b4cf-0a3b3a372297",
+          "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+          "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+          "category": "DEV_EVALUATION",
+          "sourceUrl": null,
+          "version": 1,
+          "chunkIndex": 0,
+          "pageNumber": 1,
+          "sectionTitle": null,
+          "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 FIXTURE SCOPE This document describes fictional TradePro demo navigation for a development\nintegration test. It is not a real TradePro policy or an instruction to move\nmoney.\nUse the transfer walkthrough on page 2 only when discussing this synthetic\ndemo. No actual transfer execution, fees, limits or eligibility rules are\ndefined here. Page 1 of 2",
+          "similarity": 0.7386527373013457
+        },
+        {
+          "chunkId": "e56cabb7-bb5c-4551-86ec-5611c58c65d0",
+          "documentId": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+          "title": "TradePro AI RAG Integration Test",
+          "category": "TEST",
+          "sourceUrl": null,
+          "version": 1,
+          "chunkIndex": 0,
+          "pageNumber": null,
+          "sectionTitle": null,
+          "content": "TRADEPRO AI — RAG INTEGRATION TEST\n\nDocument purpose:\nThis document is used exclusively for testing the\nTradePro AI retrieval-augmented generation pipeline.\n\nTest reference:\nTRADEPRO-RAG-2026\n\nQuestion:\nWhat is the TradePro RAG integration test reference?\n\nAnswer:\nThe TradePro RAG integration test reference is\nTRADEPRO-RAG-2026.\n\nThis document is a development test fixture.\nIt does not define financial policies, fees,\nwithdrawal times, deposit methods, or KYC requirements.",
+          "similarity": 0.7040464744401865
+        }
+      ],
+      "response": {
+        "status": 200,
+        "body": {
+          "statusCode": 200,
+          "message": "AI response generated and saved",
+          "data": {
+            "conversationId": "44c03454-b926-4bce-8367-921cbc6b4a74",
+            "reply": "In the synthetic TradePro transfer demo, after opening Funds, you select Transfer rehearsal and choose the Preview route tab. The unique support reference for this demo is TP-XFER-ORCHID-611.",
+            "category": "PLATFORM_POLICY",
+            "requiresLiveData": false,
+            "usage": {
+              "inputTokens": 12445,
+              "outputTokens": 169,
+              "totalTokens": 12614,
+              "thoughtsTokens": null
+            },
+            "toolUsed": true,
+            "toolsCalled": [
+              "search_platform_knowledge"
+            ],
+            "sources": [],
+            "ragRetrievedSources": [
+              {
+                "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+                "chunkId": "3c194163-a673-4f3d-bc69-d52b8d00bd34",
+                "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+                "version": 1,
+                "pageNumber": 2,
+                "sectionTitle": null,
+                "sourceUrl": null
+              },
+              {
+                "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+                "chunkId": "6f8434d4-55e4-4748-b4cf-0a3b3a372297",
+                "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+                "version": 1,
+                "pageNumber": 1,
+                "sectionTitle": null,
+                "sourceUrl": null
+              },
+              {
+                "documentId": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+                "chunkId": "e56cabb7-bb5c-4551-86ec-5611c58c65d0",
+                "title": "TradePro AI RAG Integration Test",
+                "version": 1,
+                "pageNumber": null,
+                "sectionTitle": null,
+                "sourceUrl": null
+              }
+            ],
+            "marketQuote": null
+          }
+        },
+        "latencyMs": 20228
+      },
+      "fixtureEvidenceFromReturnedChunkIds": [
+        {
+          "id": "6f8434d4-55e4-4748-b4cf-0a3b3a372297",
+          "pageNumber": 1,
+          "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 FIXTURE SCOPE This document describes fictional TradePro demo navigation for a development\nintegration test. It is not a real TradePro policy or an instruction to move\nmoney.\nUse the transfer walkthrough on page 2 only when discussing this synthetic\ndemo. No actual transfer execution, fees, limits or eligibility rules are\ndefined here. Page 1 of 2",
+          "document": {
+            "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+            "version": 1,
+            "status": "PUBLISHED",
+            "visibility": "PUBLIC"
+          }
+        },
+        {
+          "id": "3c194163-a673-4f3d-bc69-d52b8d00bd34",
+          "pageNumber": 2,
+          "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 SYNTHETIC TRANSFER WALKTHROUGH In the synthetic TradePro demo, open Funds, select Transfer rehearsal, and\nchoose the Preview route tab.\nThe sender field is labeled Origin pocket and the recipient field is labeled\nTarget pocket.\nBefore completing the rehearsal, read the Violet checklist and choose Finish\npreview. This is a fictional preview, not a funds transfer.\nThe unique transfer support reference is TP-XFER-ORCHID-611. Quote this\nreference when asking about this synthetic walkthrough. Page 2 of 2",
+          "document": {
+            "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+            "version": 1,
+            "status": "PUBLISHED",
+            "visibility": "PUBLIC"
+          }
+        }
+      ],
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "unrelated-password",
+      "question": "How do I reset my account password?",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "retrieval": [],
+      "response": {
+        "status": 200,
+        "body": {
+          "statusCode": 200,
+          "message": "AI response generated and saved",
+          "data": {
+            "conversationId": "2c55b43f-9cb8-42b0-8d52-c2c334c695e3",
+            "reply": "I couldn't find approved TradePro documentation to verify that information. Please check the relevant TradePro page or contact support.",
+            "category": "PLATFORM_POLICY",
+            "requiresLiveData": false,
+            "usage": {
+              "inputTokens": 7706,
+              "outputTokens": 99,
+              "totalTokens": 7805,
+              "thoughtsTokens": null
+            },
+            "toolUsed": true,
+            "toolsCalled": [
+              "search_platform_knowledge"
+            ],
+            "sources": [],
+            "ragRetrievedSources": [],
+            "marketQuote": null
+          }
+        },
+        "latencyMs": 13311
+      },
+      "fixtureEvidenceFromReturnedChunkIds": [],
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "unrelated-kyc",
+      "question": "What are the KYC document requirements?",
+      "routingExpectedFromCurrentCode": "ANY",
+      "retrieval": [
+        {
+          "chunkId": "e56cabb7-bb5c-4551-86ec-5611c58c65d0",
+          "documentId": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+          "title": "TradePro AI RAG Integration Test",
+          "category": "TEST",
+          "sourceUrl": null,
+          "version": 1,
+          "chunkIndex": 0,
+          "pageNumber": null,
+          "sectionTitle": null,
+          "content": "TRADEPRO AI — RAG INTEGRATION TEST\n\nDocument purpose:\nThis document is used exclusively for testing the\nTradePro AI retrieval-augmented generation pipeline.\n\nTest reference:\nTRADEPRO-RAG-2026\n\nQuestion:\nWhat is the TradePro RAG integration test reference?\n\nAnswer:\nThe TradePro RAG integration test reference is\nTRADEPRO-RAG-2026.\n\nThis document is a development test fixture.\nIt does not define financial policies, fees,\nwithdrawal times, deposit methods, or KYC requirements.",
+          "similarity": 0.6727319359779406
+        }
+      ],
+      "response": {
+        "status": 200,
+        "body": {
+          "statusCode": 200,
+          "message": "AI response generated and saved",
+          "data": {
+            "conversationId": "0c134275-8c28-458c-bacb-b1499ebb70b7",
+            "reply": "Verified policy information regarding specific KYC document requirements is currently unavailable in the public documentation. You can check the identity verification section within your TradePro platform account for the exact document types accepted for your region.",
+            "category": "PLATFORM_POLICY",
+            "requiresLiveData": false,
+            "usage": {
+              "inputTokens": 12468,
+              "outputTokens": 115,
+              "totalTokens": 12583,
+              "thoughtsTokens": null
+            },
+            "toolUsed": true,
+            "toolsCalled": [
+              "search_platform_knowledge",
+              "search_platform_knowledge"
+            ],
+            "sources": [],
+            "ragRetrievedSources": [
+              {
+                "documentId": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+                "chunkId": "e56cabb7-bb5c-4551-86ec-5611c58c65d0",
+                "title": "TradePro AI RAG Integration Test",
+                "version": 1,
+                "pageNumber": null,
+                "sectionTitle": null,
+                "sourceUrl": null
+              }
+            ],
+            "marketQuote": null
+          }
+        },
+        "latencyMs": 6452
+      },
+      "fixtureEvidenceFromReturnedChunkIds": [],
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "unrelated-geography",
+      "question": "What is the capital of Japan?",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "retrieval": [],
+      "response": {
+        "status": 200,
+        "body": {
+          "statusCode": 200,
+          "message": "AI response generated and saved",
+          "data": {
+            "conversationId": "d2602179-283c-4171-a4a2-e7e87ecd2e23",
+            "reply": "I'm TradePro AI, your trading and financial platform assistant. I can help with financial markets, trading education, your trading accounts, funds, and TradePro platform services.",
+            "category": "OTHER",
+            "requiresLiveData": false,
+            "usage": {
+              "inputTokens": 3700,
+              "outputTokens": 60,
+              "totalTokens": 3760,
+              "thoughtsTokens": null
+            },
+            "toolUsed": false,
+            "toolsCalled": [],
+            "sources": [],
+            "ragRetrievedSources": [],
+            "marketQuote": null
+          }
+        },
+        "latencyMs": 3141
+      },
+      "fixtureEvidenceFromReturnedChunkIds": [],
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "private",
+      "question": "Show my KYC status, trading accounts, account balances, and recent transactions.",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "response": {
+        "status": 500,
+        "body": {
+          "statusCode": 500,
+          "message": "Internal server error",
+          "data": null
+        },
+        "latencyMs": 5570
+      },
+      "fixtureEvidenceFromReturnedChunkIds": []
+    }
+  ],
+  "database": [
+    {
+      "database": "trading",
+      "address": "::1/128",
+      "port": 5432
+    }
+  ],
+  "countsBefore": {
+    "users": 17,
+    "customers": 15
+  },
+  "admin": {
+    "role": "ADMIN",
+    "isActive": true
+  },
+  "trainingBefore": [
+    {
+      "id": "259a16d9-1f66-49d6-b952-26ca96648355",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 1,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T10:58:31.815Z"
+    },
+    {
+      "id": "36a00690-caf1-49d5-9241-48c287350b0f",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 2,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T11:46:13.897Z"
+    },
+    {
+      "id": "f636bad3-963c-4ed4-8356-69d67395f75c",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 3,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T11:56:16.518Z"
+    }
+  ],
+  "publishedBefore": [
+    {
+      "id": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+      "title": "TradePro AI RAG Integration Test",
+      "slug": "tradepro-rag-integration-test",
+      "version": 1,
+      "visibility": "PUBLIC"
+    }
+  ],
+  "testUserId": "12613e84-f191-411c-b42f-f85f57972f1c",
+  "login": {
+    "status": 200,
+    "body": {
+      "statusCode": 200,
+      "message": "Login successful",
+      "data": {
+        "accessToken": "[REDACTED]",
+        "user": {
+          "id": "12613e84-f191-411c-b42f-f85f57972f1c",
+          "name": "Synthetic RAG transfer test",
+          "email": "rag-transfer-47995f40@example.invalid",
+          "role": "USER"
+        }
+      }
+    },
+    "latencyMs": 115
+  },
+  "sameDatabaseVerifiedByLoginSession": true,
+  "extractedPages": [
+    {
+      "pageNumber": 1,
+      "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 FIXTURE SCOPE This document describes fictional TradePro demo navigation for a development\nintegration test. It is not a real TradePro policy or an instruction to move\nmoney.\nUse the transfer walkthrough on page 2 only when discussing this synthetic\ndemo. No actual transfer execution, fees, limits or eligibility rules are\ndefined here. Page 1 of 2"
+    },
+    {
+      "pageNumber": 2,
+      "content": "DEVELOPMENT ONLY - SYNTHETIC FACTS - NOT REAL TRADEPRO POLICY TradePro Synthetic Transfer Walkthrough - Development Only | Version 1 SYNTHETIC TRANSFER WALKTHROUGH In the synthetic TradePro demo, open Funds, select Transfer rehearsal, and\nchoose the Preview route tab.\nThe sender field is labeled Origin pocket and the recipient field is labeled\nTarget pocket.\nBefore completing the rehearsal, read the Violet checklist and choose Finish\npreview. This is a fictional preview, not a funds transfer.\nThe unique transfer support reference is TP-XFER-ORCHID-611. Quote this\nreference when asking about this synthetic walkthrough. Page 2 of 2"
+    }
+  ],
+  "fixture": {
+    "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+    "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+    "version": 1,
+    "chunkCount": 2,
+    "alreadyExists": false
+  },
+  "publication": {
+    "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+    "slug": "tradepro-synthetic-transfer-orchid-611",
+    "version": 1,
+    "status": "PUBLISHED",
+    "visibility": "PUBLIC",
+    "chunkCount": 2
+  },
+  "trainingAfter": [
+    {
+      "id": "259a16d9-1f66-49d6-b952-26ca96648355",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 1,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T10:58:31.815Z"
+    },
+    {
+      "id": "36a00690-caf1-49d5-9241-48c287350b0f",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 2,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T11:46:13.897Z"
+    },
+    {
+      "id": "f636bad3-963c-4ed4-8356-69d67395f75c",
+      "slug": "tradepro-ai-sample-knowledge-base",
+      "version": 3,
+      "status": "DRAFT",
+      "visibility": "INTERNAL",
+      "updatedAt": "2026-11-10T11:56:16.518Z"
+    }
+  ],
+  "trainingUnchanged": true,
+  "countsAfter": {
+    "users": 18,
+    "customers": 16
+  },
+  "testSessionRevoked": true,
+  "finishedAt": "2026-11-11T08:03:55.485Z",
+  "privateServiceChecks": [
+    {
+      "tool": "get_my_kyc_status",
+      "result": {
+        "status": "REGISTERED",
+        "customerExists": true,
+        "profileExists": true,
+        "kycProfileExists": false,
+        "profileCompleted": false,
+        "identityVerified": false,
+        "agreementStepCompleted": false,
+        "nextStep": "Complete your KYC profile.",
+        "rejectionReason": null
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "tool": "get_my_trading_accounts",
+      "result": {
+        "accountCount": 0,
+        "accounts": []
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "tool": "get_my_account_balances",
+      "result": {
+        "accountCount": 0,
+        "accounts": []
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "tool": "get_my_fund_transactions",
+      "result": {
+        "totalMatchingTransactions": 0,
+        "returnedCount": 0,
+        "hasMore": false,
+        "appliedFilters": {
+          "type": null,
+          "status": null
+        },
+        "transactions": []
+      },
+      "unauthenticatedRejected": true
+    }
+  ],
+  "httpFollowup": [
+    {
+      "id": "transfer-auto",
+      "question": "Where is Transfer rehearsal, which tab comes next, and what support reference goes with this synthetic walkthrough?",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "status": 200,
+      "body": {
+        "statusCode": 200,
+        "message": "AI response generated and saved",
+        "data": {
+          "conversationId": "58928657-7639-4ed9-b2ae-43d073fa628a",
+          "reply": "I'm TradePro AI, your trading and financial platform assistant. I can help with financial markets, trading education, your trading accounts, funds, and TradePro platform services.",
+          "category": "OTHER",
+          "requiresLiveData": false,
+          "usage": {
+            "inputTokens": 3713,
+            "outputTokens": 60,
+            "totalTokens": 3773,
+            "thoughtsTokens": null
+          },
+          "toolUsed": false,
+          "toolsCalled": [],
+          "sources": [],
+          "ragRetrievedSources": [],
+          "marketQuote": null
+        }
+      },
+      "latencyMs": 5672,
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "private-kyc",
+      "question": "What is my KYC status?",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "status": 200,
+      "body": {
+        "statusCode": 200,
+        "message": "AI response generated and saved",
+        "data": {
+          "conversationId": "7e9c90ac-1f88-4bb8-9a03-33e4d2fee94b",
+          "reply": "Your current KYC account status is REGISTERED. Your next required step is to complete your KYC profile on the TradePro platform.",
+          "category": "ACCOUNT_QUERY",
+          "requiresLiveData": false,
+          "usage": {
+            "inputTokens": 7689,
+            "outputTokens": 66,
+            "totalTokens": 7755,
+            "thoughtsTokens": null
+          },
+          "toolUsed": true,
+          "toolsCalled": [
+            "get_my_kyc_status"
+          ],
+          "sources": [],
+          "ragRetrievedSources": [],
+          "marketQuote": null
+        }
+      },
+      "latencyMs": 6821,
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "private-accounts",
+      "question": "Show my trading accounts, account balances, and recent transactions.",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "status": 200,
+      "body": {
+        "statusCode": 200,
+        "message": "AI response generated and saved",
+        "data": {
+          "conversationId": "cbe2d481-d4a1-4708-a50c-59c45a033b6c",
+          "reply": "You currently have no trading accounts or fund transactions registered under your profile.",
+          "category": "ACCOUNT_QUERY",
+          "requiresLiveData": true,
+          "usage": {
+            "inputTokens": 7755,
+            "outputTokens": 87,
+            "totalTokens": 7842,
+            "thoughtsTokens": null
+          },
+          "toolUsed": true,
+          "toolsCalled": [
+            "get_my_trading_accounts",
+            "get_my_account_balances",
+            "get_my_fund_transactions"
+          ],
+          "sources": [],
+          "ragRetrievedSources": [],
+          "marketQuote": null
+        }
+      },
+      "latencyMs": 5153,
+      "conversationOwnedByTestUser": true
+    },
+    {
+      "id": "transfer-auto-qualified",
+      "question": "In the TradePro demo, where is Transfer rehearsal and which tab should I choose next?",
+      "routingExpectedFromCurrentCode": "AUTO",
+      "status": 200,
+      "body": {
+        "statusCode": 200,
+        "message": "AI response generated and saved",
+        "data": {
+          "conversationId": "ecc27594-67c6-4604-a8a4-c082cda02739",
+          "reply": "In the synthetic TradePro demo, you can find Transfer rehearsal by opening Funds. Next, you should choose the Preview route tab (TradePro Synthetic Transfer Walkthrough - Development Only, page 2).",
+          "category": "PLATFORM_POLICY",
+          "requiresLiveData": false,
+          "usage": {
+            "inputTokens": 8498,
+            "outputTokens": 102,
+            "totalTokens": 8600,
+            "thoughtsTokens": null
+          },
+          "toolUsed": true,
+          "toolsCalled": [
+            "search_platform_knowledge"
+          ],
+          "sources": [],
+          "ragRetrievedSources": [
+            {
+              "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+              "chunkId": "3c194163-a673-4f3d-bc69-d52b8d00bd34",
+              "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+              "version": 1,
+              "pageNumber": 2,
+              "sectionTitle": null,
+              "sourceUrl": null
+            },
+            {
+              "documentId": "d4327b96-7d76-447c-a4df-3e0abe91a913",
+              "chunkId": "6f8434d4-55e4-4748-b4cf-0a3b3a372297",
+              "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+              "version": 1,
+              "pageNumber": 1,
+              "sectionTitle": null,
+              "sourceUrl": null
+            },
+            {
+              "documentId": "5722ad4d-6a08-4d73-bd5f-b09c0ab66364",
+              "chunkId": "e56cabb7-bb5c-4551-86ec-5611c58c65d0",
+              "title": "TradePro AI RAG Integration Test",
+              "version": 1,
+              "pageNumber": null,
+              "sectionTitle": null,
+              "sourceUrl": null
+            }
+          ],
+          "marketQuote": null
+        }
+      },
+      "latencyMs": 12269,
+      "conversationOwnedByTestUser": true
+    }
+  ],
+  "followupSessionRevoked": true,
+  "finalVerification": {
+    "activeTestSessions": 0,
+    "fixture": {
+      "title": "TradePro Synthetic Transfer Walkthrough - Development Only",
+      "version": 1,
+      "status": "PUBLISHED",
+      "visibility": "PUBLIC"
+    },
+    "training": [
+      {
+        "id": "259a16d9-1f66-49d6-b952-26ca96648355",
+        "version": 1,
+        "status": "DRAFT",
+        "visibility": "INTERNAL",
+        "updatedAt": "2026-11-10T06:58:31.815Z"
+      },
+      {
+        "id": "36a00690-caf1-49d5-9241-48c287350b0f",
+        "version": 2,
+        "status": "DRAFT",
+        "visibility": "INTERNAL",
+        "updatedAt": "2026-11-10T07:46:13.897Z"
+      },
+      {
+        "id": "f636bad3-963c-4ed4-8356-69d67395f75c",
+        "version": 3,
+        "status": "DRAFT",
+        "visibility": "INTERNAL",
+        "updatedAt": "2026-11-10T07:56:16.518Z"
+      }
+    ]
+  }
+}

@@ -1,4 +1,3 @@
-
 import prisma from "../../db/db.config.js";
 
 // --------------------------------
@@ -54,7 +53,7 @@ export type AiNewsSource = {
   publisher: string | null;
   url: string;
   publishedAt: string;
-}
+};
 
 export type AiMarketQuote = {
   symbol: string;
@@ -65,6 +64,9 @@ export type AiMarketQuote = {
   source: string;
 };
 
+// These objects are produced by the AI service after source validation.
+// Keep the persistence layer independent of specific tools or document types.
+export type AiAnswerSource = unknown;
 
 export async function saveAiAssistantMessage(
   conversationId: string,
@@ -75,7 +77,8 @@ export async function saveAiAssistantMessage(
     totalTokens: number | null;
   },
   sources: AiNewsSource[] = [],
-  marketQuote: AiMarketQuote | null = null
+  marketQuote: AiMarketQuote | null = null,
+  answerSources: AiAnswerSource[] = []
 ) {
   return prisma.aiMessage.create({
     data: {
@@ -91,10 +94,14 @@ export async function saveAiAssistantMessage(
         process.env.GEMINI_MODEL ||
         "gemini-3.1-flash-lite",
 
+      // Preserve the existing Marketaux/news source data.
       sources,
 
-      marketQuote:
-        marketQuote ?? undefined,
+      marketQuote: marketQuote ?? undefined,
+
+      // Persist answer attribution separately from market-news sources.
+      // The Prisma schema must declare: answerSources Json?
+      answerSources: JSON.parse(JSON.stringify(answerSources)),
     },
   });
 }
@@ -250,13 +257,14 @@ export async function saveAiConversationSummary(
   }
 }
 
-
+// --------------------------------
+// GET CONVERSATION CONTEXT
+// --------------------------------
 
 export async function getAiConversationContext(
   userId: string,
   conversationId: string
 ) {
-  // Verify conversation ownership.
   const conversation = await prisma.aiConversation.findFirst({
     where: {
       id: conversationId,
@@ -272,7 +280,6 @@ export async function getAiConversationContext(
     throw new Error("AI_CONVERSATION_NOT_FOUND");
   }
 
-  // Locate the last message included in the summary.
   const checkpoint = conversation.lastSummarizedMessageId
     ? await prisma.aiMessage.findFirst({
         where: {
@@ -293,7 +300,6 @@ export async function getAiConversationContext(
     throw new Error("AI_SUMMARY_CHECKPOINT_NOT_FOUND");
   }
 
-  // Retrieve only messages newer than the checkpoint.
   const messages = await prisma.aiMessage.findMany({
     where: {
       conversationId,
@@ -332,6 +338,9 @@ export async function getAiConversationContext(
   };
 }
 
+// --------------------------------
+// LIST CONVERSATIONS
+// --------------------------------
 
 export async function listAiConversations(
   userId: string,
@@ -374,81 +383,62 @@ export async function listAiConversations(
   }));
 }
 
+// --------------------------------
+// GET CONVERSATION MESSAGES
+// --------------------------------
 
 export async function getAiConversationMessages(
   userId: string,
   conversationId: string,
   limit = 50
 ) {
-  // --------------------------------
-  // VERIFY CONVERSATION OWNERSHIP
-  // --------------------------------
-
-  const conversation =
-    await prisma.aiConversation.findFirst({
-      where: {
-        id: conversationId,
-        userId,
-      },
-      select: {
-        id: true,
-        title: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+  const conversation = await prisma.aiConversation.findFirst({
+    where: {
+      id: conversationId,
+      userId,
+    },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
   if (!conversation) {
     throw new Error("AI_CONVERSATION_NOT_FOUND");
   }
 
-  // --------------------------------
-  // LOAD CONVERSATION MESSAGES
-  // --------------------------------
-
   const messages = await prisma.aiMessage.findMany({
     where: {
       conversationId,
     },
-
     orderBy: [
       { createdAt: "desc" },
       { id: "desc" },
     ],
-
-    take: Math.min(
-      Math.max(limit, 1),
-      100
-    ),
-
+    take: Math.min(Math.max(limit, 1), 100),
     select: {
       id: true,
       role: true,
       content: true,
       createdAt: true,
-
-      // Retrieve persisted Marketaux sources.
       sources: true,
+      answerSources: true,
     },
   });
 
-  // --------------------------------
-  // RETURN FRONTEND MESSAGES
-  // --------------------------------
-
   return {
     conversation,
-
     messages: messages.reverse().map((message) => ({
       ...message,
-
-      // Old messages may have null sources.
       sources: Array.isArray(message.sources)
         ? message.sources
         : [],
+      answerSources: Array.isArray(message.answerSources)
+        ? message.answerSources
+        : [],
     })),
-
     nextCursor: null,
   };
 }
-

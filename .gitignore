@@ -7,3 +7,4 @@ src/generated/
 *.log
 .DS_Store
 storage/kyc/signed/
+storage/knowledge-documents/

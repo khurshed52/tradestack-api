@@ -1,0 +1,12 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const root='tests/fixtures/rag-isolated-full',r=JSON.parse(readFileSync(root+'/results.json','utf8'));
+const answered=r.cases.filter(c=>c.page!==null),negative=r.cases.filter(c=>/^[UA]/.test(c.id)&&c.page===null&&c.id!=='A3');
+const correctPage=c=>new RegExp('(?:page|p\\.)\\s*'+c.page+'\\b','i').test(c.response?.body?.data?.reply??'');
+const title=c=>(c.response?.body?.data?.reply??'').includes('TradePro Isolated Practice Manual - Synthetic Only');
+const version=c=>/\b(?:version|v)\s*2\b/i.test(c.response?.body?.data?.reply??'');
+const l=r.cases.filter(c=>c.response).map(c=>c.response.latencyMs).sort((a,b)=>a-b);
+const sum=(items,k)=>items.reduce((n,v)=>n+(v[k]??0),0);
+const usage=r.cases.map(c=>c.response?.body?.data?.usage??{});
+const trace=r.cases.flatMap(c=>c.trace??[]);
+const metrics={questions:r.cases.length,httpSuccess:r.cases.filter(c=>c.response?.status===200).length,toolSelectionPass:r.cases.filter(c=>c.toolSelectionPass).length,modes:trace.reduce((a,t)=>{a[t.mode]=(a[t.mode]??0)+1;return a;},{}),answerable:{count:answered.length,expectedFactsPresent:answered.filter(c=>c.factsPresent).length,recallAt5:answered.filter(c=>c.retrieval?.some(s=>s.pageNumber===c.page)).length,pageCitation:answered.filter(correctPage).length,exactTitle:answered.filter(title).length,versionCitation:answered.filter(version).length,completeCitation:answered.filter(c=>correctPage(c)&&title(c)&&version(c)).length},negative:{count:negative.length,emptyRetrieval:negative.filter(c=>c.retrieval?.length===0).length},security:{allExclusionsPass:r.cases.every(c=>c.exclusionsPass),allDedupPass:r.cases.every(c=>c.dedupPass)},latencyMs:{median:l[Math.floor(l.length/2)],p95:l[Math.ceil(l.length*.95)-1],max:l.at(-1)},usage:{inputTokens:sum(usage,'inputTokens'),outputTokens:sum(usage,'outputTokens'),totalTokens:sum(usage,'totalTokens')},realProviderErrors:trace.filter(t=>t.error&&!t.simulated).map(t=>t.error),thresholds:r.thresholds,perCase:r.cases.map(c=>({id:c.id,status:c.response?.status,tools:c.response?.body?.data?.toolsCalled,mode:c.trace?.[0]?.mode,expectedToolsPass:c.toolSelectionPass,expectedFactsPresent:c.factsPresent,pageCitation:c.page===null?null:correctPage(c),exactTitle:c.page===null?null:title(c),versionCitation:c.page===null?null:version(c),retrievedPages:c.retrieval?.map(s=>s.pageNumber)}))};
+writeFileSync(root+'/metrics.json',JSON.stringify(metrics,null,2)+'\n');console.log(JSON.stringify({...metrics,perCase:undefined},null,2));

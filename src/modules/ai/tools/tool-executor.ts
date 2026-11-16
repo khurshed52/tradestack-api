@@ -25,6 +25,11 @@ import {
   executeMyKycStatus,
 } from "./kyc.tools.js";
 
+import {
+  platformKnowledgeArgsSchema,
+  executePlatformKnowledge,
+} from "./rag.tools.js";
+
 // --------------------------------
 // CONFIGURATION
 // --------------------------------
@@ -32,6 +37,9 @@ import {
 const DEFAULT_TOOL_TIMEOUT_MS = 12_000;
 
 // Private tools require trusted user context.
+// RAG is not included because searchKnowledge()
+// already restricts retrieval to public,
+// approved documents.
 const PRIVATE_AI_TOOLS = new Set([
   "get_my_trading_accounts",
   "get_my_account_balances",
@@ -45,6 +53,7 @@ const PRIVATE_AI_TOOLS = new Set([
 
 export type AiToolExecutionContext = {
   userId?: string;
+  signal?: AbortSignal;
 };
 
 // --------------------------------
@@ -74,7 +83,6 @@ function defineTool<T extends z.ZodType>(
   definition: ToolDefinition<T>
 ): ToolHandler {
   return async (args, signal, context) => {
-    // Never trust Gemini-generated arguments.
     const validated = definition.schema.parse(args);
 
     signal.throwIfAborted();
@@ -93,9 +101,19 @@ function defineTool<T extends z.ZodType>(
 
 async function withToolTimeout<T>(
   operation: (signal: AbortSignal) => Promise<T>,
-  timeoutMs: number
+  timeoutMs: number,
+  parentSignal?: AbortSignal,
 ): Promise<T> {
+  parentSignal?.throwIfAborted();
   const controller = new AbortController();
+  let onAbort: (() => void) | undefined;
+  const cancelled = new Promise<never>((_resolve, reject) => {
+    onAbort = () => {
+      controller.abort(parentSignal?.reason);
+      reject(parentSignal?.reason ?? new Error("AI_STREAM_ABORTED"));
+    };
+    parentSignal?.addEventListener("abort", onAbort, { once: true });
+  });
 
   let timeoutId:
     | ReturnType<typeof setTimeout>
@@ -118,8 +136,10 @@ async function withToolTimeout<T>(
     return await Promise.race([
       operation(controller.signal),
       timeoutPromise,
+      cancelled,
     ]);
   } finally {
+    if (onAbort) parentSignal?.removeEventListener("abort", onAbort);
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId);
     }
@@ -147,6 +167,26 @@ const handlers: Record<string, ToolHandler> = {
   get_latest_market_news: defineTool({
     schema: marketNewsArgsSchema,
     execute: executeMarketNews,
+  }),
+
+  // --------------------------------
+  // PUBLIC PLATFORM KNOWLEDGE (RAG)
+  // --------------------------------
+
+  search_platform_knowledge: defineTool({
+    schema: platformKnowledgeArgsSchema,
+
+    execute: async (args, signal) => {
+      signal.throwIfAborted();
+
+      const result = await executePlatformKnowledge(
+        args, signal
+      );
+
+      signal.throwIfAborted();
+
+      return result;
+    },
   }),
 
   // --------------------------------
@@ -260,7 +300,6 @@ export async function executeAiTool(
   args: unknown,
   context: AiToolExecutionContext = {}
 ): Promise<unknown> {
-  // Reject unknown tool names.
   if (!Object.hasOwn(handlers, name)) {
     throw new Error("AI_TOOL_NOT_ALLOWED");
   }
@@ -271,8 +310,6 @@ export async function executeAiTool(
     throw new Error("AI_TOOL_NOT_ALLOWED");
   }
 
-  // Private tools require authenticated
-  // backend context, never Gemini arguments.
   if (
     PRIVATE_AI_TOOLS.has(name) &&
     !context.userId
@@ -283,6 +320,7 @@ export async function executeAiTool(
   return withToolTimeout(
     (signal) =>
       handler(args, signal, context),
-    DEFAULT_TOOL_TIMEOUT_MS
+    DEFAULT_TOOL_TIMEOUT_MS,
+    context.signal,
   );
 }

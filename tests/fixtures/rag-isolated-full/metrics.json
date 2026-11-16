@@ -1,0 +1,580 @@
+{
+  "questions": 26,
+  "httpSuccess": 26,
+  "toolSelectionPass": 25,
+  "modes": {
+    "AUTO": 47,
+    "ANY": 3
+  },
+  "answerable": {
+    "count": 16,
+    "expectedFactsPresent": 16,
+    "recallAt5": 16,
+    "pageCitation": 13,
+    "exactTitle": 4,
+    "versionCitation": 0,
+    "completeCitation": 0
+  },
+  "negative": {
+    "count": 8,
+    "emptyRetrieval": 2
+  },
+  "security": {
+    "allExclusionsPass": true,
+    "allDedupPass": true
+  },
+  "latencyMs": {
+    "median": 12367,
+    "p95": 19470,
+    "max": 23545
+  },
+  "usage": {
+    "inputTokens": 215493,
+    "outputTokens": 2302,
+    "totalTokens": 217795
+  },
+  "realProviderErrors": [],
+  "thresholds": [
+    {
+      "threshold": 0.55,
+      "answerableCount": 16,
+      "recallAt5": 16,
+      "negativeCount": 8,
+      "negativeEmpty": 1
+    },
+    {
+      "threshold": 0.6,
+      "answerableCount": 16,
+      "recallAt5": 16,
+      "negativeCount": 8,
+      "negativeEmpty": 1
+    },
+    {
+      "threshold": 0.65,
+      "answerableCount": 16,
+      "recallAt5": 16,
+      "negativeCount": 8,
+      "negativeEmpty": 2
+    },
+    {
+      "threshold": 0.675,
+      "answerableCount": 16,
+      "recallAt5": 16,
+      "negativeCount": 8,
+      "negativeEmpty": 3
+    },
+    {
+      "threshold": 0.7,
+      "answerableCount": 16,
+      "recallAt5": 16,
+      "negativeCount": 8,
+      "negativeEmpty": 3
+    },
+    {
+      "threshold": 0.75,
+      "answerableCount": 16,
+      "recallAt5": 14,
+      "negativeCount": 8,
+      "negativeEmpty": 3
+    },
+    {
+      "threshold": 0.8,
+      "answerableCount": 16,
+      "recallAt5": 8,
+      "negativeCount": 8,
+      "negativeEmpty": 7
+    }
+  ],
+  "perCase": [
+    {
+      "id": "K1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": true,
+      "versionCitation": false,
+      "retrievedPages": [
+        1,
+        3,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "K2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        1,
+        1,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "id": "K3",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": false,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        1,
+        1,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "D1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": false,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        2,
+        3,
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "D2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        2,
+        3,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "D3",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": true,
+      "versionCitation": false,
+      "retrievedPages": [
+        2,
+        3,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "W1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": false,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        3,
+        2,
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "W2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        3,
+        2,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "W3",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": true,
+      "versionCitation": false,
+      "retrievedPages": [
+        3,
+        2,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "T1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": true,
+      "versionCitation": false,
+      "retrievedPages": [
+        4,
+        2,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "T2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        4,
+        1,
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "id": "T3",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        4,
+        2,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "U1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "ANY",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        3,
+        2,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "U2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        2,
+        3,
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "U3",
+      "status": 200,
+      "tools": [],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        4,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "id": "M1",
+      "status": 200,
+      "tools": [
+        "get_my_kyc_status",
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        1,
+        1,
+        3,
+        1,
+        2
+      ]
+    },
+    {
+      "id": "M2",
+      "status": 200,
+      "tools": [
+        "get_my_account_balances",
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        2,
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "M3",
+      "status": 200,
+      "tools": [
+        "get_my_fund_transactions",
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        4,
+        2,
+        3,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "U4",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        3,
+        2,
+        4,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "U5",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        4,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "id": "A1",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "ANY",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        3,
+        2,
+        4,
+        1
+      ]
+    },
+    {
+      "id": "A2",
+      "status": 200,
+      "tools": [
+        "search_platform_knowledge"
+      ],
+      "mode": "ANY",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": true,
+      "exactTitle": false,
+      "versionCitation": false,
+      "retrievedPages": [
+        4,
+        1,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "id": "A3",
+      "status": 200,
+      "tools": [
+        "get_my_kyc_status"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": [
+        1
+      ]
+    },
+    {
+      "id": "A4",
+      "status": 200,
+      "tools": [],
+      "mode": "AUTO",
+      "expectedToolsPass": false,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": []
+    },
+    {
+      "id": "P1",
+      "status": 200,
+      "tools": [
+        "get_my_trading_accounts"
+      ],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": []
+    },
+    {
+      "id": "U6",
+      "status": 200,
+      "tools": [],
+      "mode": "AUTO",
+      "expectedToolsPass": true,
+      "expectedFactsPresent": true,
+      "pageCitation": null,
+      "exactTitle": null,
+      "versionCitation": null,
+      "retrievedPages": []
+    }
+  ]
+}

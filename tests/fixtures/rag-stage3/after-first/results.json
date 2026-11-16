@@ -1,0 +1,3603 @@
+{
+  "database": "rag_e2e_1794819696666_8d299a",
+  "model": "gemini-3.5-flash-lite",
+  "cases": [
+    {
+      "round": 1,
+      "id": 1,
+      "message": "How do I complete KYC verification?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "66542e16-9073-4803-834e-833789fab55d"
+          },
+          "atMs": 47
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 47
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "To complete KYC verification, please log in to your TradePro platform account"
+          },
+          "atMs": 3655
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " and navigate to the identity verification section to submit the required information and documents."
+          },
+          "atMs": 3728
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "66542e16-9073-4803-834e-833789fab55d",
+              "reply": "To complete KYC verification, please log in to your TradePro platform account and navigate to the identity verification section to submit the required information and documents.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 10092,
+                "outputTokens": 100,
+                "totalTokens": 10192,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 1,
+                  "sectionTitle": null,
+                  "sourceUrl": null
+                },
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 1,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4599
+        }
+      ],
+      "firstAnswerMs": 3655,
+      "result": {
+        "conversationId": "66542e16-9073-4803-834e-833789fab55d",
+        "reply": "To complete KYC verification, please log in to your TradePro platform account and navigate to the identity verification section to submit the required information and documents.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 10092,
+          "outputTokens": 100,
+          "totalTokens": 10192,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 1,
+            "sectionTitle": null,
+            "sourceUrl": null
+          },
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 1,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4599,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819712579,
+          "usage": {
+            "promptTokenCount": 711,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 721,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 711
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\"toolNames\":[\"search_platform_knowledge\"]}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I complete KYC verification?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1002
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819713583,
+          "usage": {
+            "promptTokenCount": 4403,
+            "candidatesTokenCount": 24,
+            "totalTokenCount": 4427,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4403
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I complete KYC verification?"
+              },
+              "id": "call_13516594857860923172"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I complete KYC verification?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 850
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 526
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819714962,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I complete KYC verification?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I complete KYC verification?"
+                    },
+                    "id": "call_13516594857860923172"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0T6jS4TGhHap7LsX8gjL12QsXkUu7WRkzTFxS9nVO6Kcm3aChBXBPgw4naRFTkwsyGF7juG8fR2szfqeX1KLrOP9PnLy658piOXyQ39edA6IQBfKTlZlfeQ7w="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_13516594857860923172",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I complete KYC verification?",
+                        "resultCount": 2,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 1,
+                            "sectionTitle": null,
+                            "sourceUrl": null,
+                            "similarity": 0.692003245591548,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 KYC DEMO SUPPORT In the fictional TradePro demo, open the Onboarding panel and select the Profile card to begin\nthe KYC profile.\nThe demo profile support reference is KYC-EMBER-72. Quote this reference when asking demo\nsupport about the Profile card.\nTo resume an existing demo identity session, select Continue identity on the Identity card. Do\nnot create a new session simply because you signed out."
+                          },
+                          {
+                            "sourceId": "S2",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 1,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.66358598091686,
+                            "content": "# PROFILE REVIEW EXERCISE\nThe fictional profile review desk is called Amber Desk. The demo confirmation badge reads\nPROFILE-PREVIEW-ONLY. It does not verify identity or approve a real account.\nThe review worksheet asks the participant to compare the displayed profile with the practice\nrecord, note any mismatched labels, and return to the Profile card. The worksheet is a local\nteaching artifact rather than a submission to an identity provider. No personal documents are\nrequired to complete this fictional worksheet.\nThe worksheet contains three distinct boxes: Display check, Label check, and Completion check.\nDisplay check records whether the Profile card is visible. Label check records whether the\npractice reference matches the page. Completion check records that the participant has read the\nexercise. These boxes describe a paper exercise and do not represent backend KYC approval\nstates.\nThe example desk assistant never asks for a password or a secret token. A participant can close\nthe worksheet without changing an account. Returning to the exercise begins with the same\nreference on the Profile card. The demonstration explains navigation only, and no completion\ntime, account limit,"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1198,
+          "usage": {
+            "promptTokenCount": 4411,
+            "candidatesTokenCount": 56,
+            "totalTokenCount": 4467,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4411
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1364
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819716336,
+          "usage": {
+            "promptTokenCount": 567,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 577,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 567
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"How do I complete KYC verification?\",\"finalAnswer\":\"To complete KYC verification, please log in to your TradePro platform account and navigate to the identity verification section to submit the required information and documents.\",\"candidates\":[{\"chunkId\":\"75a5a611-600c-4080-be23-08802d86e683\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 KYC DEMO SUPPORT In the fictional TradePro demo, open the Onboarding panel and select the Profile card to begin\\nthe KYC profile.\\nThe demo profile support reference is KYC-EMBER-72. Quote this reference when asking demo\\nsupport about the Profile card.\\nTo resume an existing demo identity session, select Continue identity on the Identity card. Do\\nnot create a new session simply because you signed out.\"},{\"chunkId\":\"0e3da12d-85ef-4bd7-a595-354931d5132a\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"# PROFILE REVIEW EXERCISE\\nThe fictional profile review desk is called Amber Desk. The demo confirmation badge reads\\nPROFILE-PREVIEW-ONLY. It does not verify identity or approve a real account.\\nThe review worksheet asks the participant to compare the displayed profile with the practice\\nrecord, note any mismatched labels, and return to the Profile card. The worksheet is a local\\nteaching artifact rather than a submission to an identity provider. No personal documents are\\nrequired to complete this fictional worksheet.\\nThe worksheet contains three distinct boxes: Display check, Label check, and Completion check.\\nDisplay check records whether the Profile card is visible. Label check records whether the\\npractice reference matches the page. Completion check records that the participant has read the\\nexercise. These boxes describe a paper exercise and do not represent backend KYC approval\\nstates.\\nThe example desk assistant never asks for a password or a secret token. A participant can close\\nthe worksheet without changing an account. Returning to the exercise begins with the same\\nreference on the Profile card. The demonstration explains navigation only, and no completion\\ntime, account limit,\"}]}",
+          "durationMs": 797
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4557,
+            "retrievalDurationMs": 526,
+            "attributionDurationMs": 799,
+            "usage": {
+              "inputTokens": 10092,
+              "outputTokens": 100,
+              "totalTokens": 10192,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 1,
+      "id": 2,
+      "message": "How do I deposit funds?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "21ff046a-be6b-466c-89d0-ae4a4005169d"
+          },
+          "atMs": 684
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 684
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified policy information regarding depositing funds is currently unavailable from official platform documentation."
+          },
+          "atMs": 4490
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "21ff046a-be6b-466c-89d0-ae4a4005169d",
+              "reply": "Verified policy information regarding depositing funds is currently unavailable from official platform documentation.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9477,
+                "outputTokens": 96,
+                "totalTokens": 9573,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 5567
+        }
+      ],
+      "firstAnswerMs": 4490,
+      "result": {
+        "conversationId": "21ff046a-be6b-466c-89d0-ae4a4005169d",
+        "reply": "Verified policy information regarding depositing funds is currently unavailable from official platform documentation.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9477,
+          "outputTokens": 96,
+          "totalTokens": 9573,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 5569,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819792315,
+          "usage": {
+            "promptTokenCount": 710,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 732,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 710
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I deposit funds?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1015
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819793331,
+          "usage": {
+            "promptTokenCount": 4402,
+            "candidatesTokenCount": 23,
+            "totalTokenCount": 4425,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4402
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I deposit funds?"
+              },
+              "id": "call_13899440224792842986"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I deposit funds?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1148
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 697
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819795178,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I deposit funds?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I deposit funds?"
+                    },
+                    "id": "call_13899440224792842986"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0TxPnmQMH0PZ+RZCwcwRf01FoajnhIUh3/uevPMINKAD9C7ZnLe4Xp30o6ezoztdQJhFgEa3Sc/jySt1mbDyRvDXDINeSfj5mVvJARGLct9rrBHHJH+v9PCBw="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_13899440224792842986",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I deposit funds?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7147988806125503,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 895,
+          "usage": {
+            "promptTokenCount": 4070,
+            "candidatesTokenCount": 41,
+            "totalTokenCount": 4111,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4070
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1032
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819796218,
+          "usage": {
+            "promptTokenCount": 295,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 305,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 295
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"How do I deposit funds?\",\"finalAnswer\":\"Verified policy information regarding depositing funds is currently unavailable from official platform documentation.\",\"candidates\":[{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 839
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4761,
+            "retrievalDurationMs": 697,
+            "attributionDurationMs": 858,
+            "usage": {
+              "inputTokens": 9477,
+              "outputTokens": 96,
+              "totalTokens": 9573,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 1,
+      "id": 3,
+      "message": "How do I withdraw funds?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "8162e931-cad9-43d2-9017-a5c12446f8cc"
+          },
+          "atMs": 137
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 137
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified official policy and instructions for withdrawing funds are currently unavailable. Please check the TradePro platform for standard"
+          },
+          "atMs": 4218
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " withdrawal procedures."
+          },
+          "atMs": 4247
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "8162e931-cad9-43d2-9017-a5c12446f8cc",
+              "reply": "Verified official policy and instructions for withdrawing funds are currently unavailable. Please check the TradePro platform for standard withdrawal procedures.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9976,
+                "outputTokens": 101,
+                "totalTokens": 10077,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 3,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                },
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4982
+        }
+      ],
+      "firstAnswerMs": 4218,
+      "result": {
+        "conversationId": "8162e931-cad9-43d2-9017-a5c12446f8cc",
+        "reply": "Verified official policy and instructions for withdrawing funds are currently unavailable. Please check the TradePro platform for standard withdrawal procedures.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9976,
+          "outputTokens": 101,
+          "totalTokens": 10077,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 3,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          },
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4983,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819813007,
+          "usage": {
+            "promptTokenCount": 710,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 732,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 710
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I withdraw funds?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1299
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819814307,
+          "usage": {
+            "promptTokenCount": 4402,
+            "candidatesTokenCount": 23,
+            "totalTokenCount": 4425,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4402
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I withdraw funds?"
+              },
+              "id": "call_9862993164580278564"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I withdraw funds?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 989
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 524
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819815822,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I withdraw funds?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I withdraw funds?"
+                    },
+                    "id": "call_9862993164580278564"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0TC7K8q1xgH58zN7zJ2Hhx8Ckrn9h+rGewi6lpXBtMgCqQkBcUQ42W6DmIIDNtwfMbGikPDmgGV6sAiFySMNrqbS/m0hK77y8OoQlRMNEDBgitYAoEtvIzfm8="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_9862993164580278564",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I withdraw funds?",
+                        "resultCount": 2,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 3,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7227760869095895,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\nwithdrawal guidance.\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\narticle.\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\nbeside the entry.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 3 of 4"
+                          },
+                          {
+                            "sourceId": "S2",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.6573213926543193,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1117,
+          "usage": {
+            "promptTokenCount": 4365,
+            "candidatesTokenCount": 50,
+            "totalTokenCount": 4415,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4365
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1306
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819817130,
+          "usage": {
+            "promptTokenCount": 499,
+            "candidatesTokenCount": 6,
+            "totalTokenCount": 505,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 499
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\"chunkIds\": []}",
+          "contents": "{\"userQuestion\":\"How do I withdraw funds?\",\"finalAnswer\":\"Verified official policy and instructions for withdrawing funds are currently unavailable. Please check the TradePro platform for standard withdrawal procedures.\",\"candidates\":[{\"chunkId\":\"4a332d41-c073-4dca-ae36-d2981aa07006\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\\nwithdrawal guidance.\\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\\narticle.\\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\\nbeside the entry.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 3 of 4\"},{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 708
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4834,
+            "retrievalDurationMs": 524,
+            "attributionDurationMs": 711,
+            "usage": {
+              "inputTokens": 9976,
+              "outputTokens": 101,
+              "totalTokens": 10077,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 1,
+      "id": 4,
+      "message": "What deposit methods are currently available?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "35c4bf5d-ed82-44d8-a162-fe9c2627361e"
+          },
+          "atMs": 584
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 584
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified information regarding currently available deposit methods is currently unavailable in our published platform documentation."
+          },
+          "atMs": 4147
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " Please log in to your TradePro platform account and navigate to the Funds section to view the payment options available for your specific region and"
+          },
+          "atMs": 4213
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " account."
+          },
+          "atMs": 4260
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "35c4bf5d-ed82-44d8-a162-fe9c2627361e",
+              "reply": "Verified information regarding currently available deposit methods is currently unavailable in our published platform documentation. Please log in to your TradePro platform account and navigate to the Funds section to view the payment options available for your specific region and account.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9514,
+                "outputTokens": 127,
+                "totalTokens": 9641,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 5114
+        }
+      ],
+      "firstAnswerMs": 4147,
+      "result": {
+        "conversationId": "35c4bf5d-ed82-44d8-a162-fe9c2627361e",
+        "reply": "Verified information regarding currently available deposit methods is currently unavailable in our published platform documentation. Please log in to your TradePro platform account and navigate to the Funds section to view the payment options available for your specific region and account.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9514,
+          "outputTokens": 127,
+          "totalTokens": 9641,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 5115,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819833937,
+          "usage": {
+            "promptTokenCount": 711,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 733,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 711
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"What deposit methods are currently available?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1050
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819834997,
+          "usage": {
+            "promptTokenCount": 4403,
+            "candidatesTokenCount": 24,
+            "totalTokenCount": 4427,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4403
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "What deposit methods are currently available?"
+              },
+              "id": "call_14095800142412813469"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What deposit methods are currently available?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 933
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 615
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819836546,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What deposit methods are currently available?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "What deposit methods are currently available?"
+                    },
+                    "id": "call_14095800142412813469"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0Tx7wi3AkxKWnWHYDOIHZjPbmBYfkOjnjuEYcO3o55kh0CPuvD7hY1u3QKLKSfkdZvMrDGKL77HtRGapGNu026FIAXBgT5Kmp4B0ghe2Fb2Fohacio6G+xC58="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_14095800142412813469",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "What deposit methods are currently available?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.6892568489244894,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 883,
+          "usage": {
+            "promptTokenCount": 4074,
+            "candidatesTokenCount": 71,
+            "totalTokenCount": 4145,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4074
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1081
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819837628,
+          "usage": {
+            "promptTokenCount": 326,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 336,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 326
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"What deposit methods are currently available?\",\"finalAnswer\":\"Verified information regarding currently available deposit methods is currently unavailable in our published platform documentation. Please log in to your TradePro platform account and navigate to the Funds section to view the payment options available for your specific region and account.\",\"candidates\":[{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 832
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4527,
+            "retrievalDurationMs": 615,
+            "attributionDurationMs": 834,
+            "usage": {
+              "inputTokens": 9514,
+              "outputTokens": 127,
+              "totalTokens": 9641,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 1,
+      "id": 5,
+      "message": "What should I do if my withdrawal is delayed?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "ff605b71-1ea2-45b9-88e9-4fb78c9966d2"
+          },
+          "atMs": 94
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 94
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified policy information regarding delayed withdrawals is currently unavailable."
+          },
+          "atMs": 3559
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "ff605b71-1ea2-45b9-88e9-4fb78c9966d2",
+              "reply": "Verified policy information regarding delayed withdrawals is currently unavailable.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9496,
+                "outputTokens": 96,
+                "totalTokens": 9592,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 3,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4750
+        }
+      ],
+      "firstAnswerMs": 3559,
+      "result": {
+        "conversationId": "ff605b71-1ea2-45b9-88e9-4fb78c9966d2",
+        "reply": "Verified policy information regarding delayed withdrawals is currently unavailable.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9496,
+          "outputTokens": 96,
+          "totalTokens": 9592,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 3,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4750,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819853616,
+          "usage": {
+            "promptTokenCount": 714,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 736,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 714
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"What should I do if my withdrawal is delayed?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 816
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819854433,
+          "usage": {
+            "promptTokenCount": 4406,
+            "candidatesTokenCount": 27,
+            "totalTokenCount": 4433,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4406
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "What should I do if my withdrawal is delayed?"
+              },
+              "id": "call_5340938586614647374"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What should I do if my withdrawal is delayed?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1148
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 492
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819856077,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What should I do if my withdrawal is delayed?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "What should I do if my withdrawal is delayed?"
+                    },
+                    "id": "call_5340938586614647374"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0TqU8iv0qU6Ie8dBuhXBqYowYGRa1pX0I7P1mo6S5fttBgqL3KBT1E4i/G05VSHH9ULD+gzVMyce3aQe4JSnohZlVMBQXZZ6CH5r97AydBWMWfFy2wfuw6yEA="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_5340938586614647374",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "What should I do if my withdrawal is delayed?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 3,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7079144863776629,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\nwithdrawal guidance.\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\narticle.\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\nbeside the entry.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 3 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 960,
+          "usage": {
+            "promptTokenCount": 4081,
+            "candidatesTokenCount": 37,
+            "totalTokenCount": 4118,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4081
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1017
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819857095,
+          "usage": {
+            "promptTokenCount": 295,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 305,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 295
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"What should I do if my withdrawal is delayed?\",\"finalAnswer\":\"Verified policy information regarding delayed withdrawals is currently unavailable.\",\"candidates\":[{\"chunkId\":\"4a332d41-c073-4dca-ae36-d2981aa07006\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\\nwithdrawal guidance.\\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\\narticle.\\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\\nbeside the entry.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 3 of 4\"}]}",
+          "durationMs": 1177
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4657,
+            "retrievalDurationMs": 492,
+            "attributionDurationMs": 1178,
+            "usage": {
+              "inputTokens": 9496,
+              "outputTokens": 96,
+              "totalTokens": 9592,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 1,
+      "id": 6,
+      "message": "What is TradePro's platinum lunar transfer rebate?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "ec958969-1ae3-4599-8911-8e6d01aa9e0a"
+          },
+          "atMs": 72
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 72
+        },
+        {
+          "event": "error",
+          "data": {
+            "code": "AI_STREAM_FAILED",
+            "message": "The response could not be completed. Please try again."
+          },
+          "atMs": 18303
+        }
+      ],
+      "totalMs": 18324,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819873402,
+          "error": {
+            "message": "fetch failed"
+          },
+          "durationMs": 18149
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "id": 1,
+      "message": "How do I complete KYC verification?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "9ec5eda5-1858-4584-b578-e093e5d9bea0"
+          },
+          "atMs": 95
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 95
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "To complete KYC verification, please log in to your TradePro platform account"
+          },
+          "atMs": 4966
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " and navigate to the verification or profile section to follow the guided steps for submitting your identity documents."
+          },
+          "atMs": 5023
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "9ec5eda5-1858-4584-b578-e093e5d9bea0",
+              "reply": "To complete KYC verification, please log in to your TradePro platform account and navigate to the verification or profile section to follow the guided steps for submitting your identity documents.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 10096,
+                "outputTokens": 116,
+                "totalTokens": 10212,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 1,
+                  "sectionTitle": null,
+                  "sourceUrl": null
+                },
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 1,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 5885
+        }
+      ],
+      "firstAnswerMs": 4966,
+      "result": {
+        "conversationId": "9ec5eda5-1858-4584-b578-e093e5d9bea0",
+        "reply": "To complete KYC verification, please log in to your TradePro platform account and navigate to the verification or profile section to follow the guided steps for submitting your identity documents.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 10096,
+          "outputTokens": 116,
+          "totalTokens": 10212,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 1,
+            "sectionTitle": null,
+            "sourceUrl": null
+          },
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 1,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 5885,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819906776,
+          "usage": {
+            "promptTokenCount": 711,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 733,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 711
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I complete KYC verification?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1453
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819908230,
+          "usage": {
+            "promptTokenCount": 4403,
+            "candidatesTokenCount": 24,
+            "totalTokenCount": 4427,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4403
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I complete KYC verification?"
+              },
+              "id": "call_12980990035957005461"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I complete KYC verification?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 987
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 456
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819909676,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I complete KYC verification?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I complete KYC verification?"
+                    },
+                    "id": "call_12980990035957005461"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0Tz+tPxNVWG/5qj2YTH/Yz9c0rm0G3nTnhae4+OwcgEbgUB+wgfs/IoN7mAEJu0wYOSZF9QkIrle+Ngoif1SMlSlEbHNIwrftemw72F3YUUK58IdsQpLp65vo="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_12980990035957005461",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I complete KYC verification?",
+                        "resultCount": 2,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 1,
+                            "sectionTitle": null,
+                            "sourceUrl": null,
+                            "similarity": 0.692003245591548,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 KYC DEMO SUPPORT In the fictional TradePro demo, open the Onboarding panel and select the Profile card to begin\nthe KYC profile.\nThe demo profile support reference is KYC-EMBER-72. Quote this reference when asking demo\nsupport about the Profile card.\nTo resume an existing demo identity session, select Continue identity on the Identity card. Do\nnot create a new session simply because you signed out."
+                          },
+                          {
+                            "sourceId": "S2",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 1,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.66358598091686,
+                            "content": "# PROFILE REVIEW EXERCISE\nThe fictional profile review desk is called Amber Desk. The demo confirmation badge reads\nPROFILE-PREVIEW-ONLY. It does not verify identity or approve a real account.\nThe review worksheet asks the participant to compare the displayed profile with the practice\nrecord, note any mismatched labels, and return to the Profile card. The worksheet is a local\nteaching artifact rather than a submission to an identity provider. No personal documents are\nrequired to complete this fictional worksheet.\nThe worksheet contains three distinct boxes: Display check, Label check, and Completion check.\nDisplay check records whether the Profile card is visible. Label check records whether the\npractice reference matches the page. Completion check records that the participant has read the\nexercise. These boxes describe a paper exercise and do not represent backend KYC approval\nstates.\nThe example desk assistant never asks for a password or a secret token. A participant can close\nthe worksheet without changing an account. Returning to the exercise begins with the same\nreference on the Profile card. The demonstration explains navigation only, and no completion\ntime, account limit,"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1915,
+          "usage": {
+            "promptTokenCount": 4411,
+            "candidatesTokenCount": 60,
+            "totalTokenCount": 4471,
+            "cachedContentTokenCount": 1926,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4411
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1926
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 2039
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819911717,
+          "usage": {
+            "promptTokenCount": 571,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 581,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 571
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"How do I complete KYC verification?\",\"finalAnswer\":\"To complete KYC verification, please log in to your TradePro platform account and navigate to the verification or profile section to follow the guided steps for submitting your identity documents.\",\"candidates\":[{\"chunkId\":\"75a5a611-600c-4080-be23-08802d86e683\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 KYC DEMO SUPPORT In the fictional TradePro demo, open the Onboarding panel and select the Profile card to begin\\nthe KYC profile.\\nThe demo profile support reference is KYC-EMBER-72. Quote this reference when asking demo\\nsupport about the Profile card.\\nTo resume an existing demo identity session, select Continue identity on the Identity card. Do\\nnot create a new session simply because you signed out.\"},{\"chunkId\":\"0e3da12d-85ef-4bd7-a595-354931d5132a\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"# PROFILE REVIEW EXERCISE\\nThe fictional profile review desk is called Amber Desk. The demo confirmation badge reads\\nPROFILE-PREVIEW-ONLY. It does not verify identity or approve a real account.\\nThe review worksheet asks the participant to compare the displayed profile with the practice\\nrecord, note any mismatched labels, and return to the Profile card. The worksheet is a local\\nteaching artifact rather than a submission to an identity provider. No personal documents are\\nrequired to complete this fictional worksheet.\\nThe worksheet contains three distinct boxes: Display check, Label check, and Completion check.\\nDisplay check records whether the Profile card is visible. Label check records whether the\\npractice reference matches the page. Completion check records that the participant has read the\\nexercise. These boxes describe a paper exercise and do not represent backend KYC approval\\nstates.\\nThe example desk assistant never asks for a password or a secret token. A participant can close\\nthe worksheet without changing an account. Returning to the exercise begins with the same\\nreference on the Profile card. The demonstration explains navigation only, and no completion\\ntime, account limit,\"}]}",
+          "durationMs": 833
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 5777,
+            "retrievalDurationMs": 456,
+            "attributionDurationMs": 835,
+            "usage": {
+              "inputTokens": 10096,
+              "outputTokens": 116,
+              "totalTokens": 10212,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 2,
+      "id": 2,
+      "message": "How do I deposit funds?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "39840833-b68f-4a3e-afb3-0d2240951e1e"
+          },
+          "atMs": 74
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 74
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified deposit policy information is currently unavailable."
+          },
+          "atMs": 3695
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "39840833-b68f-4a3e-afb3-0d2240951e1e",
+              "reply": "Verified deposit policy information is currently unavailable.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9471,
+                "outputTokens": 90,
+                "totalTokens": 9561,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4527
+        }
+      ],
+      "firstAnswerMs": 3695,
+      "result": {
+        "conversationId": "39840833-b68f-4a3e-afb3-0d2240951e1e",
+        "reply": "Verified deposit policy information is currently unavailable.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9471,
+          "outputTokens": 90,
+          "totalTokens": 9561,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4530,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819927707,
+          "usage": {
+            "promptTokenCount": 710,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 732,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 710
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I deposit funds?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1153
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819928864,
+          "usage": {
+            "promptTokenCount": 4402,
+            "candidatesTokenCount": 23,
+            "totalTokenCount": 4425,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4402
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I deposit funds?"
+              },
+              "id": "call_17715045057939868819"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I deposit funds?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 892
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 464
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819930222,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I deposit funds?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I deposit funds?"
+                    },
+                    "id": "call_17715045057939868819"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0T+fwop0eA0vqriySK80BtcAj+qjeVLGo7sxLTK44QiKj9XW2O0y7NTTCkZfgrhT6joYYsytHHZUlfnk4t7VvBjCqKfkBK5w5j4pLzfE2bXcorHvKJkNDMGSU="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_17715045057939868819",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I deposit funds?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7147988806125503,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1042,
+          "usage": {
+            "promptTokenCount": 4070,
+            "candidatesTokenCount": 35,
+            "totalTokenCount": 4105,
+            "cachedContentTokenCount": 1917,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4070
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1917
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1157
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819931381,
+          "usage": {
+            "promptTokenCount": 289,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 299,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 289
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": []\n}",
+          "contents": "{\"userQuestion\":\"How do I deposit funds?\",\"finalAnswer\":\"Verified deposit policy information is currently unavailable.\",\"candidates\":[{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 773
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4448,
+            "retrievalDurationMs": 464,
+            "attributionDurationMs": 775,
+            "usage": {
+              "inputTokens": 9471,
+              "outputTokens": 90,
+              "totalTokens": 9561,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 2,
+      "id": 3,
+      "message": "How do I withdraw funds?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "6763983b-2401-424e-b6dc-71236e1aeadc"
+          },
+          "atMs": 64
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 64
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified official policy information for withdrawals is currently unavailable."
+          },
+          "atMs": 5167
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "6763983b-2401-424e-b6dc-71236e1aeadc",
+              "reply": "Verified official policy information for withdrawals is currently unavailable.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9963,
+                "outputTokens": 87,
+                "totalTokens": 10050,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 3,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                },
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 6313
+        }
+      ],
+      "firstAnswerMs": 5167,
+      "result": {
+        "conversationId": "6763983b-2401-424e-b6dc-71236e1aeadc",
+        "reply": "Verified official policy information for withdrawals is currently unavailable.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9963,
+          "outputTokens": 87,
+          "totalTokens": 10050,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 3,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          },
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 6313,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819947280,
+          "usage": {
+            "promptTokenCount": 710,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 732,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 710
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"How do I withdraw funds?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1636
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819948917,
+          "usage": {
+            "promptTokenCount": 4402,
+            "candidatesTokenCount": 23,
+            "totalTokenCount": 4425,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4402
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "How do I withdraw funds?"
+              },
+              "id": "call_13908522285018528505"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I withdraw funds?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1040
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 631
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819950590,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How do I withdraw funds?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "How do I withdraw funds?"
+                    },
+                    "id": "call_13908522285018528505"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0Th+RC8hsF+mKTPiovqgVZp0b+9T96xMf8zZtItMnZSoWZ+/FeNubAnMpH6NU2ROHcZgWkJO2ji4Qkbs5r6LX/7SjiBa2fKONDmNIarPbiv0z8k9cOoBNT3kQ="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_13908522285018528505",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "How do I withdraw funds?",
+                        "resultCount": 2,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 3,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7227760869095895,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\nwithdrawal guidance.\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\narticle.\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\nbeside the entry.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 3 of 4"
+                          },
+                          {
+                            "sourceId": "S2",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.6573213926543193,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1724,
+          "usage": {
+            "promptTokenCount": 4365,
+            "candidatesTokenCount": 37,
+            "totalTokenCount": 4402,
+            "cachedContentTokenCount": 1925,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4365
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1925
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1865
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819952457,
+          "usage": {
+            "promptTokenCount": 486,
+            "candidatesTokenCount": 5,
+            "totalTokenCount": 491,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 486
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\"chunkIds\":[]}",
+          "contents": "{\"userQuestion\":\"How do I withdraw funds?\",\"finalAnswer\":\"Verified official policy information for withdrawals is currently unavailable.\",\"candidates\":[{\"chunkId\":\"4a332d41-c073-4dca-ae36-d2981aa07006\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\\nwithdrawal guidance.\\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\\narticle.\\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\\nbeside the entry.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 3 of 4\"},{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 1062
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 6244,
+            "retrievalDurationMs": 631,
+            "attributionDurationMs": 1067,
+            "usage": {
+              "inputTokens": 9963,
+              "outputTokens": 87,
+              "totalTokens": 10050,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 2,
+      "id": 4,
+      "message": "What deposit methods are currently available?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "db4353f7-bd26-4e7b-b948-0566f7636888"
+          },
+          "atMs": 104
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 104
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified information regarding currently available deposit methods is unavailable."
+          },
+          "atMs": 3500
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "db4353f7-bd26-4e7b-b948-0566f7636888",
+              "reply": "Verified information regarding currently available deposit methods is unavailable.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9480,
+                "outputTokens": 134,
+                "totalTokens": 9614,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "KNOWLEDGE_DOCUMENT",
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 2,
+                  "sourceUrl": null
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4949
+        }
+      ],
+      "firstAnswerMs": 3500,
+      "result": {
+        "conversationId": "db4353f7-bd26-4e7b-b948-0566f7636888",
+        "reply": "Verified information regarding currently available deposit methods is unavailable.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9480,
+          "outputTokens": 134,
+          "totalTokens": 9614,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "KNOWLEDGE_DOCUMENT",
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 2,
+            "sourceUrl": null
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4950,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819968673,
+          "usage": {
+            "promptTokenCount": 711,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 733,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 711
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"What deposit methods are currently available?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1059
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819969735,
+          "usage": {
+            "promptTokenCount": 4403,
+            "candidatesTokenCount": 24,
+            "totalTokenCount": 4427,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4403
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "What deposit methods are currently available?"
+              },
+              "id": "call_3749057618372759226"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What deposit methods are currently available?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 979
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 465
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819971181,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What deposit methods are currently available?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "What deposit methods are currently available?"
+                    },
+                    "id": "call_3749057618372759226"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0TZyzPzkjOvdEBh8sxJJPXkbPsVFCl3dpQUWo04tEAYLteuoGsF6HvwTuDkcNA4+tZ2fanPyf6Kft+L6/BLEUxQKs7sdYA8S74CVHMKoRHm2PKx2jPRTahgU8="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_3749057618372759226",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "What deposit methods are currently available?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 2,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.6892568489244894,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\nguidance.\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\na payment or transaction.\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 2 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 837,
+          "usage": {
+            "promptTokenCount": 4074,
+            "candidatesTokenCount": 37,
+            "totalTokenCount": 4111,
+            "cachedContentTokenCount": 1917,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4074
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1917
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 937
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819972120,
+          "usage": {
+            "promptTokenCount": 292,
+            "candidatesTokenCount": 51,
+            "totalTokenCount": 343,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 292
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"chunkIds\": [\n    \"e08e54cd-48b6-4bf1-a065-f03d90524407\"\n  ]\n}",
+          "contents": "{\"userQuestion\":\"What deposit methods are currently available?\",\"finalAnswer\":\"Verified information regarding currently available deposit methods is unavailable.\",\"candidates\":[{\"chunkId\":\"e08e54cd-48b6-4bf1-a065-f03d90524407\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 DEPOSIT DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Deposit card to view deposit\\nguidance.\\nThe demo deposit help reference is DEP-LILAC-83. It identifies the deposit support article, not\\na payment or transaction.\\nTo locate a demo deposit receipt, open Activity, select the deposit entry, and choose Receipt.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 2 of 4\"}]}",
+          "durationMs": 1394
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4842,
+            "retrievalDurationMs": 465,
+            "attributionDurationMs": 1395,
+            "usage": {
+              "inputTokens": 9480,
+              "outputTokens": 134,
+              "totalTokens": 9614,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "KNOWLEDGE_DOCUMENT",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "chunkId": "e08e54cd-48b6-4bf1-a065-f03d90524407",
+            "version": 2,
+            "sourceUrl": null,
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "pageNumber": 2
+          }
+        ]
+      ]
+    },
+    {
+      "round": 2,
+      "id": 5,
+      "message": "What should I do if my withdrawal is delayed?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "933a66aa-69e9-4642-9b52-bb6079489658"
+          },
+          "atMs": 63
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 63
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "Verified platform information regarding delayed withdrawals is currently unavailable. Please check your account dashboard"
+          },
+          "atMs": 3715
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": " or contact TradePro support directly for assistance."
+          },
+          "atMs": 3758
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "933a66aa-69e9-4642-9b52-bb6079489658",
+              "reply": "Verified platform information regarding delayed withdrawals is currently unavailable. Please check your account dashboard or contact TradePro support directly for assistance.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 9510,
+                "outputTokens": 94,
+                "totalTokens": 9604,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [
+                {
+                  "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                  "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                  "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                  "version": 2,
+                  "pageNumber": 3,
+                  "sectionTitle": "PROFILE REVIEW EXERCISE",
+                  "sourceUrl": null
+                }
+              ],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 4606
+        }
+      ],
+      "firstAnswerMs": 3715,
+      "result": {
+        "conversationId": "933a66aa-69e9-4642-9b52-bb6079489658",
+        "reply": "Verified platform information regarding delayed withdrawals is currently unavailable. Please check your account dashboard or contact TradePro support directly for assistance.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 9510,
+          "outputTokens": 94,
+          "totalTokens": 9604,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+            "version": 2,
+            "pageNumber": 3,
+            "sectionTitle": "PROFILE REVIEW EXERCISE",
+            "sourceUrl": null
+          }
+        ],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 4606,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794819988635,
+          "usage": {
+            "promptTokenCount": 714,
+            "candidatesTokenCount": 10,
+            "totalTokenCount": 724,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 714
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\"toolNames\":[\"search_platform_knowledge\"]}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"What should I do if my withdrawal is delayed?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 917
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794819989553,
+          "usage": {
+            "promptTokenCount": 4406,
+            "candidatesTokenCount": 27,
+            "totalTokenCount": 4433,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4406
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "What should I do if my withdrawal is delayed?"
+              },
+              "id": "call_7310752544671817834"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What should I do if my withdrawal is delayed?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 1008
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 453
+          }
+        },
+        {
+          "kind": "stream",
+          "at": 1794819991016,
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What should I do if my withdrawal is delayed?"
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "name": "search_platform_knowledge",
+                    "args": {
+                      "question": "What should I do if my withdrawal is delayed?"
+                    },
+                    "id": "call_7310752544671817834"
+                  },
+                  "thoughtSignature": "EmAKXgFpFH0Tm4V0HgLHJJBIzyrxkzA7R+xyeC63eKX0v18mPIq3rGqwxxl50XKW2XujKhUGGsepiPoGQq0s2HvKZ+mk2/LZDgPv2/oHg6gp1QY2uwHsKdG64i71KA5g498="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call_7310752544671817834",
+                    "name": "search_platform_knowledge",
+                    "response": {
+                      "success": true,
+                      "result": {
+                        "status": "KNOWLEDGE_FOUND",
+                        "question": "What should I do if my withdrawal is delayed?",
+                        "resultCount": 1,
+                        "sources": [
+                          {
+                            "sourceId": "S1",
+                            "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+                            "chunkId": "4a332d41-c073-4dca-ae36-d2981aa07006",
+                            "title": "TradePro Isolated Practice Manual - Synthetic Only",
+                            "category": "DEV_EVALUATION",
+                            "version": 2,
+                            "pageNumber": 3,
+                            "sectionTitle": "PROFILE REVIEW EXERCISE",
+                            "sourceUrl": null,
+                            "similarity": 0.7079144863776629,
+                            "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\nwithdrawal guidance.\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\narticle.\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\nbeside the entry.\nThese navigation labels and references exist only in this synthetic evaluation.\nNo real fees, limits, methods, processing times or eligibility policies are stated.\nPage 3 of 4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "firstPartMs": 1223,
+          "usage": {
+            "promptTokenCount": 4081,
+            "candidatesTokenCount": 51,
+            "totalTokenCount": 4132,
+            "cachedContentTokenCount": 1917,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4081
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1917
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "durationMs": 1323
+        },
+        {
+          "kind": "generate",
+          "stage": "attribution",
+          "at": 1794819992340,
+          "usage": {
+            "promptTokenCount": 309,
+            "candidatesTokenCount": 6,
+            "totalTokenCount": 315,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 309
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\"chunkIds\": []}",
+          "contents": "{\"userQuestion\":\"What should I do if my withdrawal is delayed?\",\"finalAnswer\":\"Verified platform information regarding delayed withdrawals is currently unavailable. Please check your account dashboard or contact TradePro support directly for assistance.\",\"candidates\":[{\"chunkId\":\"4a332d41-c073-4dca-ae36-d2981aa07006\",\"title\":\"TradePro Isolated Practice Manual - Synthetic Only\",\"content\":\"DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 WITHDRAWAL DEMO SUPPORT In the fictional TradePro demo, open the Funds panel and select the Withdrawal card to view\\nwithdrawal guidance.\\nThe demo withdrawal help reference is WDR-MAPLE-94. It identifies the withdrawal support\\narticle.\\nTo track a demo withdrawal, open Activity, select Withdrawals, and inspect the status badge\\nbeside the entry.\\nThese navigation labels and references exist only in this synthetic evaluation.\\nNo real fees, limits, methods, processing times or eligibility policies are stated.\\nPage 3 of 4\"}]}",
+          "durationMs": 834
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 4,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 4541,
+            "retrievalDurationMs": 453,
+            "attributionDurationMs": 835,
+            "usage": {
+              "inputTokens": 9510,
+              "outputTokens": 94,
+              "totalTokens": 9604,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    },
+    {
+      "round": 2,
+      "id": 6,
+      "message": "What is TradePro's platinum lunar transfer rebate?",
+      "httpStatus": 200,
+      "events": [
+        {
+          "event": "conversation",
+          "data": {
+            "conversationId": "d760b55b-f5a4-42b8-947d-49abb9bfd2cc"
+          },
+          "atMs": 64
+        },
+        {
+          "event": "status",
+          "data": {
+            "stage": "generating"
+          },
+          "atMs": 64
+        },
+        {
+          "event": "chunk",
+          "data": {
+            "text": "I couldn't find approved TradePro documentation to verify that information. Please check the relevant TradePro page or contact support."
+          },
+          "atMs": 2454
+        },
+        {
+          "event": "done",
+          "data": {
+            "finished": true,
+            "data": {
+              "conversationId": "d760b55b-f5a4-42b8-947d-49abb9bfd2cc",
+              "reply": "I couldn't find approved TradePro documentation to verify that information. Please check the relevant TradePro page or contact support.",
+              "category": "PLATFORM_POLICY",
+              "requiresLiveData": false,
+              "usage": {
+                "inputTokens": 5122,
+                "outputTokens": 43,
+                "totalTokens": 5165,
+                "thoughtsTokens": null
+              },
+              "toolUsed": true,
+              "toolsCalled": [
+                "search_platform_knowledge"
+              ],
+              "sources": [],
+              "ragRetrievedSources": [],
+              "answerSources": [
+                {
+                  "type": "NO_VERIFIED_SOURCE"
+                }
+              ],
+              "marketQuote": null
+            }
+          },
+          "atMs": 2455
+        }
+      ],
+      "firstAnswerMs": 2454,
+      "result": {
+        "conversationId": "d760b55b-f5a4-42b8-947d-49abb9bfd2cc",
+        "reply": "I couldn't find approved TradePro documentation to verify that information. Please check the relevant TradePro page or contact support.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 5122,
+          "outputTokens": 43,
+          "totalTokens": 5165,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [],
+        "answerSources": [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ],
+        "marketQuote": null
+      },
+      "totalMs": 2455,
+      "trace": [
+        {
+          "kind": "generate",
+          "stage": "planner",
+          "at": 1794820008277,
+          "usage": {
+            "promptTokenCount": 715,
+            "candidatesTokenCount": 22,
+            "totalTokenCount": 737,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 715
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "text": "{\n  \"toolNames\": [\n    \"search_platform_knowledge\"\n  ]\n}",
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "{\"message\":\"What is TradePro's platinum lunar transfer rebate?\",\"conversationSummary\":null,\"recentConversation\":[],\"availableTools\":[{\"name\":\"get_market_price\",\"description\":\"Retrieve the latest available market price for a financial instrument. Use when the user asks for current or live prices of forex pairs, gold, silver, commodities, or cryptocurrencies. Never invent market prices.\"},{\"name\":\"get_latest_market_news\",\"description\":\"Retrieve recent financial market news with article headlines, descriptions, images, publication dates, and original publisher URLs. Use when users ask about recent financial headlines, gold, forex, cryptocurrency news, or economic developments. Use a specific topic when the user mentions one.\"},{\"name\":\"search_platform_knowledge\",\"description\":\"Search approved TradePro platform documentation for KYC procedures, identity verification guidance, deposits, withdrawals, transfers, account management, and support policies. Use this tool for questions about TradePro procedures or documented policies. Do not use it to retrieve live customer balances, transaction statuses, or current market prices. Only approved, published, public knowledge is searched.\"},{\"name\":\"get_my_trading_accounts\",\"description\":\"Retrieve the authenticated customer's own trading accounts, including platform, currency and account status. Use when the customer asks about their trading accounts or account status. Do not use for balances or transactions.\"},{\"name\":\"get_my_account_balances\",\"description\":\"Retrieve trading account balances and available balances for the authenticated customer. Use for questions about account balances and available funds. Read-only. Do not perform financial transactions.\"},{\"name\":\"get_my_fund_transactions\",\"description\":\"Retrieve the authenticated customer's fund transaction history, including deposits, withdrawals, and transfers. Use when customers ask about recent transactions, latest deposits, pending withdrawals, transfer history, or transaction statuses. Transactions are ordered newest first. Optional filters are type and status. Default limit is 10; maximum is 20. Read-only. Never initiate transactions.\"},{\"name\":\"get_my_kyc_status\",\"description\":\"Get the authenticated customer's current TradePro KYC verification status, profile completion, identity verification progress, and general next steps. Read-only. Use when a customer asks whether they are verified, their KYC progress, or what verification step remains.\"}]}"
+                }
+              ]
+            }
+          ],
+          "durationMs": 966
+        },
+        {
+          "kind": "generate",
+          "stage": "tool-or-answer",
+          "at": 1794820009244,
+          "usage": {
+            "promptTokenCount": 4407,
+            "candidatesTokenCount": 21,
+            "totalTokenCount": 4428,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4407
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "functionCalls": [
+            {
+              "name": "search_platform_knowledge",
+              "args": {
+                "question": "platinum lunar transfer rebate"
+              },
+              "id": "call_14589437449895788836"
+            }
+          ],
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What is TradePro's platinum lunar transfer rebate?"
+                }
+              ]
+            }
+          ],
+          "durationMs": 960
+        },
+        {
+          "kind": "AI_TOOL_ROUND",
+          "value": {
+            "round": 1,
+            "calls": [
+              "search_platform_knowledge"
+            ],
+            "durationMs": 461
+          }
+        },
+        {
+          "kind": "GEMINI_USAGE",
+          "value": {
+            "model": "gemini-3.5-flash-lite",
+            "requests": 2,
+            "toolUsed": true,
+            "toolRounds": 1,
+            "totalToolCalls": 1,
+            "durationMs": 2391,
+            "retrievalDurationMs": 461,
+            "attributionDurationMs": 0,
+            "usage": {
+              "inputTokens": 5122,
+              "outputTokens": 43,
+              "totalTokens": 5165,
+              "thoughtsTokens": null
+            }
+          }
+        }
+      ],
+      "persisted": true,
+      "persistedSources": [
+        [
+          {
+            "type": "NO_VERIFIED_SOURCE"
+          }
+        ]
+      ]
+    }
+  ],
+  "fixture": {
+    "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+    "title": "TradePro Isolated Practice Manual - Synthetic Only",
+    "version": 2,
+    "chunkCount": 6,
+    "alreadyExists": false
+  },
+  "oldVersionStatus": "ARCHIVED",
+  "retrievalIsolation": {
+    "count": 2,
+    "onlyLatestPublic": true,
+    "sources": [
+      {
+        "chunkId": "75a5a611-600c-4080-be23-08802d86e683",
+        "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+        "title": "TradePro Isolated Practice Manual - Synthetic Only",
+        "category": "DEV_EVALUATION",
+        "sourceUrl": null,
+        "version": 2,
+        "chunkIndex": 0,
+        "pageNumber": 1,
+        "sectionTitle": null,
+        "content": "DEVELOPMENT FIXTURE - FICTIONAL FACTS - NOT REAL TRADEPRO POLICY TradePro Isolated Practice Manual - Synthetic Only | Version 1 KYC DEMO SUPPORT In the fictional TradePro demo, open the Onboarding panel and select the Profile card to begin\nthe KYC profile.\nThe demo profile support reference is KYC-EMBER-72. Quote this reference when asking demo\nsupport about the Profile card.\nTo resume an existing demo identity session, select Continue identity on the Identity card. Do\nnot create a new session simply because you signed out.",
+        "similarity": 0.692003245591548
+      },
+      {
+        "chunkId": "0e3da12d-85ef-4bd7-a595-354931d5132a",
+        "documentId": "9c44c42d-95ec-4525-981b-a7efe1a845fe",
+        "title": "TradePro Isolated Practice Manual - Synthetic Only",
+        "category": "DEV_EVALUATION",
+        "sourceUrl": null,
+        "version": 2,
+        "chunkIndex": 1,
+        "pageNumber": 1,
+        "sectionTitle": "PROFILE REVIEW EXERCISE",
+        "content": "# PROFILE REVIEW EXERCISE\nThe fictional profile review desk is called Amber Desk. The demo confirmation badge reads\nPROFILE-PREVIEW-ONLY. It does not verify identity or approve a real account.\nThe review worksheet asks the participant to compare the displayed profile with the practice\nrecord, note any mismatched labels, and return to the Profile card. The worksheet is a local\nteaching artifact rather than a submission to an identity provider. No personal documents are\nrequired to complete this fictional worksheet.\nThe worksheet contains three distinct boxes: Display check, Label check, and Completion check.\nDisplay check records whether the Profile card is visible. Label check records whether the\npractice reference matches the page. Completion check records that the participant has read the\nexercise. These boxes describe a paper exercise and do not represent backend KYC approval\nstates.\nThe example desk assistant never asks for a password or a secret token. A participant can close\nthe worksheet without changing an account. Returning to the exercise begins with the same\nreference on the Profile card. The demonstration explains navigation only, and no completion\ntime, account limit,",
+        "similarity": 0.66358598091686
+      }
+    ]
+  },
+  "security": {
+    "unauthenticated": 401,
+    "crossUserRead": {
+      "status": 404,
+      "body": {
+        "statusCode": 404,
+        "message": "Conversation not found"
+      }
+    },
+    "crossUserContinue": {
+      "status": 404,
+      "body": {
+        "statusCode": 404,
+        "message": "Conversation not found"
+      }
+    },
+    "cancellation": {
+      "conversationCreated": true,
+      "assistantMessages": 0
+    },
+    "rateLimit": {
+      "status": 429,
+      "invalidRequests": 82
+    }
+  }
+}

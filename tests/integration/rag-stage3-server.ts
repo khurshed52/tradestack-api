@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {appendFile} from 'node:fs/promises';
+import pg from 'pg';
+const url=new URL(process.env.DATABASE_URL!);
+assert.equal(url.hostname,'127.0.0.1');assert.notEqual(url.port,'5432');assert.equal(url.pathname,'/'+process.env.RAG_DATABASE_NAME);assert(url.pathname.startsWith('/rag_e2e_'));assert.notEqual(process.env.PORT,'3001');
+const db=new pg.Client({connectionString:url.href});await db.connect();assert.equal((await db.query('SELECT current_database() AS name')).rows[0].name,process.env.RAG_DATABASE_NAME);await db.end();
+const {getGeminiClient}=await import('../../src/config/gemini.js');
+const client=getGeminiClient();
+const record=(entry:unknown)=>appendFile(process.env.RAG_TRACE_FILE!,JSON.stringify(entry)+'\n');
+const original=client.models.generateContent.bind(client.models);
+client.models.generateContent=async(params)=>{const start=Date.now();const instruction=String(params.config?.systemInstruction??'');const entry:any={kind:'generate',stage:instruction.includes('tool planner')?'planner':instruction.includes('Select only retrieved')?'attribution':params.config?.tools?'tool-selection':'answer-or-repair',at:start};try{const response=await original(params);entry.usage=response.usageMetadata;entry.functionCalls=response.functionCalls;entry.text=response.text;entry.contents=params.contents;return response;}catch(e:any){entry.error={status:e.status,message:String(e.message).replace(/AIza[\w-]+/g,'[REDACTED]')};throw e;}finally{entry.durationMs=Date.now()-start;await record(entry);}};
+const originalStream=client.models.generateContentStream.bind(client.models);
+client.models.generateContentStream=async(params)=>{const start=Date.now();const stream=await originalStream(params);return (async function*(){const entry:any={kind:'stream',stage:'answer',at:start,contents:params.contents};try{for await(const part of stream){entry.firstPartMs??=Date.now()-start;if(part.usageMetadata)entry.usage=part.usageMetadata;yield part;}}catch(e:any){entry.error={message:String(e.message).replace(/AIza[\w-]+/g,'[REDACTED]')};throw e;}finally{entry.durationMs=Date.now()-start;await record(entry);}})();};
+const log=console.log;console.log=(...args)=>{log(...args);if(['AI_TOOL_ROUND','GEMINI_USAGE'].includes(args[0]))void record({kind:args[0],value:args[1]});};
+await import('../../src/server.js');

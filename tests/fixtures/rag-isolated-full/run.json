@@ -1,0 +1,26 @@
+{
+  "database": "rag_e2e_1794386756810_a2eb15",
+  "containers": [
+    "rag-pg-1794386756810_a2eb15",
+    "rag-redis-1794386756810_a2eb15"
+  ],
+  "startedAt": "2026-11-11T08:45:56.810Z",
+  "cleanup": {
+    "rag-pg-1794386756810_a2eb15": "removed",
+    "rag-redis-1794386756810_a2eb15": "removed",
+    "temporarySecrets": "removed",
+    "backendExit": 0,
+    "httpPortClosed": true
+  },
+  "databaseVerification": {
+    "host": "127.0.0.1",
+    "hostPort": 65343,
+    "database": "rag_e2e_1794386756810_a2eb15",
+    "server_port": 5432,
+    "version": "PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit"
+  },
+  "httpPort": 65349,
+  "migrations": "passed",
+  "serverReady": true,
+  "finishedAt": "2026-11-11T08:52:39.875Z"
+}

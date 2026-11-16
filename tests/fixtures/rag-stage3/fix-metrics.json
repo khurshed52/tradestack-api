@@ -1,0 +1,136 @@
+{
+  "after": {
+    "attempted": 12,
+    "completed": 11,
+    "firstAnswerMedianMs": 4506,
+    "totalMedianMs": 5561,
+    "stages": {
+      "planner": {
+        "attempts": 12,
+        "errors": 1,
+        "successfulAttemptMedianMs": 1039
+      },
+      "tool-selection": {
+        "attempts": 12,
+        "errors": 1,
+        "successfulAttemptMedianMs": 1065
+      },
+      "answer": {
+        "attempts": 9,
+        "errors": 0,
+        "successfulAttemptMedianMs": 1593
+      },
+      "attribution": {
+        "attempts": 10,
+        "errors": 1,
+        "successfulAttemptMedianMs": 951
+      }
+    },
+    "allCases": 16,
+    "allCompleted": 15,
+    "streamFinalMatches": 9,
+    "persisted": 15,
+    "failures": [
+      {
+        "round": 2,
+        "id": 2,
+        "error": {
+          "code": "AI_STREAM_FAILED",
+          "message": "The response could not be completed. Please try again."
+        }
+      }
+    ],
+    "security": {
+      "unauthenticated": 401,
+      "crossUserRead": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "crossUserContinue": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "cancellation": {
+        "conversationCreated": true,
+        "assistantMessages": 0
+      },
+      "rateLimit": {
+        "status": 429,
+        "invalidRequests": 78
+      }
+    }
+  },
+  "after-fix": {
+    "attempted": 12,
+    "completed": 12,
+    "firstAnswerMedianMs": 7000.5,
+    "totalMedianMs": 7007.5,
+    "stages": {
+      "planner": {
+        "attempts": 14,
+        "errors": 2,
+        "successfulAttemptMedianMs": 1319.5
+      },
+      "tool-selection": {
+        "attempts": 12,
+        "errors": 0,
+        "successfulAttemptMedianMs": 1251
+      },
+      "answer": {
+        "attempts": 10,
+        "errors": 0,
+        "successfulAttemptMedianMs": 1472
+      },
+      "attribution": {
+        "attempts": 11,
+        "errors": 1,
+        "successfulAttemptMedianMs": 1357.5
+      }
+    },
+    "allCases": 16,
+    "allCompleted": 15,
+    "streamFinalMatches": 15,
+    "persisted": 15,
+    "failures": [
+      {
+        "round": 1,
+        "id": 8,
+        "error": {
+          "code": "AI_STREAM_FAILED",
+          "message": "The response could not be completed. Please try again."
+        }
+      }
+    ],
+    "security": {
+      "unauthenticated": 401,
+      "crossUserRead": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "crossUserContinue": {
+        "status": 404,
+        "body": {
+          "statusCode": 404,
+          "message": "Conversation not found"
+        }
+      },
+      "cancellation": {
+        "conversationCreated": true,
+        "assistantMessages": 0
+      },
+      "rateLimit": {
+        "status": 429,
+        "invalidRequests": 78
+      }
+    }
+  }
+}

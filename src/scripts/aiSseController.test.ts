@@ -1,0 +1,23 @@
+import {EventEmitter} from 'node:events';
+import {beforeEach,expect,it,vi} from 'vitest';
+const m=vi.hoisted(()=>({create:vi.fn(),context:vi.fn(),save:vi.fn(),saveUser:vi.fn(),stream:vi.fn(),generate:vi.fn()}));
+vi.mock('../modules/ai/ai.service.js',()=>({generateAiResponse:vi.fn(),streamAiResponse:vi.fn()}));
+vi.mock('../modules/ai/ai-summary.service.js',()=>({updateAiConversationSummary:vi.fn()}));
+vi.mock('../modules/ai/ai-conversation.service.js',()=>({createAiConversation:m.create,getAiConversationContext:m.context,saveAiUserMessage:m.saveUser,saveAiAssistantMessage:m.save,listAiConversations:vi.fn(),getAiConversationMessages:vi.fn()}));
+vi.mock('../modules/ai/ai-tool-selection.service.js',()=>({streamAiResponseWithTools:m.stream,generateAiResponseWithTools:m.generate,selectAiTool:vi.fn(),selectAndExecuteAiTool:vi.fn()}));
+import {aiChatPersistentController} from '../modules/ai/ai.controller.js';
+const result={reply:'verified answer',usage:{inputTokens:1,outputTokens:1,totalTokens:2},sources:[],marketQuote:null,answerSources:[{type:'NO_VERIFIED_SOURCE'}]};
+function context(accept='text/event-stream',conversationId?:string){const events:string[]=[];const res:any=new EventEmitter();Object.assign(res,{headersSent:false,writableEnded:false,destroyed:false,status:vi.fn().mockReturnValue(res),setHeader:vi.fn(),flushHeaders:()=>{res.headersSent=true;},write:(v:string)=>{events.push(v);return true;},flush:vi.fn(),end:()=>{res.writableEnded=true;},json:vi.fn()});return {req:{user:{id:'trusted-user'},body:{message:'question',conversationId},get:()=>accept} as any,res,events,next:vi.fn()};}
+beforeEach(()=>{vi.clearAllMocks();m.save.mockReset();m.create.mockResolvedValue({id:'conversation'});m.context.mockResolvedValue({history:[],summary:null});m.generate.mockResolvedValue(result);m.stream.mockImplementation(async(_a,_b,_c,user,delta)=>{expect(user).toBe('trusted-user');await delta('verified answer');return result;});});
+it('flushes chunks before persistence and saves final sources before done',async()=>{const c=context();m.save.mockImplementation(async()=>{expect(c.events.some(e=>e.startsWith('event: chunk'))).toBe(true);expect(c.events.some(e=>e.startsWith('event: done'))).toBe(false);});await aiChatPersistentController(c.req,c.res,c.next);expect(m.save).toHaveBeenCalledWith('conversation',result.reply,result.usage,[],null,result.answerSources);expect(c.events.at(-1)).toContain('event: done');expect(c.res.listenerCount('close')).toBe(0);});
+it('generic Accept preserves JSON response contract',async()=>{const c=context('*/*');await aiChatPersistentController(c.req,c.res,c.next);expect(m.stream).not.toHaveBeenCalled();expect(c.res.json).toHaveBeenCalledWith({statusCode:200,message:'AI response generated and saved',data:{conversationId:'conversation',...result}});});
+it('verifies conversation ownership before saving or streaming',async()=>{m.context.mockRejectedValueOnce(new Error('AI_CONVERSATION_NOT_FOUND'));const c=context('text/event-stream','other-user-conversation');await aiChatPersistentController(c.req,c.res,c.next);expect(m.context).toHaveBeenCalledWith('trusted-user','other-user-conversation');expect(m.saveUser).not.toHaveBeenCalled();expect(m.stream).not.toHaveBeenCalled();expect(c.res.status).toHaveBeenCalledWith(404);});
+it('disconnect cancels the request and never saves an incomplete assistant answer',async()=>{const c=context();m.stream.mockImplementation(async(_a,_b,_c,_d,_delta,signal)=>{c.res.emit('close');signal.throwIfAborted();});await aiChatPersistentController(c.req,c.res,c.next);expect(m.save).not.toHaveBeenCalled();expect(c.events.some(e=>e.startsWith('event: done'))).toBe(false);expect(c.res.listenerCount('close')).toBe(0);});
+it('stream failures return generic error without leaking provider details',async()=>{m.stream.mockRejectedValueOnce(new Error('PRIVATE_PROVIDER_SECRET'));const c=context();const log=vi.spyOn(console,'error').mockImplementation(()=>{});try{await aiChatPersistentController(c.req,c.res,c.next);expect(c.events.join('')).toContain('AI_STREAM_FAILED');expect(c.events.join('')).not.toContain('PRIVATE_PROVIDER_SECRET');expect(m.save).not.toHaveBeenCalled();}finally{log.mockRestore();}});
+
+it('done and persistence use final reply rather than accumulated provisional text',async()=>{
+ const c=context();m.stream.mockImplementation(async(_a,_b,_c,_d,delta)=>{await delta('obsolete provisional text');return result;});
+ await aiChatPersistentController(c.req,c.res,c.next);
+ expect(m.save.mock.calls[0]![1]).toBe(result.reply);
+ const done=c.events.find(e=>e.startsWith('event: done'))!;expect(done).toContain('verified answer');expect(done).not.toContain('obsolete provisional');
+});

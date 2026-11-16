@@ -1,0 +1,754 @@
+{
+  "database": "disposable localhost container",
+  "phases": {
+    "pdfExtraction": {
+      "pageCount": 3,
+      "passed": true
+    },
+    "ingestion": {
+      "documentId": "414c07fb-0733-4e1a-b0ef-e5fd70ab2eb5",
+      "title": "Lumen Observatory development fixture",
+      "version": 1,
+      "chunkCount": 3,
+      "alreadyExists": false
+    },
+    "publication": {
+      "documentId": "414c07fb-0733-4e1a-b0ef-e5fd70ab2eb5",
+      "slug": "rag-dev-observatory",
+      "version": 1,
+      "status": "PUBLISHED",
+      "visibility": "PUBLIC",
+      "chunkCount": 3
+    },
+    "exclusions": {
+      "passed": true,
+      "queries": 16,
+      "samplePublished": false
+    },
+    "versionAndDuplicates": {
+      "passed": true,
+      "latestVersion": 2,
+      "oldVersion": "ARCHIVED"
+    }
+  },
+  "cases": [
+    {
+      "question": "Which gate is the Lumen Observatory entrance?",
+      "page": 1,
+      "answer": "Indigo Gate",
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.7195637298670459
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6009574406452095
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5764303046042774
+        }
+      ],
+      "retrievedPages": [
+        1
+      ],
+      "similarities": [
+        0.7195637298670459
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What is the observatory entrance code?",
+      "page": 1,
+      "answer": "LUMEN-42",
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.7131241901964965
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.641330075660399
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6222530470771422
+        }
+      ],
+      "retrievedPages": [
+        1
+      ],
+      "similarities": [
+        0.7131241901964965
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "Where is the welcome desk?",
+      "page": 1,
+      "answer": "Cedar Hall",
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.6231897179628091
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.5996385696135943
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5824915020153139
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": false,
+      "empty": true
+    },
+    {
+      "question": "What is the welcome desk emblem?",
+      "page": 1,
+      "answer": "silver heron",
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.6713508367538643
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6194387104805097
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.6072356850296234
+        }
+      ],
+      "retrievedPages": [
+        1
+      ],
+      "similarities": [
+        0.6713508367538643
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "How many glass planets are in the Aurora Gallery?",
+      "page": 2,
+      "answer": "seven",
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.7606848997940214
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.6129309861824546
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.582148358013983
+        }
+      ],
+      "retrievedPages": [
+        2
+      ],
+      "similarities": [
+        0.7606848997940214
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What color is Oriole?",
+      "page": 2,
+      "answer": "violet",
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.6537787960369016
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.6046446090513389
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5998199223506044
+        }
+      ],
+      "retrievedPages": [
+        2
+      ],
+      "similarities": [
+        0.6537787960369016
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "Which channel does the gallery audio guide use?",
+      "page": 2,
+      "answer": "14",
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.6968716563663387
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.5932654829538179
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5821805686073445
+        }
+      ],
+      "retrievedPages": [
+        2
+      ],
+      "similarities": [
+        0.6968716563663387
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "Where should visitors return audio guides?",
+      "page": 2,
+      "answer": "blue tray",
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.6835733983979596
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.610911423943501
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5884317756694635
+        }
+      ],
+      "retrievedPages": [
+        2
+      ],
+      "similarities": [
+        0.6835733983979596
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What is the Meridian Workshop project code?",
+      "page": 3,
+      "answer": "MAPLE-73",
+      "ranked": [
+        {
+          "pageNumber": 3,
+          "similarity": 0.7775027750447392
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.6688671909412801
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.610499580920105
+        }
+      ],
+      "retrievedPages": [
+        3,
+        1
+      ],
+      "similarities": [
+        0.7775027750447392,
+        0.6688671909412801
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What is the demonstration robot called?",
+      "page": 3,
+      "answer": "Tavi",
+      "ranked": [
+        {
+          "pageNumber": 3,
+          "similarity": 0.6915802470953454
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.6495777562135023
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.640888583263076
+        }
+      ],
+      "retrievedPages": [
+        3
+      ],
+      "similarities": [
+        0.6915802470953454
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What shape is the robot charging dock?",
+      "page": 3,
+      "answer": "triangular",
+      "ranked": [
+        {
+          "pageNumber": 3,
+          "similarity": 0.6482627486286233
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6081743034747328
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.5937764337326188
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": false,
+      "empty": true
+    },
+    {
+      "question": "Where do participants get green notebooks?",
+      "page": 3,
+      "answer": "copper shelf",
+      "ranked": [
+        {
+          "pageNumber": 3,
+          "similarity": 0.6805474807790046
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.6179264415546492
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6151399292792591
+        }
+      ],
+      "retrievedPages": [
+        3
+      ],
+      "similarities": [
+        0.6805474807790046
+      ],
+      "expectedPageRetrieved": true,
+      "empty": false
+    },
+    {
+      "question": "What is the observatory admission price?",
+      "page": null,
+      "answer": null,
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.6442441768355205
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6162151597649002
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5454659895497772
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": null,
+      "empty": true
+    },
+    {
+      "question": "What time does the observatory close?",
+      "page": null,
+      "answer": null,
+      "ranked": [
+        {
+          "pageNumber": 1,
+          "similarity": 0.6348431980983739
+        },
+        {
+          "pageNumber": 2,
+          "similarity": 0.6199026442271144
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.560310523565554
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": null,
+      "empty": true
+    },
+    {
+      "question": "What are TradePro withdrawal fees?",
+      "page": null,
+      "answer": null,
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.5941412743174966
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5909477120074283
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.565289347033828
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": null,
+      "empty": true
+    },
+    {
+      "question": "What is the current Bitcoin price?",
+      "page": null,
+      "answer": null,
+      "ranked": [
+        {
+          "pageNumber": 2,
+          "similarity": 0.5445363203027961
+        },
+        {
+          "pageNumber": 3,
+          "similarity": 0.5279472818280826
+        },
+        {
+          "pageNumber": 1,
+          "similarity": 0.5245964468487628
+        }
+      ],
+      "retrievedPages": [],
+      "similarities": [],
+      "expectedPageRetrieved": null,
+      "empty": true
+    }
+  ],
+  "thresholds": [
+    {
+      "threshold": 0.5,
+      "answerableRecall": 1,
+      "unanswerableEmptyRate": 0
+    },
+    {
+      "threshold": 0.55,
+      "answerableRecall": 1,
+      "unanswerableEmptyRate": 0.25
+    },
+    {
+      "threshold": 0.6,
+      "answerableRecall": 1,
+      "unanswerableEmptyRate": 0.5
+    },
+    {
+      "threshold": 0.65,
+      "answerableRecall": 0.8333333333333334,
+      "unanswerableEmptyRate": 1
+    },
+    {
+      "threshold": 0.7,
+      "answerableRecall": 0.3333333333333333,
+      "unanswerableEmptyRate": 1
+    },
+    {
+      "threshold": 0.75,
+      "answerableRecall": 0.16666666666666666,
+      "unanswerableEmptyRate": 1
+    },
+    {
+      "threshold": 0.8,
+      "answerableRecall": 0,
+      "unanswerableEmptyRate": 1
+    }
+  ],
+  "tools": [
+    "get_market_price",
+    "get_latest_market_news",
+    "search_platform_knowledge",
+    "get_my_trading_accounts",
+    "get_my_account_balances",
+    "get_my_fund_transactions",
+    "get_my_kyc_status"
+  ],
+  "autoRouting": [
+    {
+      "question": "Search the approved knowledge base for the Lumen Observatory entrance code.",
+      "expected": "search_platform_knowledge",
+      "selected": [
+        "search_platform_knowledge"
+      ],
+      "passed": true
+    },
+    {
+      "question": "What is my KYC status?",
+      "expected": "get_my_kyc_status",
+      "selected": [
+        "get_my_kyc_status"
+      ],
+      "passed": true
+    },
+    {
+      "question": "List my trading accounts.",
+      "expected": "get_my_trading_accounts",
+      "selected": [
+        "get_my_trading_accounts"
+      ],
+      "passed": true
+    },
+    {
+      "question": "What are my account balances?",
+      "expected": "get_my_account_balances",
+      "selected": [
+        "get_my_account_balances"
+      ],
+      "passed": true
+    },
+    {
+      "question": "What is the current Bitcoin price?",
+      "expected": "get_market_price",
+      "selected": [
+        "get_market_price"
+      ],
+      "passed": true
+    },
+    {
+      "question": "Show the latest market news.",
+      "expected": "get_latest_market_news",
+      "selected": [
+        "get_latest_market_news"
+      ],
+      "passed": true
+    },
+    {
+      "question": "Show my recent deposits and withdrawals.",
+      "expected": "get_my_fund_transactions",
+      "selected": [
+        "get_my_fund_transactions"
+      ],
+      "passed": true
+    }
+  ],
+  "grounded": [
+    {
+      "question": "What is the observatory entrance code?",
+      "expectedPage": 1,
+      "expectedAnswer": "LUMEN-42",
+      "result": {
+        "status": "answered",
+        "answer": "The entrance code for the Lumen Observatory is LUMEN-42.",
+        "sources": [
+          {
+            "sourceId": "S1",
+            "documentId": "414c07fb-0733-4e1a-b0ef-e5fd70ab2eb5",
+            "chunkId": "cb07dc2b-0422-4706-a13f-a7cedc0a786f",
+            "title": "Lumen Observatory development fixture",
+            "version": 1,
+            "pageNumber": 1,
+            "sectionTitle": null,
+            "sourceUrl": null
+          }
+        ]
+      }
+    },
+    {
+      "question": "Which channel does the gallery audio guide use?",
+      "expectedPage": 2,
+      "expectedAnswer": "14",
+      "result": {
+        "status": "answered",
+        "answer": "The gallery audio guide uses channel 14.",
+        "sources": [
+          {
+            "sourceId": "S1",
+            "documentId": "414c07fb-0733-4e1a-b0ef-e5fd70ab2eb5",
+            "chunkId": "b8e515c5-cd61-4747-bbd2-3efa47674e9e",
+            "title": "Lumen Observatory development fixture",
+            "version": 1,
+            "pageNumber": 2,
+            "sectionTitle": null,
+            "sourceUrl": null
+          }
+        ]
+      }
+    },
+    {
+      "question": "What is the demonstration robot called?",
+      "failure": "{\"error\":{\"code\":503,\"message\":\"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\"status\":\"UNAVAILABLE\"}}"
+    },
+    {
+      "question": "What is the observatory admission price?",
+      "expectedPage": null,
+      "expectedAnswer": null,
+      "result": {
+        "status": "insufficient_evidence",
+        "answer": "I couldn't verify an answer from the approved TradePro knowledge base. Please consult the relevant TradePro page or contact support.",
+        "sources": []
+      }
+    },
+    {
+      "question": "What are TradePro withdrawal fees?",
+      "expectedPage": null,
+      "expectedAnswer": null,
+      "result": {
+        "status": "insufficient_evidence",
+        "answer": "I couldn't verify an answer from the approved TradePro knowledge base. Please consult the relevant TradePro page or contact support.",
+        "sources": []
+      }
+    }
+  ],
+  "previousFailures": [
+    "{\"error\":{\"code\":503,\"message\":\"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\"status\":\"UNAVAILABLE\"}}"
+  ],
+  "privateTools": [
+    {
+      "name": "get_my_kyc_status",
+      "result": {
+        "status": "REGISTERED",
+        "customerExists": true,
+        "profileExists": true,
+        "kycProfileExists": false,
+        "profileCompleted": false,
+        "identityVerified": false,
+        "agreementStepCompleted": false,
+        "nextStep": "Complete your KYC profile.",
+        "rejectionReason": null
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "name": "get_my_trading_accounts",
+      "result": {
+        "accountCount": 0,
+        "accounts": []
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "name": "get_my_account_balances",
+      "result": {
+        "accountCount": 0,
+        "accounts": []
+      },
+      "unauthenticatedRejected": true
+    },
+    {
+      "name": "get_my_fund_transactions",
+      "result": {
+        "totalMatchingTransactions": 0,
+        "returnedCount": 0,
+        "hasMore": false,
+        "appliedFilters": {
+          "type": null,
+          "status": null
+        },
+        "transactions": []
+      },
+      "unauthenticatedRejected": true
+    }
+  ],
+  "applicationChat": [
+    {
+      "question": "Search the approved knowledge base for the Lumen Observatory entrance code.",
+      "routing": "AUTO",
+      "result": {
+        "reply": "I'm TradePro AI, your trading and financial platform assistant. I can help with financial markets, trading education, your trading accounts, funds, and TradePro platform services.",
+        "category": "OTHER",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 3705,
+          "outputTokens": 60,
+          "totalTokens": 3765,
+          "thoughtsTokens": null
+        },
+        "toolUsed": false,
+        "toolsCalled": [],
+        "sources": [],
+        "ragRetrievedSources": [],
+        "marketQuote": null
+      }
+    },
+    {
+      "question": "What are TradePro withdrawal fees?",
+      "routing": "ANY",
+      "result": {
+        "reply": "I couldn't find approved TradePro documentation to verify that information. Please check the relevant TradePro page or contact support.",
+        "category": "PLATFORM_POLICY",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 7696,
+          "outputTokens": 85,
+          "totalTokens": 7781,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [],
+        "marketQuote": null
+      }
+    },
+    {
+      "question": "For TradePro development documentation testing, search the approved knowledge base for the Meridian Workshop project code.",
+      "routing": "ANY",
+      "result": {
+        "reply": "I'm TradePro AI, your trading and financial platform assistant. I can help with financial markets, trading education, your trading accounts, funds, and TradePro platform services.",
+        "category": "OTHER",
+        "requiresLiveData": false,
+        "usage": {
+          "inputTokens": 11717,
+          "outputTokens": 147,
+          "totalTokens": 11864,
+          "thoughtsTokens": null
+        },
+        "toolUsed": true,
+        "toolsCalled": [
+          "search_platform_knowledge"
+        ],
+        "sources": [],
+        "ragRetrievedSources": [
+          {
+            "documentId": "332fd9d1-c0f8-4783-8767-b2440dbffeac",
+            "chunkId": "b426136d-3f02-4a74-930a-39de89d6a222",
+            "title": "Lumen Observatory development fixture",
+            "version": 2,
+            "pageNumber": 3,
+            "sectionTitle": null,
+            "sourceUrl": null
+          },
+          {
+            "documentId": "332fd9d1-c0f8-4783-8767-b2440dbffeac",
+            "chunkId": "eb7794f4-f3f7-4941-aa51-c18eb622c8cd",
+            "title": "Lumen Observatory development fixture",
+            "version": 2,
+            "pageNumber": 1,
+            "sectionTitle": null,
+            "sourceUrl": null
+          }
+        ],
+        "marketQuote": null
+      }
+    }
+  ],
+  "marketExecution": "NOT RUN: no development Twelve Data/MarketAux/Redis configuration approved"
+}

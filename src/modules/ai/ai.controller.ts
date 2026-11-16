@@ -27,6 +27,7 @@ import {
   selectAiTool,
   selectAndExecuteAiTool,
   generateAiResponseWithTools,
+  streamAiResponseWithTools,
 } from "./ai-tool-selection.service.js";
 
 // --------------------------------
@@ -36,11 +37,11 @@ import {
 export const aiChatController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const result = await generateAiResponse(
-      req.body.message
+      req.body.message,
     );
 
     return res.status(200).json({
@@ -54,12 +55,13 @@ export const aiChatController = async (
 };
 
 // --------------------------------
-// AI STREAMING
+// BASIC AI STREAMING
+// WITHOUT PERSISTENT MEMORY / RAG
 // --------------------------------
 
 export const aiChatStreamController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   const controller = new AbortController();
 
@@ -73,38 +75,49 @@ export const aiChatStreamController = async (
 
   res.setHeader(
     "Content-Type",
-    "text/event-stream"
+    "text/event-stream; charset=utf-8",
   );
 
   res.setHeader(
     "Cache-Control",
-    "no-cache, no-transform"
+    "no-cache, no-transform",
+  );
+
+  res.setHeader(
+    "Connection",
+    "keep-alive",
   );
 
   res.setHeader(
     "X-Accel-Buffering",
-    "no"
+    "no",
   );
 
   res.flushHeaders();
 
   const sendEvent = (
     event: string,
-    data: unknown
+    data: unknown,
   ) => {
     if (res.destroyed || res.writableEnded) {
       return;
     }
 
     res.write(
-      `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
+      `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
     );
+
+    (
+      res as Response & {
+        flush?: () => void;
+      }
+    ).flush?.();
   };
 
   try {
     for await (const text of streamAiResponse(
       req.body.message,
-      controller.signal
+      controller.signal,
     )) {
       if (controller.signal.aborted) {
         break;
@@ -122,6 +135,8 @@ export const aiChatStreamController = async (
     }
   } catch (error) {
     if (!controller.signal.aborted) {
+      console.error("BASIC_AI_STREAM_FAILED", error);
+
       sendEvent("error", {
         message: "AI streaming failed",
       });
@@ -140,15 +155,12 @@ export const aiChatStreamController = async (
 export const createAiConversationController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const userId = req.user!.id;
-    const { message } = req.body;
-
     const conversation = await createAiConversation(
-      userId,
-      message
+      req.user!.id,
+      req.body.message,
     );
 
     return res.status(201).json({
@@ -163,22 +175,97 @@ export const createAiConversationController = async (
 
 // --------------------------------
 // PERSISTENT AI CHAT
-// WITH MEMORY + FUNCTION CALLING
+//
+// SAME ENDPOINT:
+// POST /api/ai/chat/persistent
+//
+// Accept: application/json
+//   -> Normal JSON response
+//
+// Accept: text/event-stream
+//   -> SSE streaming response
+//
+// BOTH SUPPORT:
+// - Authentication
+// - Conversation history
+// - RAG
+// - Function calling
+// - Database persistence
+// - Source citations
 // --------------------------------
-
 
 export const aiChatPersistentController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
+  // Require explicit SSE opt-in.
+  // Generic Accept: */* continues returning JSON.
+  const wantsStreaming = (
+    req.get("accept") ?? ""
+  )
+    .split(",")
+    .some((entry) => {
+      const mediaType = entry
+        .trim()
+        .split(";")[0]
+        ?.trim()
+        .toLowerCase();
+
+      return mediaType === "text/event-stream";
+    });
+
+  const abortController = new AbortController();
+
+  const onClose = () => {
+    if (!res.writableEnded) {
+      abortController.abort();
+    }
+  };
+
+  if (wantsStreaming) {
+    res.on("close", onClose);
+  }
+
+  // --------------------------------
+  // SSE EVENT WRITER
+  // --------------------------------
+
+  const sendEvent = (
+    event: string,
+    data: unknown,
+  ) => {
+    if (
+      abortController.signal.aborted ||
+      res.destroyed ||
+      res.writableEnded
+    ) {
+      return;
+    }
+
+    res.write(
+      `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
+    );
+
+    // Flush events when compression middleware
+    // supports explicit flushing.
+    (
+      res as Response & {
+        flush?: () => void;
+      }
+    ).flush?.();
+  };
+
   try {
     const userId = req.user!.id;
 
     const {
       message,
       conversationId,
-    } = req.body;
+    } = req.body as {
+      message: string;
+      conversationId?: string;
+    };
 
     let activeConversationId: string;
 
@@ -193,11 +280,11 @@ export const aiChatPersistentController = async (
     // --------------------------------
 
     if (conversationId) {
-      // Verify ownership and load conversation memory.
+      // Verify ownership before saving message.
       const context =
         await getAiConversationContext(
           userId,
-          conversationId
+          conversationId,
         );
 
       activeConversationId = conversationId;
@@ -205,45 +292,137 @@ export const aiChatPersistentController = async (
       history = context.history;
       summary = context.summary;
 
-      // Save the new user message only after
-      // loading history to prevent duplication.
+      if (abortController.signal.aborted) {
+        return;
+      }
+
       await saveAiUserMessage(
         activeConversationId,
-        message
+        message,
       );
     } else {
       // --------------------------------
       // NEW CONVERSATION
       // --------------------------------
 
+      if (abortController.signal.aborted) {
+        return;
+      }
+
       const conversation =
         await createAiConversation(
           userId,
-          message
+          message,
         );
 
       activeConversationId = conversation.id;
 
-      // createAiConversation() already stores
+      // createAiConversation already saves
       // the initial user message.
     }
 
     // --------------------------------
-    // GENERATE AI RESPONSE
-    // WITH MEMORY + FUNCTION CALLING
+    // NORMAL JSON RESPONSE
     // --------------------------------
 
-  const result =
-    await generateAiResponseWithTools(
-      message,
-      history,
-      summary,
-      userId
+    if (!wantsStreaming) {
+      const result =
+        await generateAiResponseWithTools(
+          message,
+          history,
+          summary,
+          userId,
+        );
+
+      await saveAiAssistantMessage(
+        activeConversationId,
+        result.reply,
+        result.usage,
+        result.sources,
+        result.marketQuote,
+        result.answerSources ?? [],
+      );
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: "AI response generated and saved",
+        data: {
+          conversationId: activeConversationId,
+          ...result,
+        },
+      });
+    }
+
+    // --------------------------------
+    // STREAMING SSE RESPONSE
+    // --------------------------------
+
+    if (abortController.signal.aborted) {
+      return;
+    }
+
+    res.status(200);
+
+    res.setHeader(
+      "Content-Type",
+      "text/event-stream; charset=utf-8",
     );
 
+    res.setHeader(
+      "Cache-Control",
+      "no-cache, no-transform",
+    );
+
+    res.setHeader(
+      "Connection",
+      "keep-alive",
+    );
+
+    res.setHeader(
+      "X-Accel-Buffering",
+      "no",
+    );
+
+    res.flushHeaders();
+
     // --------------------------------
-    // SAVE ASSISTANT RESPONSE
-    // INCLUDING NEWS + PRICE METADATA
+    // SEND CONVERSATION INFORMATION
+    // --------------------------------
+
+    sendEvent("conversation", {
+      conversationId: activeConversationId,
+    });
+
+    sendEvent("status", {
+      stage: "generating",
+    });
+
+    // --------------------------------
+    // STREAM GEMINI ANSWER
+    // WITH RAG + AUTHENTICATED TOOLS
+    // --------------------------------
+
+    const result =
+      await streamAiResponseWithTools(
+        message,
+        history,
+        summary,
+        userId,
+
+        // Called for each generated answer delta.
+        (text: string) => {
+          sendEvent("chunk", { text });
+        },
+
+        abortController.signal,
+      );
+
+    if (abortController.signal.aborted) {
+      return;
+    }
+
+    // --------------------------------
+    // SAVE COMPLETED ASSISTANT RESPONSE
     // --------------------------------
 
     await saveAiAssistantMessage(
@@ -251,37 +430,69 @@ export const aiChatPersistentController = async (
       result.reply,
       result.usage,
       result.sources,
-      result.marketQuote
+      result.marketQuote,
+      result.answerSources ?? [],
     );
 
     // --------------------------------
-    // RETURN FRONTEND-COMPATIBLE RESULT
+    // SEND FINAL METADATA + CITATIONS
     // --------------------------------
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: "AI response generated and saved",
+    sendEvent("done", {
+      finished: true,
       data: {
         conversationId: activeConversationId,
         ...result,
       },
     });
+
+    res.end();
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message ===
-        "AI_CONVERSATION_NOT_FOUND"
-    ) {
-      return res.status(404).json({
-        statusCode: 404,
-        message: "Conversation not found",
-      });
+    if (abortController.signal.aborted) {
+      return;
     }
 
-    next(error);
+    // --------------------------------
+    // ERRORS BEFORE RESPONSE STARTS
+    // --------------------------------
+
+    if (!res.headersSent) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          "AI_CONVERSATION_NOT_FOUND"
+      ) {
+        return res.status(404).json({
+          statusCode: 404,
+          message: "Conversation not found",
+        });
+      }
+
+      return next(error);
+    }
+
+    // --------------------------------
+    // ERRORS AFTER STREAM STARTS
+    // --------------------------------
+
+    console.error(
+      "PERSISTENT_AI_STREAM_FAILED",
+      error,
+    );
+
+    sendEvent("error", {
+      code: "AI_STREAM_FAILED",
+      message:
+        "The response could not be completed. Please try again.",
+    });
+
+    res.end();
+  } finally {
+    if (wantsStreaming) {
+      res.off("close", onClose);
+    }
   }
 };
-
 
 // --------------------------------
 // TEST AI SUMMARIZATION
@@ -290,17 +501,18 @@ export const aiChatPersistentController = async (
 export const testAiSummaryController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user!.id;
 
-    const { conversationId } = req.params;
+    const conversationId =
+      req.params.conversationId as string;
 
     const result =
       await updateAiConversationSummary(
         userId,
-        conversationId as string
+        conversationId,
       );
 
     return res.status(200).json({
@@ -320,12 +532,12 @@ export const testAiSummaryController = async (
 export const listAiConversationsController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const conversations =
       await listAiConversations(
-        req.user!.id
+        req.user!.id,
       );
 
     return res.status(200).json({
@@ -349,7 +561,7 @@ export const getAiConversationMessagesController =
   async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const conversationId =
@@ -358,7 +570,7 @@ export const getAiConversationMessagesController =
       const result =
         await getAiConversationMessages(
           req.user!.id,
-          conversationId
+          conversationId,
         );
 
       return res.status(200).json({
@@ -390,11 +602,11 @@ export const getAiConversationMessagesController =
 export const testAiToolSelectionController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const result = await selectAiTool(
-      req.body.message
+      req.body.message,
     );
 
     return res.status(200).json({
@@ -414,12 +626,12 @@ export const testAiToolSelectionController = async (
 export const testAiToolExecutionController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const result =
       await selectAndExecuteAiTool(
-        req.body.message
+        req.body.message,
       );
 
     return res.status(200).json({
@@ -439,12 +651,12 @@ export const testAiToolExecutionController = async (
 export const testAiToolResponseController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const result =
       await generateAiResponseWithTools(
-        req.body.message
+        req.body.message,
       );
 
     return res.status(200).json({

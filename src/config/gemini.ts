@@ -11,7 +11,7 @@ export const getGeminiClient = (): GoogleGenAI => {
     throw new Error("GEMINI_NOT_CONFIGURED");
   }
 
-  client = new GoogleGenAI({ apiKey });
+  client = new GoogleGenAI({ apiKey, httpOptions: { timeout: 30_000 } });
 
   return client;
 };

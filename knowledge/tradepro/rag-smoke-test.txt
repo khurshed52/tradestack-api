@@ -1,0 +1,20 @@
+
+TRADEPRO AI — RAG INTEGRATION TEST
+
+Document purpose:
+This document is used exclusively for testing the
+TradePro AI retrieval-augmented generation pipeline.
+
+Test reference:
+TRADEPRO-RAG-2026
+
+Question:
+What is the TradePro RAG integration test reference?
+
+Answer:
+The TradePro RAG integration test reference is
+TRADEPRO-RAG-2026.
+
+This document is a development test fixture.
+It does not define financial policies, fees,
+withdrawal times, deposit methods, or KYC requirements.
